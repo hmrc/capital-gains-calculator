@@ -15,7 +15,6 @@ This service is written in [Scala](http://www.scala-lang.org/) and [Play](http:/
 
 ## Dependencies
 
-* Authorisation - auth
 * Audit - datastream
 
 ## License
