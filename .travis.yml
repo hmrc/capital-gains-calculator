@@ -8,7 +8,4 @@ jdk:
 cache:
   directories:
     - '$HOME/.ivy2/cache'
-branches:
-  except:
-    - master
     
