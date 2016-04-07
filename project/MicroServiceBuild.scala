@@ -35,6 +35,7 @@ private object AppDependencies {
   import play.core.PlayVersion
 
   private val hmrcTestVersion = "1.6.0"
+  private val jsoupVersion = "1.8.3"
 
   val compile = Seq(
 
@@ -60,6 +61,7 @@ private object AppDependencies {
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
+        "org.jsoup" % "jsoup" % jsoupVersion % scope,
       )
     }.test
   }
@@ -74,6 +76,7 @@ private object AppDependencies {
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
+        "org.jsoup" % "jsoup" % jsoupVersion % scope,
       )
     }.test
   }

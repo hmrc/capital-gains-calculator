@@ -19,16 +19,23 @@ package controllers
 import play.api.http.Status
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import org.jsoup._
 
 
 class MessageControllerSpec extends UnitSpec with WithFakeApplication {
 
-  val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/hello-world")
-
   "GET /capital-gains-calculator/hello-world" should {
+
+    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/hello-world")
+    val result = MessageController.helloWorld()(fakeRequest)
+
     "return 200" in {
-      val result = MessageController.helloWorld()(fakeRequest)
       status(result) shouldBe Status.OK
+    }
+
+    "return the text `Hello world`" in {
+      val jsoupDoc = Jsoup.parse(bodyOf(result))
+      jsoupDoc.body.text shouldEqual "Hello world"
     }
   }
 }
