@@ -60,8 +60,8 @@ private object AppDependencies {
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
-        "org.jsoup" % "jsoup" % jsoupVersion % scope,
+        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+        "org.jsoup" % "jsoup" % jsoupVersion % scope
       )
     }.test
   }
@@ -75,8 +75,8 @@ private object AppDependencies {
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
-        "org.jsoup" % "jsoup" % jsoupVersion % scope,
+        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+        "org.jsoup" % "jsoup" % jsoupVersion % scope
       )
     }.test
   }
