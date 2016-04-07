@@ -24,7 +24,7 @@ object MessageController extends MessageController
 
 trait MessageController extends BaseController {
 
-	def helloWorld() = Action.async { implicit request =>
-		Future.successful(Ok("Hello world"))
-	}
+  def helloWorld() = Action.async { implicit request =>
+    Future.successful(Ok("Hello world"))
+  }
 }
