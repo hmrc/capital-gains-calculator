@@ -16,15 +16,22 @@
 
 package controllers
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import play.api.mvc._
+import services.CalculationService
+
 import scala.concurrent.Future
 
-object CalculatorController extends CalculatorController
+object CalculatorController extends CalculatorController {
+  override val calculationService = CalculationService
+}
 
 trait CalculatorController extends BaseController {
 
-  def helloWorld() = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
+  val calculationService: CalculationService
+
+  def calculate(left: Int, right: Int) = Action.async { implicit request =>
+    Future.successful(Ok(Json.toJson(calculationService.add(left, right))))
   }
 }

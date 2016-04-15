@@ -16,7 +16,7 @@
 
 package services
 
-import models.CalculationResultModel
+import models.CalculationResult
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CalculationServiceSpec extends UnitSpec {
@@ -24,7 +24,7 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService" should {
     "return the sum of two numbers" in {
       val result = CalculationService.add(20, 10)
-      result shouldEqual CalculationResultModel(20, 10, 20 + 10)
+      result shouldEqual CalculationResult(20, 10, 20 + 10)
     }
   }
 

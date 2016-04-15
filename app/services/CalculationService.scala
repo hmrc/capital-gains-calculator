@@ -16,10 +16,10 @@
 
 package services
 
-import models.CalculationResultModel
+import models.CalculationResult
 
 object CalculationService extends CalculationService
 
 trait CalculationService {
-  def add(a: Int, b: Int) = CalculationResultModel(a, b, a + b)
+  def add(a: Int, b: Int) = CalculationResult(a, b, a + b)
 }

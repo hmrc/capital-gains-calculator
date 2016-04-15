@@ -16,4 +16,10 @@
 
 package models
 
-case class CalculationResultModel(left: Int, right: Int, result: Int)
+import play.api.libs.json.Json
+
+case class CalculationResult(left: Int, right: Int, result: Int)
+
+object CalculationResult {
+  implicit val formats = Json.format[CalculationResult]
+}

@@ -16,26 +16,48 @@
 
 package controllers
 
+import models.CalculationResult
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import services.CalculationService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import org.jsoup._
 
+class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
-class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
+  "GET /capital-gains-calculator/calculate" should {
 
-  "GET /capital-gains-calculator/hello-world" should {
+    val mockCalculationService = mock[CalculationService]
+    when(mockCalculationService.add(Matchers.anyInt, Matchers.anyInt))
+      .thenReturn(CalculationResult(1, 2, 3))
 
-    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/hello-world")
-    val result = CalculatorController.helloWorld()(fakeRequest)
+    val target: CalculatorController = new CalculatorController {
+      override val calculationService = mockCalculationService
+    }
+
+    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate")
+    val result = target.calculate(1, 1)(fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK
     }
 
-    "return the text `Hello world`" in {
-      val jsoupDoc = Jsoup.parse(bodyOf(result))
-      jsoupDoc.body.text shouldEqual "Hello world"
+    "return a JSON result" in {
+      contentType(result) shouldBe Some("application/json")
+      charset(result) shouldBe Some("utf-8")
     }
+
+    "return a valid result" in {
+      val data = contentAsString(result)
+      val json = Json.parse(data)
+      (json \ "left").as[Int] shouldBe 1
+      (json \ "right").as[Int] shouldBe 2
+      (json \ "result").as[Int] shouldBe 3
+    }
+
   }
 }
