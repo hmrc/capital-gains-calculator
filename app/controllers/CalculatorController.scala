@@ -16,26 +16,15 @@
 
 package controllers
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import org.jsoup._
+import uk.gov.hmrc.play.microservice.controller.BaseController
+import play.api.mvc._
+import scala.concurrent.Future
 
+object CalculatorController extends CalculatorController
 
-class MessageControllerSpec extends UnitSpec with WithFakeApplication {
+trait CalculatorController extends BaseController {
 
-  "GET /capital-gains-calculator/hello-world" should {
-
-    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/hello-world")
-    val result = MessageController.helloWorld()(fakeRequest)
-
-    "return 200" in {
-      status(result) shouldBe Status.OK
-    }
-
-    "return the text `Hello world`" in {
-      val jsoupDoc = Jsoup.parse(bodyOf(result))
-      jsoupDoc.body.text shouldEqual "Hello world"
-    }
+  def helloWorld() = Action.async { implicit request =>
+    Future.successful(Ok("Hello world"))
   }
 }
