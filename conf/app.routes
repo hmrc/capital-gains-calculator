@@ -1,3 +1,3 @@
 # microservice specific routes
 
-GET        /calculate/:left/:right             controllers.CalculatorController.calculate(left: Int, right: Int)
+GET        /calculate             controllers.CalculatorController.calculate(left: Int ?= 0, right: Int ?= 0)
