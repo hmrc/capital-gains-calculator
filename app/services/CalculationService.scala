@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package services
 
-import uk.gov.hmrc.play.microservice.controller.BaseController
-import play.api.mvc._
-import scala.concurrent.Future
+import models.CalculationResult
 
-object MessageController extends MessageController
+object CalculationService extends CalculationService
 
-trait MessageController extends BaseController {
-
-  def helloWorld() = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
-  }
+trait CalculationService {
+  def add(a: Int, b: Int) = CalculationResult(a, b, a + b)
 }
