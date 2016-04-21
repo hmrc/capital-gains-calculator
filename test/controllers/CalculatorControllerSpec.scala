@@ -40,7 +40,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     }
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate")
-    val result = target.calculate(1, 1)(fakeRequest)
+    val result = target.calculate(1, 2)(fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK
