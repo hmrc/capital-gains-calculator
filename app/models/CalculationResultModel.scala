@@ -18,8 +18,13 @@ package models
 
 import play.api.libs.json.Json
 
-case class CalculationResult(left: Int, right: Int, result: Int)
+case class CalculationResultModel(taxOwed: Double,
+                                  totalGain: Double,
+                                  baseTaxGain: Double,
+                                  baseTaxRate: Int,
+                                  upperTaxGain: Option[Double] = None,
+                                  upperTaxRate: Option[Int] = None)
 
-object CalculationResult {
-  implicit val formats = Json.format[CalculationResult]
+object CalculationResultModel {
+  implicit val formats = Json.format[CalculationResultModel]
 }

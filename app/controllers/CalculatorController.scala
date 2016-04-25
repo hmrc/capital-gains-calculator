@@ -16,10 +16,12 @@
 
 package controllers
 
+import models.CalculationResultModel
 import play.api.libs.json.Json
+import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import play.api.mvc._
-import services.CalculationService
+import services.CalculationService._
 
 import scala.concurrent.Future
 
@@ -31,7 +33,38 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculate(left: Int, right: Int) = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(calculationService.add(left, right))))
+  def calculate(customerType: String,
+                priorDisposal: String,
+                annualExemptAmount: Option[Double],
+                isVulnerable: Option[String],
+                currentIncome: Double,
+                personalAllowanceAmt: Double,
+                disposalValue: Double,
+                disposalCosts: Double,
+                acquisitionValueAmt: Double,
+                acquisitionCostsAmt: Double,
+                improvementsAmt: Double,
+                reliefs: Double,
+                allowableLossesAmt: Double,
+                entReliefClaimed: String): Action[AnyContent] = Action.async { implicit request =>
+
+    val result: CalculationResultModel = calculateCapitalGainsTax(
+      customerType,
+      priorDisposal,
+      annualExemptAmount,
+      isVulnerable,
+      currentIncome,
+      personalAllowanceAmt,
+      disposalValue,
+      disposalCosts,
+      acquisitionValueAmt,
+      acquisitionCostsAmt,
+      improvementsAmt,
+      reliefs,
+      allowableLossesAmt,
+      entReliefClaimed
+    )
+
+    Future.successful(Ok(Json.toJson(result)))
   }
 }
