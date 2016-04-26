@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.CalculationResult
+import models.CalculationResultModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -32,15 +32,43 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
   "GET /capital-gains-calculator/calculate" should {
 
     val mockCalculationService = mock[CalculationService]
-    when(mockCalculationService.add(Matchers.anyInt, Matchers.anyInt))
-      .thenReturn(CalculationResult(1, 2, 3))
+    when(mockCalculationService.calculateCapitalGainsTax(
+      Matchers.anyString,
+      Matchers.anyString,
+      Option(Matchers.anyDouble),
+      Option(Matchers.anyString),
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyDouble,
+      Matchers.anyString
+    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18))
 
     val target: CalculatorController = new CalculatorController {
       override val calculationService = mockCalculationService
     }
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate")
-    val result = target.calculate(1, 2)(fakeRequest)
+    val result = target.calculate(
+      customerType = "individual",
+      priorDisposal = "No",
+      annualExemptAmount = Some(0),
+      isVulnerable = None,
+      currentIncome = 7000,
+      personalAllowanceAmt = 11000,
+      disposalValue = 21100,
+      disposalCosts = 0,
+      acquisitionValueAmt = 0,
+      acquisitionCostsAmt = 0,
+      improvementsAmt = 0,
+      reliefs = 0,
+      allowableLossesAmt = 0,
+      entReliefClaimed = "No") (fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK
@@ -54,9 +82,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     "return a valid result" in {
       val data = contentAsString(result)
       val json = Json.parse(data)
-      (json \ "left").as[Int] shouldBe 1
-      (json \ "right").as[Int] shouldBe 2
-      (json \ "result").as[Int] shouldBe 3
+      (json \ "taxOwed").as[Double] shouldBe 1800.0
     }
 
   }

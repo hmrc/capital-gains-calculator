@@ -18,8 +18,9 @@ package models
 
 import play.api.libs.json.Json
 
-case class CalculationResult(left: Int, right: Int, result: Int)
+case class DateModel (day: Int, month: Int, year: Int)
 
-object CalculationResult {
-  implicit val formats = Json.format[CalculationResult]
+object DateModel {
+  implicit val formats = Json.format[DateModel]
 }
+
