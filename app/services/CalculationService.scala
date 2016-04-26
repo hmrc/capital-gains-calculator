@@ -37,8 +37,8 @@ trait CalculationService {
                                priorDisposal: String,
                                annualExemptAmount: Option[Double],
                                isVulnerable: Option[String],
-                               currentIncome: Double,
-                               personalAllowanceAmt: Double,
+                               currentIncome: Option[Double],
+                               personalAllowanceAmt: Option[Double],
                                disposalValue: Double,
                                disposalCosts: Double,
                                acquisitionValueAmt: Double,
@@ -62,13 +62,13 @@ trait CalculationService {
         baseTaxRate = entrepreneursPercentage)
       case _ => customerType match {
           case "individual" => CalculationResultModel(
-            taxOwed = round("result",min(brRemaining(currentIncome, personalAllowanceAmt), taxableGain) * basicRate +
-                      negativeToZero(taxableGain - brRemaining(currentIncome, personalAllowanceAmt)) * higherRate),
+            taxOwed = round("result",min(brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0)), taxableGain) * basicRate +
+                      negativeToZero(taxableGain - brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0))) * higherRate),
             totalGain = calculatedGain,
-            baseTaxGain = min(brRemaining(currentIncome, personalAllowanceAmt), calculatedChargeableGain),
+            baseTaxGain = min(brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0)), calculatedChargeableGain),
             baseTaxRate = basicRatePercentage,
-            upperTaxGain = negativeToNone(taxableGain - brRemaining(currentIncome, personalAllowanceAmt)),
-            upperTaxRate = if (negativeToZero(taxableGain - brRemaining(currentIncome, personalAllowanceAmt)) > 0 ) Some(higherRatePercentage) else None)
+            upperTaxGain = negativeToNone(taxableGain - brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0))),
+            upperTaxRate = if (negativeToZero(taxableGain - brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0))) > 0 ) Some(higherRatePercentage) else None)
           case _ => CalculationResultModel(
             taxOwed = round("result",taxableGain * higherRate),
             totalGain = calculatedGain,

@@ -1,4 +1,4 @@
 # microservice specific routes
 
-GET        /calculate             controllers.CalculatorController.calculate(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], isVulnerable: Option[String],currentIncome: Double,personalAllowanceAmt: Double,disposalValue: Double,disposalCosts: Double,acquisitionValueAmt: Double,acquisitionCostsAmt: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,entReliefClaimed: String)
+GET        /calculate             controllers.CalculatorController.calculate(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,acquisitionValueAmt: Double,acquisitionCostsAmt: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,entReliefClaimed: String)
 

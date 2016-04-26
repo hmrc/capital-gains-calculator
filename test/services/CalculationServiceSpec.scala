@@ -200,8 +200,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = None,
-        currentIncome = 30000,
-        personalAllowanceAmt = 11000,
+        currentIncome = Some(30000),
+        personalAllowanceAmt = Some(11000),
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -244,8 +244,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = None,
-        currentIncome = 38000,
-        personalAllowanceAmt = 11000,
+        currentIncome = Some(38000),
+        personalAllowanceAmt = Some(11000),
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -288,8 +288,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = None,
-        currentIncome = 7000,
-        personalAllowanceAmt = 11000,
+        currentIncome = Some(7000),
+        personalAllowanceAmt = Some(11000),
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -332,8 +332,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = None,
-        currentIncome = 50000,
-        personalAllowanceAmt = 11000,
+        currentIncome = Some(50000),
+        personalAllowanceAmt = Some(11000),
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -375,8 +375,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = None,
-        currentIncome = 0,
-        personalAllowanceAmt = 0,
+        currentIncome = None,
+        personalAllowanceAmt = None,
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -419,8 +419,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = Some("No"),
-        currentIncome = 0,
-        personalAllowanceAmt = 0,
+        currentIncome = None,
+        personalAllowanceAmt = None,
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -463,8 +463,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = Some("Yes"),
-        currentIncome = 0,
-        personalAllowanceAmt = 0,
+        currentIncome = None,
+        personalAllowanceAmt = None,
         disposalValue = 21100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -506,8 +506,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         isVulnerable = None,
-        currentIncome = 0,
-        personalAllowanceAmt = 0,
+        currentIncome = None,
+        personalAllowanceAmt = None,
         disposalValue = 1100,
         disposalCosts = 0,
         acquisitionValueAmt = 0,
@@ -550,8 +550,8 @@ class CalculationServiceSpec extends UnitSpec {
         priorDisposal = "Yes",
         annualExemptAmount = Some(5000),
         isVulnerable = None,
-        currentIncome = 50000,
-        personalAllowanceAmt = 11000,
+        currentIncome = Some(50000),
+        personalAllowanceAmt = Some(11000),
         disposalValue = 124000.68,
         disposalCosts = 1241.22,
         acquisitionValueAmt = 65000.50,
@@ -587,35 +587,4 @@ class CalculationServiceSpec extends UnitSpec {
       }
     }
   }
-
-
-
-
-  /*
-  "Calling CalculationService .add()" should {
-    "return the sum of two numbers" in {
-      val result = CalculationService.add(20, 10)
-      result shouldEqual CalculationResult(20, 10, 20 + 10)
-    }
-  }
-
-  "Calling CalculationService .annualExemptYear(date: SimpleDateFormat)" should {
-    "return a value of 11000 when a date between 05/04/2015 and 06/04/2016 is entered" in {
-      val value = CalculationService.annualExemptYear("01062015")
-      value shouldEqual 11000
-    }
-
-    "return a value of 10500 when a date before or after these dates are entered" in {
-      CalculationService.annualExemptYear("01032017") shouldEqual 10500
-      val value2 = CalculationService.annualExemptYear("01032015")
-      value2 shouldEqual 10500
-    }
-  }
-
-  "Calling CalculationService .isVulnerableTrustee" should {
-    "return a value of 5500" in {
-      CalculationService.isVulnerableTrustee("07072015", "No") shouldEqual 5500
-    }
-  }
-  */
 }
