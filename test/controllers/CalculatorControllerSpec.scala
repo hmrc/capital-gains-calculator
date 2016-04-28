@@ -29,10 +29,11 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
-  "GET /capital-gains-calculator/calculate" should {
+  "GET /capital-gains-calculator/calculate-flat" should {
 
     val mockCalculationService = mock[CalculationService]
     when(mockCalculationService.calculateCapitalGainsTax(
+      Matchers.anyString,
       Matchers.anyString,
       Matchers.anyString,
       Option(Matchers.anyDouble),
@@ -53,8 +54,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       override val calculationService = mockCalculationService
     }
 
-    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate")
-    val result = target.calculate(
+    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-flat")
+    val result = target.calculateFlat(
       customerType = "individual",
       priorDisposal = "No",
       annualExemptAmount = Some(0),

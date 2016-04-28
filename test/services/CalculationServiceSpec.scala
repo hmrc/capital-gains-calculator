@@ -131,7 +131,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return the total Gain value of 4700 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000, " +
     "Incidental Acquisition Costs = 300, Enhancement Costs = 2000" in {
-      val result = CalculationService.calculateGain(10000, 2000, 1000, 300, 2000)
+      val result = CalculationService.calculateGainFlat(10000, 2000, 1000, 300, 2000)
       result shouldEqual 4700
     }
   }
@@ -196,6 +196,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return £1,000 for an Individual, claiming ER, with a taxable gain of £10,000 charged at 10%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -240,6 +241,7 @@ class CalculationServiceSpec extends UnitSpec {
     "return £2,300 for an Individual, not claiming ER, with a lower and higher rate income and a taxable gain of £10,000, " +
       "£5,000 of which charged at 18% and the remaining at 28%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -284,6 +286,7 @@ class CalculationServiceSpec extends UnitSpec {
     "return £1,800 for an Individual, not claiming ER, with a lower rate income and a taxable gain of £10,000 " +
       "charged at 18%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -328,6 +331,7 @@ class CalculationServiceSpec extends UnitSpec {
     "return £2,800 for an Individual, not claiming ER, with a higher rate income and a taxable gain of £10,000 " +
       "charged at 28%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -371,6 +375,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return £2,800 for a PR, not claiming ER, with taxable gain of £10,000 charged at 28%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "personalRep",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -415,6 +420,7 @@ class CalculationServiceSpec extends UnitSpec {
     "return £4,354 for a Trustee for non-vulnerable person, not claiming ER, with taxable gain of £15,550 " +
       "charged at 28%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "trustee",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -459,6 +465,7 @@ class CalculationServiceSpec extends UnitSpec {
     "return £2,800 for a Trustee for vulnerable person, not claiming ER, with a taxable gain of £10,000 " +
       "charged at 28%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "trustee",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -502,6 +509,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return £0 for an Individual not claiming ER, with a lower rate income and a taxable gain of -£10,000" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
@@ -546,6 +554,7 @@ class CalculationServiceSpec extends UnitSpec {
     "return £6,331.64 for an Individual not claiming ER, with a higher rate income and taxable gain of £44,615 charged " +
       "at 28%" should {
       val result = CalculationService.calculateCapitalGainsTax(
+        calculationType = "flat",
         customerType = "individual",
         priorDisposal = "Yes",
         annualExemptAmount = Some(5000),
@@ -587,35 +596,4 @@ class CalculationServiceSpec extends UnitSpec {
       }
     }
   }
-
-
-
-
-  /*
-  "Calling CalculationService .add()" should {
-    "return the sum of two numbers" in {
-      val result = CalculationService.add(20, 10)
-      result shouldEqual CalculationResult(20, 10, 20 + 10)
-    }
-  }
-
-  "Calling CalculationService .annualExemptYear(date: SimpleDateFormat)" should {
-    "return a value of 11000 when a date between 05/04/2015 and 06/04/2016 is entered" in {
-      val value = CalculationService.annualExemptYear("01062015")
-      value shouldEqual 11000
-    }
-
-    "return a value of 10500 when a date before or after these dates are entered" in {
-      CalculationService.annualExemptYear("01032017") shouldEqual 10500
-      val value2 = CalculationService.annualExemptYear("01032015")
-      value2 shouldEqual 10500
-    }
-  }
-
-  "Calling CalculationService .isVulnerableTrustee" should {
-    "return a value of 5500" in {
-      CalculationService.isVulnerableTrustee("07072015", "No") shouldEqual 5500
-    }
-  }
-  */
 }

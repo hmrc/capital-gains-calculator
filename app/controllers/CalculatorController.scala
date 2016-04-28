@@ -33,7 +33,7 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculate(customerType: String,
+  def calculateFlat(customerType: String,
                 priorDisposal: String,
                 annualExemptAmount: Option[Double],
                 isVulnerable: Option[String],
@@ -48,7 +48,8 @@ trait CalculatorController extends BaseController {
                 allowableLossesAmt: Double,
                 entReliefClaimed: String): Action[AnyContent] = Action.async { implicit request =>
 
-    val result: CalculationResultModel = calculateCapitalGainsTax(
+    val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
+      "flat",
       customerType,
       priorDisposal,
       annualExemptAmount,

@@ -24,7 +24,7 @@ object CalculationService extends CalculationService
 trait CalculationService {
 
   val maxAnnualExemptAmount = 11100
-  val notVulnerableMaxannualExemptAmount = 5550
+  val notVulnerableMaxAnnualExemptAmount = 5550
   val entrepreneursPercentage = 10
   val basicRatePercentage = 18
   val higherRatePercentage = 28
@@ -33,51 +33,79 @@ trait CalculationService {
   val higherRate = higherRatePercentage / 100.toDouble
   val basicRateBand = 32000
 
-  def calculateCapitalGainsTax(customerType: String,
-                               priorDisposal: String,
-                               annualExemptAmount: Option[Double],
-                               isVulnerable: Option[String],
-                               currentIncome: Double,
-                               personalAllowanceAmt: Double,
-                               disposalValue: Double,
-                               disposalCosts: Double,
-                               acquisitionValueAmt: Double,
-                               acquisitionCostsAmt: Double,
-                               improvementsAmt: Double,
-                               reliefs: Double,
-                               allowableLossesAmt: Double,
-                               entReliefClaimed: String)
+  def calculateCapitalGainsTax(calculationType: String,
+                 customerType: String,
+                    priorDisposal: String,
+                    annualExemptAmount: Option[Double],
+                    isVulnerable: Option[String],
+                    currentIncome: Double,
+                    personalAllowanceAmt: Double,
+                    disposalValue: Double,
+                    disposalCosts: Double,
+                    acquisitionValueAmt: Double,
+                    acquisitionCostsAmt: Double,
+                    improvementsAmt: Double,
+                    reliefs: Double,
+                    allowableLossesAmt: Double,
+                    entReliefClaimed: String)
   : CalculationResultModel = {
 
-    val calculatedGain = calculateGain(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
-    val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
-    val calculatedChargeableGain = calculateChargeableGain(calculatedGain, reliefs, allowableLossesAmt, calculatedAEA)
-    val taxableGain = negativeToZero(calculatedChargeableGain)
+    val gain: Double = calculationType match {
+      case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
+    }
+    val calculatedAEA: Double = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
+    val calculatedChargeableGain: Double = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
+    val taxableGain: Double = negativeToZero(calculatedChargeableGain)
+    val basicRateRemaining: Double = if (customerType == "individual") brRemaining(currentIncome, personalAllowanceAmt) else 0
+
+    generateResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
+
+  }
+
+  def generateResult(entReliefClaimed: String,
+                     customerType: String,
+                     gain: Double,
+                     taxableGain: Double,
+                     chargeableGain: Double,
+                     basicRateRemaining: Double)
+  : CalculationResultModel = {
 
     entReliefClaimed match {
       case "Yes" => CalculationResultModel(
         taxOwed = round("result", taxableGain * entrepreneursRate),
-        totalGain = calculatedGain,
-        baseTaxGain = calculatedChargeableGain,
+        totalGain = gain,
+        baseTaxGain = chargeableGain,
         baseTaxRate = entrepreneursPercentage)
       case _ => customerType match {
-          case "individual" => CalculationResultModel(
-            taxOwed = round("result",min(brRemaining(currentIncome, personalAllowanceAmt), taxableGain) * basicRate +
-                      negativeToZero(taxableGain - brRemaining(currentIncome, personalAllowanceAmt)) * higherRate),
-            totalGain = calculatedGain,
-            baseTaxGain = min(brRemaining(currentIncome, personalAllowanceAmt), calculatedChargeableGain),
-            baseTaxRate = basicRatePercentage,
-            upperTaxGain = negativeToNone(taxableGain - brRemaining(currentIncome, personalAllowanceAmt)),
-            upperTaxRate = if (negativeToZero(taxableGain - brRemaining(currentIncome, personalAllowanceAmt)) > 0 ) Some(higherRatePercentage) else None)
-          case _ => CalculationResultModel(
-            taxOwed = round("result",taxableGain * higherRate),
-            totalGain = calculatedGain,
-            baseTaxGain = 0,
-            baseTaxRate = basicRatePercentage,
-            upperTaxGain = Some(calculatedChargeableGain),
-            upperTaxRate = Some(higherRatePercentage))
-        }
+        case "individual" => CalculationResultModel(
+          taxOwed = round("result", min(basicRateRemaining, taxableGain) * basicRate + negativeToZero(taxableGain - basicRateRemaining) * higherRate),
+          totalGain = gain,
+          baseTaxGain = min(basicRateRemaining, chargeableGain),
+          baseTaxRate = basicRatePercentage,
+          upperTaxGain = negativeToNone(taxableGain - basicRateRemaining),
+          upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None)
+        case _ => CalculationResultModel(
+          taxOwed = round("result", taxableGain * higherRate),
+          totalGain = gain,
+          baseTaxGain = 0,
+          baseTaxRate = basicRatePercentage,
+          upperTaxGain = Some(chargeableGain),
+          upperTaxRate = Some(higherRatePercentage))
+      }
     }
+  }
+
+  def calculateGainFlat(disposalValue: Double,
+                        disposalCosts: Double,
+                        acquisitionValueAmt: Double,
+                        acquisitionCostsAmt: Double,
+                        improvementsAmt: Double)
+  : Double = {
+    round("down", disposalValue) -
+      round("up", disposalCosts) -
+      round("up", acquisitionValueAmt) -
+      round("up", acquisitionCostsAmt) -
+      round("up", improvementsAmt)
   }
 
   def calculateAEA(customerType: String,
@@ -90,35 +118,36 @@ trait CalculationService {
         customerType match {
           case "individual" | "personalRep" => maxAnnualExemptAmount
           case "trustee" if isVulnerable.contains("Yes") => maxAnnualExemptAmount
-          case _ => notVulnerableMaxannualExemptAmount
+          case _ => notVulnerableMaxAnnualExemptAmount
         }
       case _ => annualExemptAmount.getOrElse(0)
     }
   }
 
-  def calculateGain(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double, acquisitionCostsAmt: Double, improvementsAmt: Double): Double = {
-    round("down", disposalValue) -
-    round("up", disposalCosts) -
-    round("up", acquisitionValueAmt) -
-    round("up", acquisitionCostsAmt) -
-    round("up", improvementsAmt)
-  }
-
-  def calculateChargeableGain(gain: Double, reliefs: Double, allowableLossesAmt: Double, annualExemptAmount: Double): Double = {
+  def calculateChargeableGain(gain: Double,
+                              reliefs: Double,
+                              allowableLossesAmt:
+                              Double, annualExemptAmount:
+                              Double)
+  : Double = {
     gain -
-    round("up", reliefs) -
-    round("up", allowableLossesAmt) -
-    round("up", annualExemptAmount)
+      round("up", reliefs) -
+      round("up", allowableLossesAmt) -
+      round("up", annualExemptAmount)
   }
 
-  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double): Double = {
+  def brRemaining(currentIncome: Double,
+                  personalAllowanceAmt: Double)
+  : Double = {
     currentIncome match {
       case a if a < personalAllowanceAmt => basicRateBand
       case _ => negativeToZero(basicRateBand - (currentIncome - personalAllowanceAmt))
     }
   }
 
-  def round(roundMethod: String, x: Double): Double = {
+  def round(roundMethod: String,
+            x: Double)
+  : Double = {
     roundMethod match {
       case "down" => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
       case "up" => BigDecimal.valueOf(x).setScale(0, RoundingMode.UP).toDouble
@@ -127,7 +156,7 @@ trait CalculationService {
     }
   }
 
-  def min(x: Double, y:Double): Double = {
+  def min(x: Double, y: Double): Double = {
     if (x < y) x else y
   }
 
