@@ -33,20 +33,23 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculateFlat(customerType: String,
-                    priorDisposal: String,
-                    annualExemptAmount: Option[Double],
-                    isVulnerable: Option[String],
-                    currentIncome: Double,
-                    personalAllowanceAmt: Double,
-                    disposalValue: Double,
-                    disposalCosts: Double,
-                    acquisitionValueAmt: Double,
-                    acquisitionCostsAmt: Double,
-                    improvementsAmt: Double,
-                    reliefs: Double,
-                    allowableLossesAmt: Double,
-                    entReliefClaimed: String): Action[AnyContent] = Action.async { implicit request =>
+  def calculateFlat
+  (
+    customerType: String,
+    priorDisposal: String,
+    annualExemptAmount: Option[Double],
+    isVulnerable: Option[String],
+    currentIncome: Option[Double],
+    personalAllowanceAmt: Option[Double],
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValueAmt: Double,
+    acquisitionCostsAmt: Double,
+    improvementsAmt: Double,
+    reliefs: Double,
+    allowableLossesAmt: Double,
+    entReliefClaimed: String
+  ): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "flat",
@@ -64,6 +67,49 @@ trait CalculatorController extends BaseController {
       reliefs,
       allowableLossesAmt,
       entReliefClaimed
+    )
+
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateTA
+  (
+    customerType: String,
+    priorDisposal: String,
+    annualExemptAmount: Option[Double],
+    isVulnerable: Option[String],
+    currentIncome: Option[Double],
+    personalAllowanceAmt: Option[Double],
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValueAmt: Double,
+    acquisitionCostsAmt: Double,
+    improvementsAmt: Double,
+    reliefs: Double,
+    allowableLossesAmt: Double,
+    entReliefClaimed: String,
+    acquisitionDate: Option[String],
+    disposalDate: Option[String]
+  ): Action[AnyContent] = Action.async { implicit request =>
+
+    val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
+      "time",
+      customerType,
+      priorDisposal,
+      annualExemptAmount,
+      isVulnerable,
+      currentIncome,
+      personalAllowanceAmt,
+      disposalValue,
+      disposalCosts,
+      acquisitionValueAmt,
+      acquisitionCostsAmt,
+      improvementsAmt,
+      reliefs,
+      allowableLossesAmt,
+      entReliefClaimed,
+      acquisitionDate,
+      disposalDate
     )
 
     Future.successful(Ok(Json.toJson(result)))

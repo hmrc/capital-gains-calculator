@@ -16,11 +16,9 @@
 
 package services
 
-import java.util.Date
-
-import models.{DateModel, CalculationResultModel}
-import org.joda.time.{DateTime, Days}
-import scala.math.BigDecimal._
+import models.CalculationResultModel
+import common.Math._
+import common.Date._
 
 object CalculationService extends CalculationService
 
@@ -35,16 +33,17 @@ trait CalculationService {
   val basicRate = basicRatePercentage / 100.toDouble
   val higherRate = higherRatePercentage / 100.toDouble
   val basicRateBand = 32000
+  val startOfTax = "2015-04-06"
 
   def calculateCapitalGainsTax
   (
     calculationType: String,
     customerType: String,
     priorDisposal: String,
-    annualExemptAmount: Option[Double],
-    isVulnerable: Option[String],
-    currentIncome: Double,
-    personalAllowanceAmt: Double,
+    annualExemptAmount: Option[Double] = None,
+    isVulnerable: Option[String] = None,
+    currentIncome: Option[Double] = None,
+    personalAllowanceAmt: Option[Double] = None,
     disposalValue: Double,
     disposalCosts: Double,
     acquisitionValueAmt: Double,
@@ -52,16 +51,19 @@ trait CalculationService {
     improvementsAmt: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    entReliefClaimed: String
+    entReliefClaimed: String,
+    acquisitionDate: Option[String] = None,
+    disposalDate: Option[String] = None
   ): CalculationResultModel = {
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
+      case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt, acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
     }
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
-    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome, personalAllowanceAmt) else 0
+    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0)) else 0
 
     calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
 
@@ -111,11 +113,29 @@ trait CalculationService {
     improvementsAmt: Double
   ): Double = {
 
-    round("down", disposalValue) -
+    round("result",round("down", disposalValue) -
       round("up", disposalCosts) -
       round("up", acquisitionValueAmt) -
       round("up", acquisitionCostsAmt) -
-      round("up", improvementsAmt)
+      round("up", improvementsAmt))
+  }
+
+  def calculateGainTA
+  (
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValueAmt: Double,
+    acquisitionCostsAmt: Double,
+    improvementsAmt: Double,
+    acquisitionDate: String,
+    disposalDate: String
+  ): Double = {
+
+    val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt,acquisitionCostsAmt,improvementsAmt)
+    val fractionOfOwnership = daysBetween(startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
+
+    round("result",flatGain * fractionOfOwnership)
+
   }
 
   def calculateAEA
@@ -144,38 +164,13 @@ trait CalculationService {
     annualExemptAmount: Double
   ): Double = {
 
-    gain -
+    round("result",gain -
       round("up", reliefs) -
       round("up", allowableLossesAmt) -
-      round("up", annualExemptAmount)
+      round("up", annualExemptAmount))
   }
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double): Double = {
     negativeToZero(basicRateBand - negativeToZero(currentIncome - personalAllowanceAmt))
-  }
-
-  def round(roundMethod: String, x: Double): Double = {
-    roundMethod match {
-      case "down" => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
-      case "up" => BigDecimal.valueOf(x).setScale(0, RoundingMode.UP).toDouble
-      case "result" => BigDecimal.valueOf(x).setScale(2, RoundingMode.DOWN).toDouble
-      case _ => x
-    }
-  }
-
-  def min(x: Double, y: Double): Double = {
-    if (x < y) x else y
-  }
-
-  def negativeToNone(x: Double): Option[Double] = {
-    if (x < 0) None else Some(x)
-  }
-
-  def negativeToZero(x: Double): Double = {
-    if (x < 0) 0 else x
-  }
-
-  def daysBetween(start: DateTime, end: DateTime): Int = {
-    Days.daysBetween(start, end).getDays + 1
   }
 }
