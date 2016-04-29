@@ -36,22 +36,24 @@ trait CalculationService {
   val higherRate = higherRatePercentage / 100.toDouble
   val basicRateBand = 32000
 
-  def calculateCapitalGainsTax(calculationType: String,
-                               customerType: String,
-                               priorDisposal: String,
-                               annualExemptAmount: Option[Double],
-                               isVulnerable: Option[String],
-                               currentIncome: Double,
-                               personalAllowanceAmt: Double,
-                               disposalValue: Double,
-                               disposalCosts: Double,
-                               acquisitionValueAmt: Double,
-                               acquisitionCostsAmt: Double,
-                               improvementsAmt: Double,
-                               reliefs: Double,
-                               allowableLossesAmt: Double,
-                               entReliefClaimed: String)
-  : CalculationResultModel = {
+  def calculateCapitalGainsTax
+  (
+    calculationType: String,
+    customerType: String,
+    priorDisposal: String,
+    annualExemptAmount: Option[Double],
+    isVulnerable: Option[String],
+    currentIncome: Double,
+    personalAllowanceAmt: Double,
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValueAmt: Double,
+    acquisitionCostsAmt: Double,
+    improvementsAmt: Double,
+    reliefs: Double,
+    allowableLossesAmt: Double,
+    entReliefClaimed: String
+  ): CalculationResultModel = {
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
@@ -65,13 +67,15 @@ trait CalculationService {
 
   }
 
-  def calculationResult(entReliefClaimed: String,
-                        customerType: String,
-                        gain: Double,
-                        taxableGain: Double,
-                        chargeableGain: Double,
-                        basicRateRemaining: Double)
-  : CalculationResultModel = {
+  def calculationResult
+  (
+    entReliefClaimed: String,
+    customerType: String,
+    gain: Double,
+    taxableGain: Double,
+    chargeableGain: Double,
+    basicRateRemaining: Double
+  ): CalculationResultModel = {
 
     entReliefClaimed match {
       case "Yes" => CalculationResultModel(
@@ -98,12 +102,15 @@ trait CalculationService {
     }
   }
 
-  def calculateGainFlat(disposalValue: Double,
-                        disposalCosts: Double,
-                        acquisitionValueAmt: Double,
-                        acquisitionCostsAmt: Double,
-                        improvementsAmt: Double)
-  : Double = {
+  def calculateGainFlat
+  (
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValueAmt: Double,
+    acquisitionCostsAmt: Double,
+    improvementsAmt: Double
+  ): Double = {
+
     round("down", disposalValue) -
       round("up", disposalCosts) -
       round("up", acquisitionValueAmt) -
@@ -111,11 +118,14 @@ trait CalculationService {
       round("up", improvementsAmt)
   }
 
-  def calculateAEA(customerType: String,
-                   priorDisposal: String,
-                   annualExemptAmount: Option[Double] = None,
-                   isVulnerable: Option[String] = None)
-  : Double = {
+  def calculateAEA
+  (
+    customerType: String,
+    priorDisposal: String,
+    annualExemptAmount: Option[Double] = None,
+    isVulnerable: Option[String] = None
+  ): Double = {
+
     priorDisposal match {
       case "No" =>
         customerType match {
@@ -126,24 +136,25 @@ trait CalculationService {
     }
   }
 
-  def calculateChargeableGain(gain: Double,
-                              reliefs: Double,
-                              allowableLossesAmt: Double,
-                              annualExemptAmount: Double)
-  : Double = {
+  def calculateChargeableGain
+  (
+    gain: Double,
+    reliefs: Double,
+    allowableLossesAmt: Double,
+    annualExemptAmount: Double
+  ): Double = {
+
     gain -
       round("up", reliefs) -
       round("up", allowableLossesAmt) -
       round("up", annualExemptAmount)
   }
 
-  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double)
-  : Double = {
+  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double): Double = {
     negativeToZero(basicRateBand - negativeToZero(currentIncome - personalAllowanceAmt))
   }
 
-  def round(roundMethod: String, x: Double)
-  : Double = {
+  def round(roundMethod: String, x: Double): Double = {
     roundMethod match {
       case "down" => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
       case "up" => BigDecimal.valueOf(x).setScale(0, RoundingMode.UP).toDouble
