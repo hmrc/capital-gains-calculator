@@ -19,6 +19,7 @@ package services
 import java.util.Date
 
 import models.{DateModel, CalculationResultModel}
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest._
 
@@ -594,6 +595,29 @@ class CalculationServiceSpec extends UnitSpec {
       "have the upper tax rate of 28%" in {
         result.upperTaxRate shouldEqual Some(28)
       }
+    }
+  }
+
+  "calling CalculationService.monthsBetween" should {
+
+    "return 10 days when passing in dates 1/1/2015 and 10/1/2015" in {
+      val result = CalculationService.daysBetween(DateTime.parse("2015-1-1"), DateTime.parse("2015-1-10"))
+      result shouldEqual 10
+    }
+
+    "return 1 day when passing in the dates 1/1/2015 and 1/1/2015" in {
+      val result = CalculationService.daysBetween(DateTime.parse("2015-1-1"), DateTime.parse("2015-1-1"))
+      result shouldEqual 1
+    }
+
+    "return 365 days when passing in the dates 1/1/2015 and 31/12/2015" in {
+      val result = CalculationService.daysBetween(DateTime.parse("2015-1-1"), DateTime.parse("2015-12-31"))
+      result shouldEqual 365
+    }
+
+    "return 366 days when passing in the dates 1/1/2016 and 31/12/2016 (leap year test)" in {
+      val result = CalculationService.daysBetween(DateTime.parse("2016-1-1"), DateTime.parse("2016-12-31"))
+      result shouldEqual 366
     }
   }
 }

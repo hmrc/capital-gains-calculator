@@ -34,19 +34,19 @@ trait CalculatorController extends BaseController {
   val calculationService: CalculationService
 
   def calculateFlat(customerType: String,
-                priorDisposal: String,
-                annualExemptAmount: Option[Double],
-                isVulnerable: Option[String],
-                currentIncome: Double,
-                personalAllowanceAmt: Double,
-                disposalValue: Double,
-                disposalCosts: Double,
-                acquisitionValueAmt: Double,
-                acquisitionCostsAmt: Double,
-                improvementsAmt: Double,
-                reliefs: Double,
-                allowableLossesAmt: Double,
-                entReliefClaimed: String): Action[AnyContent] = Action.async { implicit request =>
+                    priorDisposal: String,
+                    annualExemptAmount: Option[Double],
+                    isVulnerable: Option[String],
+                    currentIncome: Double,
+                    personalAllowanceAmt: Double,
+                    disposalValue: Double,
+                    disposalCosts: Double,
+                    acquisitionValueAmt: Double,
+                    acquisitionCostsAmt: Double,
+                    improvementsAmt: Double,
+                    reliefs: Double,
+                    allowableLossesAmt: Double,
+                    entReliefClaimed: String): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "flat",

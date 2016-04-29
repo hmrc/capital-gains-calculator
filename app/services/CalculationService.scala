@@ -16,7 +16,10 @@
 
 package services
 
+import java.util.Date
+
 import models.{DateModel, CalculationResultModel}
+import org.joda.time.{DateTime, Days}
 import scala.math.BigDecimal._
 
 object CalculationService extends CalculationService
@@ -34,40 +37,40 @@ trait CalculationService {
   val basicRateBand = 32000
 
   def calculateCapitalGainsTax(calculationType: String,
-                 customerType: String,
-                    priorDisposal: String,
-                    annualExemptAmount: Option[Double],
-                    isVulnerable: Option[String],
-                    currentIncome: Double,
-                    personalAllowanceAmt: Double,
-                    disposalValue: Double,
-                    disposalCosts: Double,
-                    acquisitionValueAmt: Double,
-                    acquisitionCostsAmt: Double,
-                    improvementsAmt: Double,
-                    reliefs: Double,
-                    allowableLossesAmt: Double,
-                    entReliefClaimed: String)
+                               customerType: String,
+                               priorDisposal: String,
+                               annualExemptAmount: Option[Double],
+                               isVulnerable: Option[String],
+                               currentIncome: Double,
+                               personalAllowanceAmt: Double,
+                               disposalValue: Double,
+                               disposalCosts: Double,
+                               acquisitionValueAmt: Double,
+                               acquisitionCostsAmt: Double,
+                               improvementsAmt: Double,
+                               reliefs: Double,
+                               allowableLossesAmt: Double,
+                               entReliefClaimed: String)
   : CalculationResultModel = {
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     }
-    val calculatedAEA: Double = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
-    val calculatedChargeableGain: Double = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
-    val taxableGain: Double = negativeToZero(calculatedChargeableGain)
-    val basicRateRemaining: Double = if (customerType == "individual") brRemaining(currentIncome, personalAllowanceAmt) else 0
+    val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
+    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
+    val taxableGain = negativeToZero(calculatedChargeableGain)
+    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome, personalAllowanceAmt) else 0
 
-    generateResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
+    calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
 
   }
 
-  def generateResult(entReliefClaimed: String,
-                     customerType: String,
-                     gain: Double,
-                     taxableGain: Double,
-                     chargeableGain: Double,
-                     basicRateRemaining: Double)
+  def calculationResult(entReliefClaimed: String,
+                        customerType: String,
+                        gain: Double,
+                        taxableGain: Double,
+                        chargeableGain: Double,
+                        basicRateRemaining: Double)
   : CalculationResultModel = {
 
     entReliefClaimed match {
@@ -117,8 +120,7 @@ trait CalculationService {
       case "No" =>
         customerType match {
           case "individual" | "personalRep" => maxAnnualExemptAmount
-          case "trustee" if isVulnerable.contains("Yes") => maxAnnualExemptAmount
-          case _ => notVulnerableMaxAnnualExemptAmount
+          case "trustee" => if (isVulnerable.contains("Yes")) maxAnnualExemptAmount else notVulnerableMaxAnnualExemptAmount
         }
       case _ => annualExemptAmount.getOrElse(0)
     }
@@ -126,9 +128,8 @@ trait CalculationService {
 
   def calculateChargeableGain(gain: Double,
                               reliefs: Double,
-                              allowableLossesAmt:
-                              Double, annualExemptAmount:
-                              Double)
+                              allowableLossesAmt: Double,
+                              annualExemptAmount: Double)
   : Double = {
     gain -
       round("up", reliefs) -
@@ -136,17 +137,12 @@ trait CalculationService {
       round("up", annualExemptAmount)
   }
 
-  def brRemaining(currentIncome: Double,
-                  personalAllowanceAmt: Double)
+  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double)
   : Double = {
-    currentIncome match {
-      case a if a < personalAllowanceAmt => basicRateBand
-      case _ => negativeToZero(basicRateBand - (currentIncome - personalAllowanceAmt))
-    }
+    negativeToZero(basicRateBand - negativeToZero(currentIncome - personalAllowanceAmt))
   }
 
-  def round(roundMethod: String,
-            x: Double)
+  def round(roundMethod: String, x: Double)
   : Double = {
     roundMethod match {
       case "down" => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
@@ -166,5 +162,9 @@ trait CalculationService {
 
   def negativeToZero(x: Double): Double = {
     if (x < 0) 0 else x
+  }
+
+  def daysBetween(start: DateTime, end: DateTime): Int = {
+    Days.daysBetween(start, end).getDays + 1
   }
 }
