@@ -61,8 +61,51 @@ trait CalculatorController extends BaseController {
       personalAllowanceAmt,
       disposalValue,
       disposalCosts,
+      0,
+      0,
       acquisitionValueAmt,
       acquisitionCostsAmt,
+      improvementsAmt,
+      reliefs,
+      allowableLossesAmt,
+      entReliefClaimed
+    )
+
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateRebased
+  (
+    customerType: String,
+    priorDisposal: String,
+    annualExemptAmount: Option[Double],
+    isVulnerable: Option[String],
+    currentIncome: Option[Double],
+    personalAllowanceAmt: Option[Double],
+    disposalValue: Double,
+    disposalCosts: Double,
+    rebasedValue: Double,
+    revaluationCost: Double,
+    improvementsAmt: Double,
+    reliefs: Double,
+    allowableLossesAmt: Double,
+    entReliefClaimed: String
+  ): Action[AnyContent] = Action.async { implicit request =>
+
+    val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
+      "rebased",
+      customerType,
+      priorDisposal,
+      annualExemptAmount,
+      isVulnerable,
+      currentIncome,
+      personalAllowanceAmt,
+      disposalValue,
+      disposalCosts,
+      0,
+      0,
+      rebasedValue,
+      revaluationCost,
       improvementsAmt,
       reliefs,
       allowableLossesAmt,
@@ -102,6 +145,8 @@ trait CalculatorController extends BaseController {
       personalAllowanceAmt,
       disposalValue,
       disposalCosts,
+      0,
+      0,
       acquisitionValueAmt,
       acquisitionCostsAmt,
       improvementsAmt,

@@ -48,6 +48,8 @@ trait CalculationService {
     disposalCosts: Double,
     acquisitionValueAmt: Double,
     acquisitionCostsAmt: Double,
+    revaluedAmount: Double,
+    revaluationCost: Double,
     improvementsAmt: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
@@ -58,6 +60,7 @@ trait CalculationService {
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
+      case "rebased" => calculateGainFlat(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
       case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt, acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
     }
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
@@ -119,6 +122,15 @@ trait CalculationService {
       round("up", acquisitionCostsAmt) -
       round("up", improvementsAmt))
   }
+
+  def calculateGainRebased
+  (
+    disposalValue: Double,
+    disposalCosts: Double,
+    revaluedAmount: Double,
+    revaluationCost: Double,
+    improvementsAmt: Double
+  ): Double = calculateGainFlat(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
 
   def calculateGainTA
   (
