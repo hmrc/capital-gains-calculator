@@ -60,7 +60,7 @@ trait CalculationService {
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
-      case "rebased" => calculateGainFlat(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
+      case "rebased" => calculateGainRebased(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
       case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt, acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
     }
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
