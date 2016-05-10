@@ -19,6 +19,7 @@ package services
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
+import play.mvc.Results.Todo
 
 object CalculationService extends CalculationService
 
@@ -35,6 +36,7 @@ trait CalculationService {
   val basicRateBand = 32000
   val startOfTax = "2015-04-06"
 
+  //scalastyle:off
   def calculateCapitalGainsTax
   (
     calculationType: String,
@@ -63,13 +65,57 @@ trait CalculationService {
       case "rebased" => calculateGainRebased(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
       case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt, acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
     }
-    val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
-    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
-    val taxableGain = negativeToZero(calculatedChargeableGain)
-    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0)) else 0
 
-    calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
+    gain match {
+      case q if q <= 0.0 => negativeGainCalculationResult(q, 0.0)
+      case 0.0 => zeroGainCalculationResult()
+      case x =>
+        calculateGainMinusReliefs(x, reliefs) match {
+          case 0.0 => zeroTaxableGainCalculationResult(x)
+          case y =>
+            calculateGainMRMinusAllowableLosses(y, allowableLossesAmt) match {
+              case v if v < 0.0 => negativeGainCalculationResult(x, v)
+              case 0.0 => zeroTaxableGainCalculationResult(x)
+              case w =>
+                val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
+                calculateGainMRMALMinusAEA(w, calculatedAEA) match {
+                  case 0.0 => zeroTaxableGainCalculationResult(x)
+                  case calculatedChargeableGain =>
+                    //val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
+                    val taxableGain = negativeToZero(calculatedChargeableGain)
+                    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0)) else 0
 
+                    calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
+                }
+            }
+        }
+    }
+  }
+  def zeroGainCalculationResult(): CalculationResultModel ={
+    CalculationResultModel(
+      taxOwed = 0.00,
+      totalGain = 0.00,
+      baseTaxGain = 0.00,
+      baseTaxRate = 0
+    )
+  }
+
+  def zeroTaxableGainCalculationResult(totalGain: Double): CalculationResultModel ={
+    CalculationResultModel(
+      taxOwed = 0.00,
+      totalGain = totalGain,
+      baseTaxGain = 0.00,
+      baseTaxRate = 0
+    )
+  }
+
+  def negativeGainCalculationResult(gain: Double, taxableGain: Double): CalculationResultModel ={
+    CalculationResultModel(
+      taxOwed = 0.0,
+      totalGain = gain,
+      baseTaxGain = taxableGain,
+      baseTaxRate = 0
+    )
   }
 
   def calculationResult
@@ -184,5 +230,20 @@ trait CalculationService {
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double): Double = {
     negativeToZero(basicRateBand - negativeToZero(currentIncome - personalAllowanceAmt))
+  }
+
+  def calculateGainMinusReliefs(gain: Double, reliefs: Double): Double = {
+    negativeToZero(round("result", gain -
+      round("up", reliefs)))
+  }
+
+  def calculateGainMRMinusAllowableLosses(gain: Double, allowableLosses: Double): Double = {
+    round("result", gain -
+      round("down", allowableLosses))
+  }
+
+  def calculateGainMRMALMinusAEA(gain: Double, aea: Double): Double = {
+    negativeToZero(round("result", gain -
+      round("up", aea)))
   }
 }
