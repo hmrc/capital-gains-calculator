@@ -38,6 +38,7 @@ trait CalculatorController extends BaseController {
     customerType: String,
     priorDisposal: String,
     annualExemptAmount: Option[Double],
+    otherPropertiesAmt: Option[Double],
     isVulnerable: Option[String],
     currentIncome: Option[Double],
     personalAllowanceAmt: Option[Double],
@@ -56,6 +57,7 @@ trait CalculatorController extends BaseController {
       customerType,
       priorDisposal,
       annualExemptAmount,
+      otherPropertiesAmt,
       isVulnerable,
       currentIncome,
       personalAllowanceAmt,
@@ -79,6 +81,7 @@ trait CalculatorController extends BaseController {
     customerType: String,
     priorDisposal: String,
     annualExemptAmount: Option[Double],
+    otherPropertiesAmt: Option[Double],
     isVulnerable: Option[String],
     currentIncome: Option[Double],
     personalAllowanceAmt: Option[Double],
@@ -97,6 +100,7 @@ trait CalculatorController extends BaseController {
       customerType,
       priorDisposal,
       annualExemptAmount,
+      otherPropertiesAmt,
       isVulnerable,
       currentIncome,
       personalAllowanceAmt,
@@ -115,11 +119,13 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
+//scalastyle: off
   def calculateTA
   (
     customerType: String,
     priorDisposal: String,
     annualExemptAmount: Option[Double],
+    otherPropertiesAmt: Option[Double],
     isVulnerable: Option[String],
     currentIncome: Option[Double],
     personalAllowanceAmt: Option[Double],
@@ -140,6 +146,7 @@ trait CalculatorController extends BaseController {
       customerType,
       priorDisposal,
       annualExemptAmount,
+      otherPropertiesAmt,
       isVulnerable,
       currentIncome,
       personalAllowanceAmt,
