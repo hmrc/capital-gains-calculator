@@ -19,6 +19,7 @@ package services
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
+import org.joda.time.{DateTime, Days}
 
 object CalculationService extends CalculationService
 
@@ -34,6 +35,9 @@ trait CalculationService {
   val higherRate = higherRatePercentage / 100.toDouble
   val basicRateBand = 32000
   val startOfTax = "2015-04-06"
+  val startOfTaxDateTime = DateTime.parse("2015-04-06")
+  val disposalDateTimePRR = DateTime.parse("2016-10-06")
+  val months = 18
 
   def calculateCapitalGainsTax
   (
@@ -62,12 +66,14 @@ trait CalculationService {
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
       case "rebased" => calculateGainRebased(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
-      case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt, acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
+      case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt,
+                     acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
     }
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
-    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0)) else 0
+    val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0),
+        otherPropertiesAmt.getOrElse(0)) else 0
 
     calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
 
@@ -185,5 +191,31 @@ trait CalculationService {
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
     negativeToZero(basicRateBand - negativeToZero(currentIncome - personalAllowanceAmt) - otherPropertiesAmt)
+  }
+
+  def calculateFlatPRR
+  (disposalDate: String,
+   acquisitionDate: Option[String],
+   daysEligible: Double,
+   gain: Double): Double = {
+
+    val dispDateTime = DateTime.parse(disposalDate)
+
+    acquisitionDate match {
+      case None => 0
+      case Some(acquisitionDate) =>
+
+        val acqDateTime = DateTime.parse(acquisitionDate)
+
+        dispDateTime match {
+        case a if a.isBefore(disposalDateTimePRR) && (acqDateTime.isAfter(startOfTaxDateTime) ||
+                  acqDateTime.isEqual(startOfTaxDateTime)) =>
+          round("up", gain * (daysBetween(dispDateTime.minusMonths(months), dispDateTime) /
+          daysBetween(acqDateTime, dispDateTime)))
+        case _ =>
+          round("up", gain * ((daysEligible + daysBetween(dispDateTime.minusMonths(months), dispDateTime)) /
+          daysBetween(acqDateTime, dispDateTime)))
+        }
+    }
   }
 }
