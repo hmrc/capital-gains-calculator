@@ -107,33 +107,48 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.brRemaining" should {
 
     "return a value of 32000 when Individual has Income of 8000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(8000, 11000)
+      val result = CalculationService.brRemaining(8000, 11000, 0)
       result shouldEqual 32000
     }
 
     "return a value of 0 when Individual has Income of 50000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(50000, 11000)
+      val result = CalculationService.brRemaining(50000, 11000, 0)
       result shouldEqual 0
     }
 
     "return a value of 3000 when Individual has Income of 50000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(40000, 11000)
+      val result = CalculationService.brRemaining(40000, 11000, 0)
       result shouldEqual 3000
     }
 
     "return a value of 0 when Individual has Income of 33000 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(33000, 1000)
+      val result = CalculationService.brRemaining(33000, 1000, 0)
       result shouldEqual 0
     }
 
     "return a value of 0 when Individual has Income of 33001 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(33001, 1000)
+      val result = CalculationService.brRemaining(33001, 1000, 0)
       result shouldEqual 0
     }
 
     "return a value of 1 when Individual has Income of 32999 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(32999, 1000)
+      val result = CalculationService.brRemaining(32999, 1000, 0)
       result shouldEqual 1
+    }
+
+    "return a value of 16000 when Individual has income of 8000, PA of 11000 and previous gain of 16000" in {
+      val result = CalculationService.brRemaining(8000, 11000, 16000)
+      result shouldEqual 16000
+    }
+
+    "return a value of 0 when Individual has Income of 50000, PA of 11000 and previous gain of 16000" in {
+      val result = CalculationService.brRemaining(50000, 11000, 16000)
+      result shouldEqual 0
+    }
+
+    "return a value of 0 when Individual has income of 8000, PA of 11000 and previous gain of 32000" in {
+      val result = CalculationService.brRemaining(8000, 11000, 32000)
+      result shouldEqual 0
     }
   }
 
@@ -1062,7 +1077,7 @@ class CalculationServiceSpec extends UnitSpec {
                                      acquisitionDate: String, disposalDate: String) = 0.00
       }
 
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
       result.taxOwed shouldEqual 0.0
       result.totalGain shouldEqual 0.0
       result.baseTaxGain shouldEqual 0.0
@@ -1078,7 +1093,7 @@ class CalculationServiceSpec extends UnitSpec {
     }
 
     "return a negative calculation result" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
       result.totalGain shouldEqual -200.0
       result.baseTaxGain shouldEqual 0.0
     }
@@ -1095,31 +1110,31 @@ class CalculationServiceSpec extends UnitSpec {
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0, "No")
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain beyond zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0, "No")
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the allowable losses reduce the gain to zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0, "No")
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with -200.00 taxable gain if the allowable losses reduce the gain beyond zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0, "No")
       result.totalGain shouldEqual 200.0
       result.baseTaxGain shouldEqual -200.0
     }
 
     "return a calculation result model with 0 taxable gain if the AEA can reduce the gain too or beyond zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
