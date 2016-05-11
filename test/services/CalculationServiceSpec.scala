@@ -516,8 +516,8 @@ class CalculationServiceSpec extends UnitSpec {
           entReliefClaimed = "No"
         )
 
-        "have tax owed of £6,331.64" in {
-          result.taxOwed shouldEqual 6331.64
+        "have tax owed of £6,331.92" in {
+          result.taxOwed shouldEqual 6331.92
         }
 
         "have the total gain £44,615" in {
@@ -532,8 +532,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxRate shouldEqual 18
         }
 
-        "have the upper tax gain of £22,613" in {
-          result.upperTaxGain shouldEqual Some(22613)
+        "have the upper tax gain of £22,614.0" in {
+          result.upperTaxGain shouldEqual Some(22614.0)
         }
 
         "have the upper tax rate of 28%" in {
@@ -924,8 +924,8 @@ class CalculationServiceSpec extends UnitSpec {
           entReliefClaimed = "No"
         )
 
-        "have tax owed of £6,331.64" in {
-          result.taxOwed shouldEqual 6331.64
+        "have tax owed of £6,331.92" in {
+          result.taxOwed shouldEqual 6331.92
         }
 
         "have the total gain £44,615" in {
@@ -940,8 +940,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxRate shouldEqual 18
         }
 
-        "have the upper tax gain of £22,613" in {
-          result.upperTaxGain shouldEqual Some(22613)
+        "have the upper tax gain of £22,614.0" in {
+          result.upperTaxGain shouldEqual Some(22614.0)
         }
 
         "have the upper tax rate of 28%" in {

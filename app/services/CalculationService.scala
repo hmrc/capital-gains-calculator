@@ -81,10 +81,8 @@ trait CalculationService {
                 calculateGainMRMALMinusAEA(w, calculatedAEA) match {
                   case 0.0 => zeroTaxableGainCalculationResult(x)
                   case calculatedChargeableGain =>
-                    //val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
                     val taxableGain = negativeToZero(calculatedChargeableGain)
                     val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0)) else 0
-
                     calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
                 }
             }
