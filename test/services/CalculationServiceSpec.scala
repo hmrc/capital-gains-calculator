@@ -493,12 +493,12 @@ class CalculationServiceSpec extends UnitSpec {
           result.totalGain shouldEqual 1100
         }
 
-        "have the base tax gain of -£10,000" in {
-          result.baseTaxGain shouldEqual -10000
+        "have the base tax gain of 0.0" in {
+          result.baseTaxGain shouldEqual 0.0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of None" in {
@@ -531,8 +531,8 @@ class CalculationServiceSpec extends UnitSpec {
           entReliefClaimed = "No"
         )
 
-        "have tax owed of £6,331.64" in {
-          result.taxOwed shouldEqual 6331.64
+        "have tax owed of £6,331.92" in {
+          result.taxOwed shouldEqual 6331.92
         }
 
         "have the total gain £44,615" in {
@@ -547,8 +547,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxRate shouldEqual 18
         }
 
-        "have the upper tax gain of £22,613" in {
-          result.upperTaxGain shouldEqual Some(22613)
+        "have the upper tax gain of £22,614.0" in {
+          result.upperTaxGain shouldEqual Some(22614.0)
         }
 
         "have the upper tax rate of 28%" in {
@@ -888,6 +888,11 @@ class CalculationServiceSpec extends UnitSpec {
           entReliefClaimed = "No"
         )
 
+        val testService = new CalculationService {
+          override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
+                                         acquisitionCostsAmt: Double, improvementsAmt: Double) = 1100.00
+        }
+
         "have tax owed of £0" in {
           result.taxOwed shouldEqual 0
         }
@@ -896,12 +901,12 @@ class CalculationServiceSpec extends UnitSpec {
           result.totalGain shouldEqual 1100
         }
 
-        "have the base tax gain of -£10,000" in {
-          result.baseTaxGain shouldEqual -10000
+        "have the base tax gain of 0.0" in {
+          result.baseTaxGain shouldEqual 0.0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of None" in {
@@ -934,8 +939,8 @@ class CalculationServiceSpec extends UnitSpec {
           entReliefClaimed = "No"
         )
 
-        "have tax owed of £6,331.64" in {
-          result.taxOwed shouldEqual 6331.64
+        "have tax owed of £6,331.92" in {
+          result.taxOwed shouldEqual 6331.92
         }
 
         "have the total gain £44,615" in {
@@ -950,8 +955,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxRate shouldEqual 18
         }
 
-        "have the upper tax gain of £22,613" in {
-          result.upperTaxGain shouldEqual Some(22613)
+        "have the upper tax gain of £22,614.0" in {
+          result.upperTaxGain shouldEqual Some(22614.0)
         }
 
         "have the upper tax rate of 28%" in {
@@ -1055,4 +1060,84 @@ class CalculationServiceSpec extends UnitSpec {
       }
     }
   }
+    //###################### Zero gain tests #############################
+  "Calling the calculate your capital gains method, when the gain calculation results in a zero value it" should {
+
+    "return a calculationResultModel with 0 taxable gain, 0 tax owed, 0 baseTaxGain and 0 tax rate." in {
+
+      val testService = new CalculationService {
+        override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
+                                       acquisitionCostsAmt: Double, improvementsAmt: Double) = 0.00
+
+        override def calculateGainRebased(disposalValue: Double, disposalCosts: Double, revaluedAmount: Double,
+                                          revaluationCost: Double, improvementsAmt: Double) = 0.00
+
+        override def calculateGainTA(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
+                                     acquisitionCostsAmt: Double, improvementsAmt: Double,
+                                     acquisitionDate: String, disposalDate: String) = 0.00
+      }
+
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
+      result.taxOwed shouldEqual 0.0
+      result.totalGain shouldEqual 0.0
+      result.baseTaxGain shouldEqual 0.0
+      result.baseTaxRate shouldEqual 0
+    }
+  }
+
+  "Calling the calculate your capital gains method, when the gain calculation results in a negative value it" should {
+
+    val testService = new CalculationService {
+      override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
+                                     acquisitionCostsAmt: Double, improvementsAmt: Double) = -200.00
+    }
+
+    "return a negative calculation result" in {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
+      result.totalGain shouldEqual -200.0
+      result.baseTaxGain shouldEqual 0.0
+    }
+  }
+
+  "Calling the calculate your capital gains method, when the gain calculation results in a positive value it" should {
+
+    val testService = new CalculationService {
+      override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
+                                     acquisitionCostsAmt: Double, improvementsAmt: Double) = 200.00
+//      override def calculateAEA(customerType: String, priorDisposal: String,
+//                                     annualExemptAmount: Option[Double] = None,
+//                                     isVulnerable: Option[String] = None) = 10000.0
+    }
+
+    "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0, "No")
+      result.totalGain shouldEqual 200.00
+      result.baseTaxGain shouldEqual 0.0
+    }
+
+    "return a calculation result model with 0 taxable gain if the reliefs reduce the gain beyond zero" in {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0, "No")
+      result.totalGain shouldEqual 200.00
+      result.baseTaxGain shouldEqual 0.0
+    }
+
+    "return a calculation result model with 0 taxable gain if the allowable losses reduce the gain to zero" in {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0, "No")
+      result.totalGain shouldEqual 200.00
+      result.baseTaxGain shouldEqual 0.0
+    }
+
+    "return a calculation result model with -200.00 taxable gain if the allowable losses reduce the gain beyond zero" in {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0, "No")
+      result.totalGain shouldEqual 200.0
+      result.baseTaxGain shouldEqual -200.0
+    }
+
+    "return a calculation result model with 0 taxable gain if the AEA can reduce the gain too or beyond zero" in {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
+      result.totalGain shouldEqual 200.00
+      result.baseTaxGain shouldEqual 0.0
+    }
+  }
 }
+
