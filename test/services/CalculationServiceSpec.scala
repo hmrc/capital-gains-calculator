@@ -1059,52 +1059,52 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.calculateFlatPRR" should {
 
     "return 0 for a Disposal Date of 06-10-2016 and no Acquisition Date" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-06", None, 0, 1000)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), None, Some(0), 1000)
       result shouldEqual 0
     }
 
     "return 0 for a Disposal Date of 05-10-2016 and no Acquisition Date" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-05", None, 0, 1000)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), None, Some(0), 1000)
       result shouldEqual 0
     }
 
     "return £2019 for a Disposal Date of 05-10-2016, Acquisition Date of 05-04-2015, Days Eligible of 5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-05", Some("2015-04-05"), 5, 2000)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2015-04-05"), Some(5), 2000)
       result shouldEqual 2019
     }
 
     "return £8695 for a Disposal Date of 20-01-2016, Acquisition Date of 01-04-2015, Days Eligible of 20 and Gain of £4500" in {
-      val result = CalculationService.calculateFlatPRR("2016-01-20", Some("2015-04-01"), 20, 4500)
+      val result = CalculationService.calculateFlatPRR(Some("2016-01-20"), Some("2015-04-01"), Some(20), 4500)
       result shouldEqual 8695
     }
 
     "return £2004 for a Disposal Date of 05-10-2016, Acquisition Date of 06-04-2015, Days Eligible of 5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-05", Some("2015-04-06"), 5, 2000)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2015-04-06"), Some(5), 2000)
       result shouldEqual 2004
     }
 
     "return £13165 for a Disposal Date of 05-10-2016, Acquisition Date of 01-04-2016, Days Eligible of 0 and Gain of £4500" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-05", Some("2016-04-01"), 0, 4500)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2016-04-01"), Some(0), 4500)
       result shouldEqual 13165
     }
 
     "return £2015 for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of 5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-06", Some("2015-04-05"), 5, 2000)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), Some("2015-04-05"), Some(5), 2000)
       result shouldEqual 2015
     }
 
     "return £4540 for a Disposal Date of 20-10-2016, Acquisition Date of 05-04-2015, Days Eligible of 20 and Gain of £4500" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-20", Some("2015-04-05"), 20, 4500)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-20"), Some("2015-04-05"), Some(20), 4500)
       result shouldEqual 4540
     }
 
     "return £2019 for a Disposal Date of 06-10-2016, Acquisition Date of 06-04-2015, Days Eligible of 5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-06", Some("2015-04-06"), 5, 2000)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), Some("2015-04-06"), Some(5), 2000)
       result shouldEqual 2019
     }
 
     "return £4664 for a Disposal Date of 20-10-2016, Acquisition Date of 20-04-2015, Days Eligible of 20 and Gain of £4500" in {
-      val result = CalculationService.calculateFlatPRR("2016-10-20", Some("2015-04-20"), 20, 4500)
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-20"), Some("2015-04-20"), Some(20), 4500)
       result shouldEqual 4664
     }
   }

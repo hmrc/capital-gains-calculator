@@ -60,7 +60,10 @@ trait CalculationService {
     allowableLossesAmt: Double,
     entReliefClaimed: String,
     acquisitionDate: Option[String] = None,
-    disposalDate: Option[String] = None
+    disposalDate: Option[String] = None,
+    isClaimingPRR: Option[String] = None,
+    daysClaimed: Option[Double] = None,
+    daysClaimedAfter: Option[Double] = None
   ): CalculationResultModel = {
 
     val gain: Double = calculationType match {
@@ -70,7 +73,17 @@ trait CalculationService {
                      acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
     }
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
-    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
+
+    val reliefsPRR: Double = isClaimingPRR.getOrElse("") match {
+      case "Yes" => calculateFlatPRR(disposalDate, acquisitionDate, daysClaimed, gain) match {
+        case a if a >= gain => gain
+        case b if b < gain => b
+        case _ => 0
+      }
+      case _ => 0
+    }
+
+    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + reliefsPRR, allowableLossesAmt, calculatedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = if (customerType == "individual") brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0),
         otherPropertiesAmt.getOrElse(0)) else 0
@@ -194,28 +207,26 @@ trait CalculationService {
   }
 
   def calculateFlatPRR
-  (disposalDate: String,
+  (disposalDate: Option[String],
    acquisitionDate: Option[String],
-   daysEligible: Double,
+   daysClaimed: Option[Double],
    gain: Double): Double = {
 
-    val dispDateTime = DateTime.parse(disposalDate)
-
-    acquisitionDate match {
-      case None => 0
-      case Some(acquisitionDate) =>
-
+    (acquisitionDate, disposalDate) match {
+      case (None, None) => 0
+      case (Some(acquisitionDate), (Some(disposalDate))) =>
         val acqDateTime = DateTime.parse(acquisitionDate)
-
+        val dispDateTime = DateTime.parse(disposalDate)
         dispDateTime match {
-        case a if a.isBefore(disposalDateTimePRR) && (acqDateTime.isAfter(startOfTaxDateTime) ||
-                  acqDateTime.isEqual(startOfTaxDateTime)) =>
-          round("up", gain * (daysBetween(dispDateTime.minusMonths(months), dispDateTime) /
-          daysBetween(acqDateTime, dispDateTime)))
-        case _ =>
-          round("up", gain * ((daysEligible + daysBetween(dispDateTime.minusMonths(months), dispDateTime)) /
-          daysBetween(acqDateTime, dispDateTime)))
+              case a if a.isBefore(disposalDateTimePRR) && (acqDateTime.isAfter(startOfTaxDateTime) ||
+                acqDateTime.isEqual(startOfTaxDateTime)) =>
+                round("up", gain * (daysBetween(dispDateTime.minusMonths(months), dispDateTime) /
+                  daysBetween(acqDateTime, dispDateTime)))
+              case _ =>
+                round("up", gain * ((daysClaimed.get + daysBetween(dispDateTime.minusMonths(months), dispDateTime)) /
+                  daysBetween(acqDateTime, dispDateTime)))
         }
+      case _ => 0
     }
   }
 }
