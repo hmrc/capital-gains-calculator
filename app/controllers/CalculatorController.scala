@@ -26,7 +26,9 @@ import services.CalculationService._
 import scala.concurrent.Future
 
 object CalculatorController extends CalculatorController {
+  // $COVERAGE-OFF$
   override val calculationService = CalculationService
+  // $COVERAGE-ON$
 }
 
 trait CalculatorController extends BaseController {
