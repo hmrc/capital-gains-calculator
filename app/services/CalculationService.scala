@@ -37,8 +37,7 @@ trait CalculationService {
   val basicRateBand = 32000
   val startOfTax = "2015-04-06"
   val startOfTaxDateTime = DateTime.parse("2015-04-06")
-  val disposalDateTimePRR = DateTime.parse("2016-10-06")
-  val months = 18
+  val eighteenMonths = 18
 
   //scalastyle:off
   def calculateCapitalGainsTax
@@ -260,12 +259,12 @@ trait CalculationService {
         val acqDateTime = DateTime.parse(acquisitionDate)
         val dispDateTime = DateTime.parse(disposalDate)
         dispDateTime match {
-          case a if a.isBefore(disposalDateTimePRR) && (acqDateTime.isAfter(startOfTaxDateTime) ||
+          case a if a.isBefore(startOfTaxDateTime.plusMonths(eighteenMonths)) && (acqDateTime.isAfter(startOfTaxDateTime) ||
             acqDateTime.isEqual(startOfTaxDateTime)) =>
-            round("up", gain * (daysBetween(dispDateTime.minusMonths(months), dispDateTime) /
+            round("up", gain * (daysBetween(dispDateTime.minusMonths(eighteenMonths), dispDateTime) /
               daysBetween(acqDateTime, dispDateTime)))
           case _ =>
-            round("up", gain * ((daysClaimed.get + daysBetween(dispDateTime.minusMonths(months), dispDateTime)) /
+            round("up", gain * ((daysClaimed.get + daysBetween(dispDateTime.minusMonths(eighteenMonths), dispDateTime)) /
               daysBetween(acqDateTime, dispDateTime)))
         }
       case _ => 0
