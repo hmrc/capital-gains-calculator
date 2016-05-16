@@ -88,7 +88,6 @@ trait CalculationService {
     chargeableGain: Double,
     basicRateRemaining: Double
   ): CalculationResultModel = {
-
     entReliefClaimed match {
       case "Yes" => CalculationResultModel(
         taxOwed = round("result", taxableGain * entrepreneursRate),
@@ -113,7 +112,7 @@ trait CalculationService {
             case x if x > 0 => basicRatePercentage
             case _ => 0
           },
-          upperTaxGain = negativeToNone(taxableGain - basicRateRemaining),
+          upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
           upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None)
         case _ => CalculationResultModel(
           taxOwed = round("result", taxableGain * higherRate),
