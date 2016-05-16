@@ -150,6 +150,16 @@ class CalculationServiceSpec extends UnitSpec {
       val result = CalculationService.brRemaining(8000, 11000, 32000)
       result shouldEqual 0
     }
+
+    "return a value of 2000 when Individual has income of 31000.99, PA of 10999.99 and previous gain of 10000.99" in {
+      val result = CalculationService.brRemaining(31000.99, 10999.99, 10000.99)
+      result shouldEqual 2000
+    }
+
+    "return a value of 2000 when Individual has income of 31000.01, PA of 10999.01 and previous gain of 10000.01" in {
+      val result = CalculationService.brRemaining(31000.01, 10999.01, 10000.01)
+      result shouldEqual 2000
+    }
   }
 
   "calling CalculationService.calculateCapitalGainsTax" should {
