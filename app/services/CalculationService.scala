@@ -19,6 +19,7 @@ package services
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
+import org.joda.time.{DateTime, Days}
 import play.mvc.Results.Todo
 
 object CalculationService extends CalculationService
@@ -35,6 +36,8 @@ trait CalculationService {
   val higherRate = higherRatePercentage / 100.toDouble
   val basicRateBand = 32000
   val startOfTax = "2015-04-06"
+  val startOfTaxDateTime = DateTime.parse("2015-04-06")
+  val eighteenMonths = 18
 
   //scalastyle:off
   def calculateCapitalGainsTax
@@ -58,17 +61,29 @@ trait CalculationService {
     allowableLossesAmt: Double,
     entReliefClaimed: String,
     acquisitionDate: Option[String] = None,
-    disposalDate: Option[String] = None
+    disposalDate: Option[String] = None,
+    isClaimingPRR: Option[String] = None,
+    daysClaimed: Option[Double] = None,
+    daysClaimedAfter: Option[Double] = None
   ): CalculationResultModel = {
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
       case "rebased" => calculateGainRebased(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
-      case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt, acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
+      case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt,
+        acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
+    }
+
+    val prrAmount: Double = isClaimingPRR match {
+      case Some("Yes") => calculationType match {
+        case "flat" => calculateFlatPRR(disposalDate, acquisitionDate, daysClaimed, gain)
+        case _ => 0
+      }
+      case _ => 0
     }
 
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
-    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs, allowableLossesAmt, calculatedAEA)
+    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
       case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0))
@@ -76,7 +91,6 @@ trait CalculationService {
     }
 
     calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
-
   }
 
   def calculationResult
@@ -134,7 +148,7 @@ trait CalculationService {
     improvementsAmt: Double
   ): Double = {
 
-    round("result",round("down", disposalValue) -
+    round("result", round("down", disposalValue) -
       round("up", disposalCosts) -
       round("up", acquisitionValueAmt) -
       round("up", acquisitionCostsAmt) -
@@ -161,10 +175,10 @@ trait CalculationService {
     disposalDate: String
   ): Double = {
 
-    val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt,acquisitionCostsAmt,improvementsAmt)
+    val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     val fractionOfOwnership = daysBetween(startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
 
-    round("result",flatGain * fractionOfOwnership)
+    round("result", flatGain * fractionOfOwnership)
 
   }
 
@@ -193,6 +207,7 @@ trait CalculationService {
     allowableLossesAmt: Double,
     annualExemptAmount: Double
   ): Double = {
+
     round("result", gain match {
       case a if a <= 0 => a //gain less than 0, no need to deduct reliefs, losses or aea
       case b => b - round("up", reliefs) match { //gain greater than 0 so deduct the reliefs
@@ -208,4 +223,32 @@ trait CalculationService {
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
     negativeToZero(basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
   }
+
+  def calculateFlatPRR
+  (disposalDate: Option[String],
+   acquisitionDate: Option[String],
+   daysClaimed: Option[Double],
+   gain: Double): Double = {
+
+    (acquisitionDate, disposalDate) match {
+      case (None, None) => 0
+      case (Some(acquisitionDate), (Some(disposalDate))) =>
+        val acqDateTime = DateTime.parse(acquisitionDate)
+        val dispDateTime = DateTime.parse(disposalDate)
+        min(dispDateTime match {
+          case a if a.isBefore(startOfTaxDateTime.plusMonths(eighteenMonths)) && (acqDateTime.isAfter(startOfTaxDateTime) ||
+            acqDateTime.isEqual(startOfTaxDateTime)) =>
+              round ("up", gain * (daysBetween (dispDateTime.minusMonths (eighteenMonths), dispDateTime) /
+              daysBetween (acqDateTime, dispDateTime))) match {
+                case x if x > gain => gain
+                case y => y
+              }
+          case _ =>
+            round("up", gain * ((daysClaimed.get + daysBetween(dispDateTime.minusMonths(eighteenMonths), dispDateTime)) /
+              daysBetween(acqDateTime, dispDateTime)))
+        }, gain)
+      case _ => 0
+    }
+  }
 }
+

@@ -23,4 +23,8 @@ object Date {
   def daysBetween(start: String, end: String): Double = {
     Days.daysBetween(DateTime.parse(start), DateTime.parse(end)).getDays + 1
   }
+
+  def daysBetween(start: DateTime, end: DateTime): Double = {
+    Days.daysBetween(start, end).getDays + 1
+  }
 }

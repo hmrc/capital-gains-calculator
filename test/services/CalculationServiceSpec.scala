@@ -565,6 +565,147 @@ class CalculationServiceSpec extends UnitSpec {
           result.upperTaxRate shouldEqual Some(28)
         }
       }
+
+      //############ Flat Rate PRR Tests ########################
+      "return £0 tax owed for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of 5, Gain of £2000 and " +
+        "PRR of £2015" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "flat",
+          customerType = "individual",
+          priorDisposal = "No",
+          annualExemptAmount = Some(0),
+          otherPropertiesAmt = Some(0),
+          isVulnerable = Some("No"),
+          currentIncome = Some(0),
+          personalAllowanceAmt = Some(0),
+          disposalValue = 2000,
+          disposalCosts = 0,
+          acquisitionValueAmt = 0,
+          acquisitionCostsAmt = 0,
+          revaluedAmount = 0,
+          revaluationCost = 0,
+          improvementsAmt = 0,
+          reliefs = 0,
+          allowableLossesAmt = 0,
+          entReliefClaimed = "No",
+          acquisitionDate = Some("2015-04-05"),
+          disposalDate = Some("2016-10-06"),
+          isClaimingPRR = Some("Yes"),
+          daysClaimed = Some(5),
+          daysClaimedAfter = Some(0)
+        )
+
+        "have total gain of £2,000" in {
+          result.totalGain shouldEqual 2000
+        }
+
+        "have total tax owed of £0" in {
+          result.taxOwed shouldEqual 0
+        }
+      }
+
+      "return £9498.56 tax owed for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, Days Eligible of 0, Gain of £100,000 and " +
+        "PRR of £43,548" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "flat",
+          customerType = "individual",
+          priorDisposal = "No",
+          annualExemptAmount = Some(0),
+          otherPropertiesAmt = Some(0),
+          isVulnerable = Some("No"),
+          currentIncome = Some(0),
+          personalAllowanceAmt = Some(0),
+          disposalValue = 100000,
+          disposalCosts = 0,
+          acquisitionValueAmt = 0,
+          acquisitionCostsAmt = 0,
+          revaluedAmount = 0,
+          revaluationCost = 0,
+          improvementsAmt = 0,
+          reliefs = 0,
+          allowableLossesAmt = 0,
+          entReliefClaimed = "No",
+          acquisitionDate = Some("2013-04-20"),
+          disposalDate = Some("2016-10-03"),
+          isClaimingPRR = Some("Yes"),
+          daysClaimed = Some(0),
+          daysClaimedAfter = Some(0)
+        )
+
+        "have total gain of £100,000" in {
+          result.totalGain shouldEqual 100000
+        }
+
+        "have base tax gain of £32000" in {
+          result.baseTaxGain shouldEqual 32000
+        }
+
+        "have base tax rate of 18%" in {
+          result.baseTaxRate shouldEqual 18
+        }
+
+        "have an upper tax gain of £13352" in {
+          result.upperTaxGain shouldEqual Some(13352)
+        }
+
+        "have an upper tax rate of 28%" in {
+          result.upperTaxRate shouldEqual Some(28)
+        }
+
+        "have total taxed owed of £9498.56" in {
+          result.taxOwed shouldEqual 9498.56
+        }
+      }
+
+      "return £861.84 tax owed for an Individual claiming PRR, with a taxable gain of £44,615, chargeable gain of £3078 " +
+        "and a PRR total of £19535" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "flat",
+          customerType = "individual",
+          priorDisposal = "Yes",
+          annualExemptAmount = Some(4999.23),
+          currentIncome = Some(49999.34),
+          personalAllowanceAmt = Some(10999.45),
+          disposalValue = 124000.68,
+          disposalCosts = 1241.22,
+          revaluedAmount = 0,
+          revaluationCost = 0,
+          acquisitionValueAmt = 65000.50,
+          acquisitionCostsAmt = 1105.53,
+          improvementsAmt = 12035.99,
+          reliefs = 14000.11,
+          allowableLossesAmt = 3001,
+          entReliefClaimed = "No",
+          isClaimingPRR = Some("Yes"),
+          acquisitionDate = Some("2013-04-20"),
+          disposalDate = Some("2016-10-03"),
+          daysClaimed = Some(3)
+        )
+
+        "have tax owed of £861.84" in {
+          result.taxOwed shouldEqual 861.84
+        }
+
+        "have the total gain £44,615" in {
+          result.totalGain shouldEqual 44615
+        }
+
+        "have the base tax gain of £0" in {
+          result.baseTaxGain shouldEqual 0
+        }
+
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
+        }
+
+        "have the upper tax gain of £3078" in {
+          result.upperTaxGain shouldEqual Some(3078)
+        }
+
+        "have the upper tax rate of 28%" in {
+          result.upperTaxRate shouldEqual Some(28)
+        }
+      }
     }
 
     //########### Rebased Tests ##########################
@@ -1070,7 +1211,79 @@ class CalculationServiceSpec extends UnitSpec {
       }
     }
   }
-    //###################### Zero gain tests #############################
+
+  "Calling CalculationService.calculateFlatPRR" should {
+
+    "return 0 for a Disposal Date of 06-10-2016 and no Acquisition Date" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), None, Some(0), 1000)
+      result shouldEqual 0
+    }
+
+    "return 0 for a Disposal Date of 05-10-2016 and no Acquisition Date" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), None, Some(0), 1000)
+      result shouldEqual 0
+    }
+
+    "return £2000 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
+      "5 and Gain of £2000 " in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2015-04-05"), Some(5), 2000)
+      result shouldEqual 2000
+    }
+
+    "return £4501 (capped at the Gain) for a Disposal Date of 20-01-2016, Acquisition Date of 01-04-2015, Days Eligible of " +
+      "20 and Gain of £4501" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-01-20"), Some("2015-04-01"), Some(20), 4501)
+      result shouldEqual 4501
+    }
+
+    "return £2001 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
+      "5 and Gain of £2000" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2015-04-06"), Some(5), 2001)
+      result shouldEqual 2001
+    }
+
+    "return £4502 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 01-04-2016, Days Eligible of " +
+      "0 and Gain of £4502" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2016-04-01"), Some(0), 4502)
+      result shouldEqual 4502
+    }
+
+    "return £2002 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
+      "5 and Gain of £2000" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), Some("2015-04-05"), Some(5), 2002)
+      result shouldEqual 2002
+    }
+
+    "return £4503 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
+      "20 and Gain of £4503" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-20"), Some("2015-04-05"), Some(20), 4503)
+      result shouldEqual 4503
+    }
+
+    "return £2003 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
+      "5 and Gain of £2003" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), Some("2015-04-06"), Some(5), 2003)
+      result shouldEqual 2003
+    }
+
+    "return £4504 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 20-04-2015, Days Eligible of " +
+      "20 and Gain of £4504" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-20"), Some("2015-04-20"), Some(20), 4504)
+      result shouldEqual 4504
+    }
+
+    "return a rounded up amount of £43,548 for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, " +
+      "Days Eligible of 0 and Gain of £100,000 which results in a PRR of £43,547.11005[...]" in {
+      val result = CalculationService.calculateFlatPRR(Some("2016-10-03"), Some("2013-04-20"), Some(0), 100000)
+      result shouldEqual 43548
+    }
+
+    "return £0 for no Disposal Date and no Acquisition Date" in {
+      val result = CalculationService.calculateFlatPRR(None, None, Some(0), 100000)
+      result shouldEqual 0
+    }
+  }
+  //###################### Zero gain tests #############################
   "Calling the calculate your capital gains method, when the gain calculation results in a zero value it" should {
 
     "return a calculationResultModel with 0 taxable gain, 0 tax owed, 0 baseTaxGain and 0 tax rate." in {
@@ -1132,9 +1345,10 @@ class CalculationServiceSpec extends UnitSpec {
     val testService = new CalculationService {
       override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
                                      acquisitionCostsAmt: Double, improvementsAmt: Double) = 200.00
-//      override def calculateAEA(customerType: String, priorDisposal: String,
-//                                     annualExemptAmount: Option[Double] = None,
-//                                     isVulnerable: Option[String] = None) = 10000.0
+
+      //      override def calculateAEA(customerType: String, priorDisposal: String,
+      //                                     annualExemptAmount: Option[Double] = None,
+      //                                     isVulnerable: Option[String] = None) = 10000.0
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
@@ -1165,7 +1379,7 @@ class CalculationServiceSpec extends UnitSpec {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
+
     }
   }
 }
-
