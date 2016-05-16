@@ -558,7 +558,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       //############ Flat Rate PRR Tests ########################
       "return £0 tax owed for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of 5, Gain of £2000 and " +
-        "PRR of £2015" in {
+        "PRR of £2015" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
           customerType = "individual",
@@ -584,11 +584,17 @@ class CalculationServiceSpec extends UnitSpec {
           daysClaimed = Some(5),
           daysClaimedAfter = Some(0)
         )
-        result.totalGain shouldEqual 2000
-        result.taxOwed shouldEqual 0
+
+        "have total gain of £2,000" in {
+          result.totalGain shouldEqual 2000
+        }
+
+        "have total tax owed of £0" in {
+          result.taxOwed shouldEqual 0
+        }
       }
 
-      "return £9498.56 tax owed for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, Days Eligible of 0, Gain of £32000 and " +
+      "return £9498.56 tax owed for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, Days Eligible of 0, Gain of £100,000 and " +
         "PRR of £43,548" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
@@ -624,10 +630,142 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 32000
         }
 
+        "have base tax rate of 18%" in {
+          result.baseTaxRate shouldEqual 18
+        }
+
+        "have an upper tax gain of £13352" in {
+          result.upperTaxGain shouldEqual Some(13352)
+        }
+
+        "have an upper tax rate of 28%" in {
+          result.upperTaxRate shouldEqual Some(28)
+        }
+
         "have total taxed owed of £9498.56" in {
           result.taxOwed shouldEqual 9498.56
         }
       }
+
+      "return £ for an Individual claiming PRR, with a taxable gain of £44,615, chargeable gain of £3078 and a PRR total of £19535" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "flat",
+          customerType = "individual",
+          priorDisposal = "Yes",
+          annualExemptAmount = Some(4999.23),
+          currentIncome = Some(49999.34),
+          personalAllowanceAmt = Some(10999.45),
+          disposalValue = 124000.68,
+          disposalCosts = 1241.22,
+          revaluedAmount = 0,
+          revaluationCost = 0,
+          acquisitionValueAmt = 65000.50,
+          acquisitionCostsAmt = 1105.53,
+          improvementsAmt = 12035.99,
+          reliefs = 14000.11,
+          allowableLossesAmt = 3001,
+          entReliefClaimed = "No",
+          acquisitionDate = Some("2013-04-20"),
+          disposalDate = Some("2016-10-03"),
+          daysClaimed = Some(3)
+        )
+
+        "have tax owed of £861.84" in {
+          result.taxOwed shouldEqual 861.84
+        }
+
+        "have the total gain £44,615" in {
+          result.totalGain shouldEqual 44615
+        }
+
+        "have the base tax gain of £0" in {
+          result.baseTaxGain shouldEqual 0
+        }
+
+        "have the base tax rate of 18%" in {
+          result.baseTaxRate shouldEqual 18
+        }
+
+        "have the upper tax gain of £3078" in {
+          result.upperTaxGain shouldEqual Some(3078)
+        }
+
+        "have the upper tax rate of 28%" in {
+          result.upperTaxRate shouldEqual Some(28)
+        }
+      }
+    }
+
+    "test" should {
+      "return a" in {
+        val result = CalculationService.calculateGainFlat(
+          disposalValue = 124000.68,
+          disposalCosts = 1241.22,
+          acquisitionValueAmt = 65000.50,
+          acquisitionCostsAmt = 1105.53,
+          improvementsAmt = 12035.99
+        )
+        result shouldEqual 44615
+      }
+
+      "return b" in {
+        val result = CalculationService.calculateFlatPRR(Some("2016-10-03"), Some("2013-04-20"), Some(0), 100000)
+        result shouldEqual 43548
+      }
+
+      "return" in {
+        val result = CalculationService.brRemaining(
+          currentIncome = 49999.34,
+          personalAllowanceAmt = 10999.45,
+          otherPropertiesAmt = 0
+        )
+        result shouldEqual 0
+      }
+
+      "return 2" in {
+        val result = CalculationService.calculateGainMinusReliefs(
+          44615, 14000.11 + 19535
+        )
+        result shouldEqual 11079
+      }
+
+      "return 3" in {
+        val result = CalculationService.calculateGainMRMinusAllowableLosses(CalculationService.calculateGainMinusReliefs(
+          44615, 14000.11 + 19535
+        ), 3001)
+
+        result shouldEqual 8078
+      }
+
+      "return 4" in {
+        val result = CalculationService.calculateGainMRMALMinusAEA(
+                      CalculationService.calculateGainMRMinusAllowableLosses(
+                        CalculationService.calculateGainMinusReliefs(
+                          44615,
+                          14000.11 + 19535
+                        )
+                        ,
+                        3001)
+                      ,
+                      4999.23)
+
+        result shouldEqual 3078
+      }
+
+      "return 5" in {
+        val result = CalculationService.calculateAEA("individual", "Yes", Some(4999.23), Some("No"))
+
+        result shouldEqual 4999.23
+      }
+
+      "return 6" in {
+        val result = CalculationService.calculationResult("No", "individual", 44615, 3078, 3078, 0)
+
+        result.taxOwed shouldEqual 861.84
+        result.totalGain shouldEqual 44615
+        result.upperTaxGain shouldEqual Some(3078)
+      }
+
     }
 
     //########### Rebased Tests ##########################
