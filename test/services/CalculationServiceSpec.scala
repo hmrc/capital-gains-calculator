@@ -1272,8 +1272,8 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 4504
     }
 
-    "return £43,548 for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, Days Eligible of 0 and Gain of " +
-      "£100,000" in {
+    "return a rounded up amount of £43,548 for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, " +
+      "Days Eligible of 0 and Gain of £100,000 which results in a PRR of £43,547.11005[...]" in {
       val result = CalculationService.calculateFlatPRR(Some("2016-10-03"), Some("2013-04-20"), Some(0), 100000)
       result shouldEqual 43548
     }
