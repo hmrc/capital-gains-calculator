@@ -207,6 +207,6 @@ trait CalculationService {
   }
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
-    negativeToZero(basicRateBand - negativeToZero(currentIncome - personalAllowanceAmt) - otherPropertiesAmt)
+    negativeToZero(basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
   }
 }
