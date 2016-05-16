@@ -323,8 +323,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £10,000" in {
@@ -365,8 +365,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £10,000" in {
@@ -409,8 +409,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £15,550" in {
@@ -453,8 +453,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £10,000" in {
@@ -532,7 +532,7 @@ class CalculationServiceSpec extends UnitSpec {
         )
 
         "have tax owed of £6,331.92" in {
-          result.taxOwed shouldEqual 6331.92
+          result.taxOwed shouldEqual 6331.64
         }
 
         "have the total gain £44,615" in {
@@ -543,12 +543,12 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £22,614.0" in {
-          result.upperTaxGain shouldEqual Some(22614.0)
+          result.upperTaxGain shouldEqual Some(22613.0)
         }
 
         "have the upper tax rate of 28%" in {
@@ -591,7 +591,7 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 10000
         }
 
-        "have the base tax rate of 18%" in {
+        "have the base tax rate of 10%" in {
           result.baseTaxRate shouldEqual 10
         }
 
@@ -726,8 +726,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £10,000" in {
@@ -768,8 +768,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £10,000" in {
@@ -812,8 +812,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £15,550" in {
@@ -856,8 +856,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £10,000" in {
@@ -939,8 +939,8 @@ class CalculationServiceSpec extends UnitSpec {
           entReliefClaimed = "No"
         )
 
-        "have tax owed of £6,331.92" in {
-          result.taxOwed shouldEqual 6331.92
+        "have tax owed of £6,331.64" in {
+          result.taxOwed shouldEqual 6331.64
         }
 
         "have the total gain £44,615" in {
@@ -951,12 +951,12 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
-        "have the upper tax gain of £22,614.0" in {
-          result.upperTaxGain shouldEqual Some(22614.0)
+        "have the upper tax gain of £22,613.0" in {
+          result.upperTaxGain shouldEqual Some(22613.0)
         }
 
         "have the upper tax rate of 28%" in {
@@ -1046,8 +1046,8 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxGain shouldEqual 0.00
         }
 
-        "have the base tax rate of 18%" in {
-          result.baseTaxRate shouldEqual 18
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
         }
 
         "have the upper tax gain of £7598.36" in {
@@ -1092,10 +1092,28 @@ class CalculationServiceSpec extends UnitSpec {
                                      acquisitionCostsAmt: Double, improvementsAmt: Double) = -200.00
     }
 
-    "return a negative calculation result" in {
+    "for an individual performing flat who is not claiming ER resulting in a £200 loss" should {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0, "No")
-      result.totalGain shouldEqual -200.0
-      result.baseTaxGain shouldEqual 0.0
+
+      "return -200 for total gain" in {
+        result.totalGain shouldEqual -200.0
+      }
+
+      "return 0 for basic tax gain" in {
+        result.baseTaxGain shouldEqual 0.0
+      }
+    }
+
+    "for an individual performing flat who is claiming ER resulting in a £200 loss" should {
+      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0, "Yes")
+
+      "return -200 for total gain" in {
+        result.totalGain shouldEqual -200.0
+      }
+
+      "return 0 for basic tax gain" in {
+        result.baseTaxGain shouldEqual 0.0
+      }
     }
   }
 
