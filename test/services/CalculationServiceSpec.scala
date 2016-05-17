@@ -1269,6 +1269,44 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 43548
     }
   }
+
+  "Calling CalculationService.calculateRebasedPRR" should {
+
+    "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £100,000" in {
+      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 100000)
+      result shouldEqual 100000
+    }
+
+    "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 20 and gain of £100,000 resulting PRR of " +
+      "£103,637 that is capped" in {
+      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 20, 100000)
+      result shouldEqual 100000
+    }
+
+    "return £75,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £75,000" in {
+      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 75000)
+      result shouldEqual 75000
+    }
+
+    "return a rounded up amount of £30,899 for a Disposal date of 25-12-2016, days claimed after of 0 and gain of £56,000 " +
+      "which results in a PRR of £30898.492[...]" in {
+      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2017-12-25"), 0, 56000)
+      result shouldEqual 30899
+    }
+
+    "return £45,000 for a Disposal date of 05-10-2016, days claimed after of 0 (the question was not asked) and gain of £45,000 " +
+      "resulting in a PRR of £45082 that is capped" in {
+      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-05"), 0, 45000)
+      result shouldEqual 45000
+    }
+
+    "return £35000 for a Disposal date of 25-12-2015, days claimed after of 0 (the question was not asked) and gain of £35,000 " +
+      "resulting in a PRR of £72785 that is capped" in {
+      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2015-12-25"), 0, 35000)
+      result shouldEqual 35000
+    }
+
+  }
   //###################### Zero gain tests #############################
   "Calling the calculate your capital gains method, when the gain calculation results in a zero value it" should {
 

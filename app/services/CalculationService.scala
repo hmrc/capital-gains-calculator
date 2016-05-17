@@ -234,4 +234,14 @@ trait CalculationService {
     min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
       daysBetween(acquisitionDate, disposalDate))), gain)
   }
+
+  def calculateRebasedPRR
+  (disposalDate: DateTime,
+   daysClaimedAfter: Double,
+   gain: Double): Double = {
+
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
+      daysBetween(startOfTaxDateTime, disposalDate))), gain)
+
+  }
 }
