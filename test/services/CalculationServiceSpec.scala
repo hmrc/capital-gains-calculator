@@ -16,6 +16,7 @@
 
 package services
 
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CalculationServiceSpec extends UnitSpec {
@@ -1209,6 +1210,61 @@ class CalculationServiceSpec extends UnitSpec {
           result.upperTaxRate shouldEqual Some(28)
         }
       }
+
+    //############### Time Apportionment PRR ######################
+
+      "return £ tax owed for an Individual claiming PRR, with a total gain of £, PRR of £, acquisition date of 05-04-2015, " +
+        "disposal date of 06-10-2016 and days claimed of 3" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "time",
+          customerType = "individual",
+          priorDisposal = "No",
+          annualExemptAmount = Some(0),
+          otherPropertiesAmt = Some(0),
+          isVulnerable = Some("No"),
+          currentIncome = Some(0),
+          personalAllowanceAmt = Some(0),
+          disposalValue = 110000,
+          disposalCosts = 0,
+          acquisitionValueAmt = 0,
+          acquisitionCostsAmt = 0,
+          revaluedAmount = 0,
+          revaluationCost = 0,
+          improvementsAmt = 0,
+          reliefs = 0,
+          allowableLossesAmt = 0,
+          entReliefClaimed = "No",
+          acquisitionDate = Some("2015-04-05"),
+          disposalDate = Some("2016-10-06"),
+          isClaimingPRR = Some("Yes"),
+          daysClaimedAfter = Some(3)
+        )
+
+        "have tax owed of £" in {
+          result.taxOwed shouldEqual 0
+        }
+
+        "have the total gain £109,800.36" in {
+          result.totalGain shouldEqual 109800.36
+        }
+
+        "have the base tax gain of 0.0" in {
+          result.baseTaxGain shouldEqual 0.0
+        }
+
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
+        }
+
+        "have the upper tax gain of None" in {
+          result.upperTaxGain shouldEqual None
+        }
+
+        "have the upper tax rate of None" in {
+          result.upperTaxRate shouldEqual None
+        }
+      }
+
     }
   }
 
@@ -1283,6 +1339,44 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 0
     }
   }
+
+  "Calling CalculationService.calculateTimeApportionmentPRR" should {
+
+    "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £100,000" in {
+      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 100000)
+      result shouldEqual 100000
+    }
+
+    "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 20 and gain of £100,000 resulting PRR of " +
+      "£103,637 that is capped" in {
+      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 20, 100000)
+      result shouldEqual 100000
+    }
+
+    "return £75,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £75,000" in {
+      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 75000)
+      result shouldEqual 75000
+    }
+
+    "return a rounded up amount of £30,899 for a Disposal date of 25-12-2016, days claimed after of 0 and gain of £56,000 " +
+      "which results in a PRR of £30898.492[...]" in {
+      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2017-12-25"), 0, 56000)
+      result shouldEqual 30899
+    }
+
+    "return £45,000 for a Disposal date of 05-10-2016, days claimed after of 0 (the question was not asked) and gain of £45,000 " +
+      "resulting in a PRR of £45082 that is capped" in {
+      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-05"), 0, 45000)
+      result shouldEqual 45000
+    }
+
+    "return £35000 for a Disposal date of 25-12-2015, days claimed after of 0 (the question was not asked) and gain of £35,000 " +
+      "resulting in a PRR of £72785 that is capped" in {
+      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2015-12-25"), 0, 35000)
+      result shouldEqual 35000
+    }
+  }
+
   //###################### Zero gain tests #############################
   "Calling the calculate your capital gains method, when the gain calculation results in a zero value it" should {
 

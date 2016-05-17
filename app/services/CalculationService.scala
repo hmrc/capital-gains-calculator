@@ -250,5 +250,16 @@ trait CalculationService {
       case _ => 0
     }
   }
+
+
+  def calculateTimeApportionmentPRR
+  (disposalDate: DateTime,
+   daysClaimedAfter: Double,
+   gain: Double): Double = {
+
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
+      daysBetween(startOfTaxDateTime, disposalDate))), gain)
+
+  }
 }
 
