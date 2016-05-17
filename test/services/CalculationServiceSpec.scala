@@ -16,6 +16,7 @@
 
 package services
 
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CalculationServiceSpec extends UnitSpec {
@@ -1214,73 +1215,58 @@ class CalculationServiceSpec extends UnitSpec {
 
   "Calling CalculationService.calculateFlatPRR" should {
 
-    "return 0 for a Disposal Date of 06-10-2016 and no Acquisition Date" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), None, Some(0), 1000)
-      result shouldEqual 0
-    }
-
-    "return 0 for a Disposal Date of 05-10-2016 and no Acquisition Date" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), None, Some(0), 1000)
-      result shouldEqual 0
-    }
-
     "return £2000 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "5 and Gain of £2000 " in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2015-04-05"), Some(5), 2000)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-05"), 5, 2000)
       result shouldEqual 2000
     }
 
     "return £4501 (capped at the Gain) for a Disposal Date of 20-01-2016, Acquisition Date of 01-04-2015, Days Eligible of " +
       "20 and Gain of £4501" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-01-20"), Some("2015-04-01"), Some(20), 4501)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-01-20"), DateTime.parse("2015-04-01"), 20, 4501)
       result shouldEqual 4501
     }
 
     "return £2001 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
       "5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2015-04-06"), Some(5), 2001)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-06"), 5, 2001)
       result shouldEqual 2001
     }
 
     "return £4502 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 01-04-2016, Days Eligible of " +
       "0 and Gain of £4502" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-05"), Some("2016-04-01"), Some(0), 4502)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2016-04-01"), 0, 4502)
       result shouldEqual 4502
     }
 
     "return £2002 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), Some("2015-04-05"), Some(5), 2002)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-05"), 5, 2002)
       result shouldEqual 2002
     }
 
     "return £4503 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "20 and Gain of £4503" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-20"), Some("2015-04-05"), Some(20), 4503)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-05"), 20, 4503)
       result shouldEqual 4503
     }
 
     "return £2003 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
       "5 and Gain of £2003" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-06"), Some("2015-04-06"), Some(5), 2003)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-06"), 5, 2003)
       result shouldEqual 2003
     }
 
     "return £4504 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 20-04-2015, Days Eligible of " +
       "20 and Gain of £4504" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-20"), Some("2015-04-20"), Some(20), 4504)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-20"), 20, 4504)
       result shouldEqual 4504
     }
 
     "return a rounded up amount of £43,548 for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, " +
       "Days Eligible of 0 and Gain of £100,000 which results in a PRR of £43,547.11005[...]" in {
-      val result = CalculationService.calculateFlatPRR(Some("2016-10-03"), Some("2013-04-20"), Some(0), 100000)
+      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-03"), DateTime.parse("2013-04-20"), 0, 100000)
       result shouldEqual 43548
-    }
-
-    "return £0 for no Disposal Date and no Acquisition Date" in {
-      val result = CalculationService.calculateFlatPRR(None, None, Some(0), 100000)
-      result shouldEqual 0
     }
   }
   //###################### Zero gain tests #############################
