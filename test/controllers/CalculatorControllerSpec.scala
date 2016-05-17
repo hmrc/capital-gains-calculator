@@ -83,8 +83,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       acquisitionDate = None,
       disposalDate = None,
       isClaimingPRR = None,
-      daysClaimed = None,
-      daysClaimedAfter = None)(fakeRequest)
+      daysClaimed = None)(fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK
@@ -153,7 +152,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       improvementsAmt = 0,
       reliefs = 0,
       allowableLossesAmt = 0,
-      entReliefClaimed = "No") (fakeRequest)
+      acquisitionDate = None,
+      disposalDate = None,
+      isClaimingPRR = None,
+      entReliefClaimed = "No",
+      daysClaimedAfter = None)(fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK

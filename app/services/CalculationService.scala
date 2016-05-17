@@ -78,7 +78,7 @@ trait CalculationService {
       case Some("Yes") => calculationType match {
         case "flat" => calculateFlatPRR(DateTime.parse(disposalDate.get), DateTime.parse(acquisitionDate.get),
                                         daysClaimed.getOrElse(0), gain)
-        case _ => 0
+        case "rebased" => calculateRebasedPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
       }
       case _ => 0
     }

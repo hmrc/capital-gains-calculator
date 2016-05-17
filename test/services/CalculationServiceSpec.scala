@@ -592,8 +592,7 @@ class CalculationServiceSpec extends UnitSpec {
           acquisitionDate = Some("2015-04-05"),
           disposalDate = Some("2016-10-06"),
           isClaimingPRR = Some("Yes"),
-          daysClaimed = Some(5),
-          daysClaimedAfter = Some(0)
+          daysClaimed = Some(5)
         )
 
         "have total gain of £2,000" in {
@@ -629,8 +628,7 @@ class CalculationServiceSpec extends UnitSpec {
           acquisitionDate = Some("2013-04-20"),
           disposalDate = Some("2016-10-03"),
           isClaimingPRR = Some("Yes"),
-          daysClaimed = Some(0),
-          daysClaimedAfter = Some(0)
+          daysClaimed = Some(0)
         )
 
         "have total gain of £100,000" in {
@@ -1113,6 +1111,163 @@ class CalculationServiceSpec extends UnitSpec {
 
         "have the upper tax rate of 28%" in {
           result.upperTaxRate shouldEqual Some(28)
+        }
+      }
+
+      //############### Rebased PRR Tests #####################
+
+      "return £0 tax owed for an Individual claiming PRR, with a total gain of £100,000 and PRR of £100,000" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "rebased",
+          customerType = "individual",
+          priorDisposal = "No",
+          annualExemptAmount = Some(0),
+          otherPropertiesAmt = Some(0),
+          isVulnerable = Some("No"),
+          currentIncome = Some(0),
+          personalAllowanceAmt = Some(0),
+          disposalValue = 110000,
+          disposalCosts = 0,
+          acquisitionValueAmt = 0,
+          acquisitionCostsAmt = 0,
+          revaluedAmount = 10000,
+          revaluationCost = 0,
+          improvementsAmt = 0,
+          reliefs = 0,
+          allowableLossesAmt = 0,
+          entReliefClaimed = "No",
+          acquisitionDate = None,
+          disposalDate = Some("2016-10-06"),
+          isClaimingPRR = Some("Yes"),
+          daysClaimedAfter = Some(0)
+        )
+
+        "have tax owed of £0" in {
+          result.taxOwed shouldEqual 0
+        }
+
+        "have the total gain £100,000" in {
+          result.totalGain shouldEqual 100000
+        }
+
+        "have the base tax gain of 0.0" in {
+          result.baseTaxGain shouldEqual 0.0
+        }
+
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
+        }
+
+        "have the upper tax gain of None" in {
+          result.upperTaxGain shouldEqual None
+        }
+
+        "have the upper tax rate of None" in {
+          result.upperTaxRate shouldEqual None
+        }
+      }
+
+      "return £17206.28 tax owed for a Trustee not for Vulnerable person claiming PRR, with a total gain of £288400 and " +
+        "PRR of £220,707" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "rebased",
+          customerType = "trustee",
+          priorDisposal = "No",
+          annualExemptAmount = Some(0),
+          otherPropertiesAmt = Some(0),
+          isVulnerable = Some("No"),
+          currentIncome = Some(0),
+          personalAllowanceAmt = Some(0),
+          disposalValue = 323456.78,
+          disposalCosts = 1001.34,
+          acquisitionValueAmt = 455.67,
+          acquisitionCostsAmt = 100.45,
+          revaluedAmount = 34000.78,
+          revaluationCost = 12.99,
+          improvementsAmt = 39.99,
+          reliefs = 300.99,
+          allowableLossesAmt = 390.45,
+          entReliefClaimed = "No",
+          acquisitionDate = Some("2015-04-06"),
+          disposalDate = Some("2017-03-25"),
+          isClaimingPRR = Some("Yes"),
+          daysClaimedAfter = Some(3)
+        )
+
+        "have tax owed of £17,206.28" in {
+          result.taxOwed shouldEqual 17206.28
+        }
+
+        "have the total gain £288,400" in {
+          result.totalGain shouldEqual 288400
+        }
+
+        "have the base tax gain of 0.0" in {
+          result.baseTaxGain shouldEqual 0
+        }
+
+        "have the base tax rate of 0%" in {
+          result.baseTaxRate shouldEqual 0
+        }
+
+        "have the upper tax gain of £61,451" in {
+          result.upperTaxGain shouldEqual Some(61451)
+        }
+
+        "have the upper tax rate of 28%" in {
+          result.upperTaxRate shouldEqual Some(28)
+        }
+      }
+
+      "return £2,766.30 tax owed for an Individual claiming PRR and ER, with a prior disposal, a total gain of £105,942 and " +
+        "PRR of £73,586" should {
+        val result = CalculationService.calculateCapitalGainsTax(
+          calculationType = "rebased",
+          customerType = "individual",
+          priorDisposal = "Yes",
+          annualExemptAmount = Some(4000.30),
+          otherPropertiesAmt = Some(6700.34),
+          isVulnerable = Some("No"),
+          currentIncome = Some(50100),
+          personalAllowanceAmt = Some(11100),
+          disposalValue = 120000.78,
+          disposalCosts = 1001.34,
+          acquisitionValueAmt = 455.67,
+          acquisitionCostsAmt = 100.45,
+          revaluedAmount = 13002.89,
+          revaluationCost = 12.99,
+          improvementsAmt = 39.99,
+          reliefs = 300.99,
+          allowableLossesAmt = 390.45,
+          entReliefClaimed = "Yes",
+          acquisitionDate = Some("2015-04-07"),
+          disposalDate = Some("2017-06-25"),
+          isClaimingPRR = Some("Yes"),
+          daysClaimedAfter = Some(15)
+        )
+
+        "have tax owed of £2,766.30" in {
+          result.taxOwed shouldEqual 2766.3
+        }
+
+        "have the total gain £105,942" in {
+          result.totalGain shouldEqual 105942
+        }
+
+        "have the base tax gain of £27,664" in {
+          result.baseTaxGain shouldEqual 27663
+        }
+
+        "have the base tax rate of 10%" in {
+          result.baseTaxRate shouldEqual 10
+        }
+
+        "have the upper tax gain of £0" in {
+          result.upperTaxGain shouldEqual None
+        }
+
+        "have the upper tax rate of 0%" in {
+          result.upperTaxRate shouldEqual None
         }
       }
     }
