@@ -55,8 +55,7 @@ trait CalculatorController extends BaseController {
     acquisitionDate: Option[String] = None,
     disposalDate: Option[String] = None,
     isClaimingPRR: Option[String],
-    daysClaimed: Option[Double],
-    daysClaimedAfter: Option[Double]
+    daysClaimed: Option[Double]
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
@@ -81,8 +80,7 @@ trait CalculatorController extends BaseController {
       None,
       None,
       isClaimingPRR,
-      daysClaimed,
-      daysClaimedAfter
+      daysClaimed
     )
 
     Future.successful(Ok(Json.toJson(result)))
@@ -104,7 +102,12 @@ trait CalculatorController extends BaseController {
     improvementsAmt: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    entReliefClaimed: String
+    entReliefClaimed: String,
+    acquisitionDate: Option[String] = None,
+    disposalDate: Option[String] = None,
+    isClaimingPRR: Option[String],
+    daysClaimedAfter: Option[Double]
+
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
@@ -125,7 +128,11 @@ trait CalculatorController extends BaseController {
       improvementsAmt,
       reliefs,
       allowableLossesAmt,
-      entReliefClaimed
+      entReliefClaimed,
+      acquisitionDate,
+      disposalDate,
+      isClaimingPRR,
+      daysClaimedAfter
     )
 
     Future.successful(Ok(Json.toJson(result)))
