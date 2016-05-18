@@ -158,8 +158,8 @@ trait CalculatorController extends BaseController {
     entReliefClaimed: String,
     acquisitionDate: Option[String],
     disposalDate: Option[String],
-    isClaimingPRR: Option[String] = None,
-    daysClaimedAfter: Option[Double] = None
+    isClaimingPRR: Option[String],
+    daysClaimedAfter: Option[Double]
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
