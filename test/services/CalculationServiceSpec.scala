@@ -210,6 +210,10 @@ class CalculationServiceSpec extends UnitSpec {
         "have the upper tax rate of 28%" in {
           result.upperTaxRate shouldEqual None
         }
+
+        "have total PRR of None" in {
+          result.simplePRR shouldEqual None
+        }
       }
 
       "return £2,300 for an Individual, not claiming ER, with a lower and higher rate income and a taxable gain of £10,000, " +
@@ -602,6 +606,10 @@ class CalculationServiceSpec extends UnitSpec {
         "have total tax owed of £0" in {
           result.taxOwed shouldEqual 0
         }
+
+        "have total PRR of £2,000" in {
+          result.simplePRR shouldEqual Some(2000)
+        }
       }
 
       "return £9498.56 tax owed for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, Days Eligible of 0, Gain of £100,000 and " +
@@ -654,10 +662,14 @@ class CalculationServiceSpec extends UnitSpec {
         "have total taxed owed of £9498.56" in {
           result.taxOwed shouldEqual 9498.56
         }
+
+        "have total PRR of £43,548" in {
+          result.simplePRR shouldEqual Some(43548)
+        }
       }
 
       "return £861.84 tax owed for an Individual claiming PRR, with a taxable gain of £44,615, chargeable gain of £3078 " +
-        "and a PRR total of £19535" should {
+        "and a PRR total of £19,535" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
           customerType = "individual",
@@ -703,6 +715,10 @@ class CalculationServiceSpec extends UnitSpec {
 
         "have the upper tax rate of 28%" in {
           result.upperTaxRate shouldEqual Some(28)
+        }
+
+        "have total PRR of £19,535" in {
+          result.simplePRR shouldEqual Some(19535)
         }
       }
     }
@@ -751,6 +767,10 @@ class CalculationServiceSpec extends UnitSpec {
 
         "have the upper tax rate of 28%" in {
           result.upperTaxRate shouldEqual None
+        }
+
+        "have total PRR of None" in {
+          result.simplePRR shouldEqual None
         }
       }
 
@@ -1165,6 +1185,10 @@ class CalculationServiceSpec extends UnitSpec {
         "have the upper tax rate of None" in {
           result.upperTaxRate shouldEqual None
         }
+
+        "have total PRR of £100,000" in {
+          result.simplePRR shouldEqual Some(100000)
+        }
       }
 
       "return £17206.28 tax owed for a Trustee not for Vulnerable person claiming PRR, with a total gain of £288400 and " +
@@ -1217,6 +1241,10 @@ class CalculationServiceSpec extends UnitSpec {
         "have the upper tax rate of 28%" in {
           result.upperTaxRate shouldEqual Some(28)
         }
+
+        "have total PRR of £220,707" in {
+          result.simplePRR shouldEqual Some(220707)
+        }
       }
 
       "return £2,766.30 tax owed for an Individual claiming PRR and ER, with a prior disposal, a total gain of £105,942 and " +
@@ -1268,6 +1296,10 @@ class CalculationServiceSpec extends UnitSpec {
 
         "have the upper tax rate of 0%" in {
           result.upperTaxRate shouldEqual None
+        }
+
+        "have total PRR of £73,586" in {
+          result.simplePRR shouldEqual Some(73586)
         }
       }
     }
