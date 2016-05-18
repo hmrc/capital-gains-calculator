@@ -76,8 +76,10 @@ trait CalculationService {
 
     val prrAmount: Double = isClaimingPRR match {
       case Some("Yes") => calculationType match {
-        case "flat" => calculateFlatPRR(disposalDate, acquisitionDate, daysClaimed, gain)
-        case _ => 0
+        case "flat" => calculateFlatPRR(DateTime.parse(disposalDate.get), DateTime.parse(acquisitionDate.get),
+                                        daysClaimed.getOrElse(0), gain)
+        case "rebased" => calculateRebasedPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
+        case "time" => calculateTimeApportionmentPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
       }
       case _ => 0
     }
@@ -225,32 +227,24 @@ trait CalculationService {
   }
 
   def calculateFlatPRR
-  (disposalDate: Option[String],
-   acquisitionDate: Option[String],
-   daysClaimed: Option[Double],
+  (disposalDate: DateTime,
+   acquisitionDate: DateTime,
+   daysClaimed: Double,
    gain: Double): Double = {
 
-    (acquisitionDate, disposalDate) match {
-      case (None, None) => 0
-      case (Some(acquisitionDate), (Some(disposalDate))) =>
-        val acqDateTime = DateTime.parse(acquisitionDate)
-        val dispDateTime = DateTime.parse(disposalDate)
-        min(dispDateTime match {
-          case a if a.isBefore(startOfTaxDateTime.plusMonths(eighteenMonths)) && (acqDateTime.isAfter(startOfTaxDateTime) ||
-            acqDateTime.isEqual(startOfTaxDateTime)) =>
-              round ("up", gain * (daysBetween (dispDateTime.minusMonths (eighteenMonths), dispDateTime) /
-              daysBetween (acqDateTime, dispDateTime))) match {
-                case x if x > gain => gain
-                case y => y
-              }
-          case _ =>
-            round("up", gain * ((daysClaimed.get + daysBetween(dispDateTime.minusMonths(eighteenMonths), dispDateTime)) /
-              daysBetween(acqDateTime, dispDateTime)))
-        }, gain)
-      case _ => 0
-    }
+    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
+      daysBetween(acquisitionDate, disposalDate))), gain)
   }
 
+  def calculateRebasedPRR
+  (disposalDate: DateTime,
+   daysClaimedAfter: Double,
+   gain: Double): Double = {
+
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
+      daysBetween(startOfTaxDateTime, disposalDate))), gain)
+
+  }
 
   def calculateTimeApportionmentPRR
   (disposalDate: DateTime,
@@ -262,4 +256,3 @@ trait CalculationService {
 
   }
 }
-
