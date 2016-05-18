@@ -81,10 +81,10 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 2500
     }
 
-    "return 3000 where Disposal Proceeds = 12,645.77, Incidental Disposal Costs = 1954.66, Acquisition Cost = 1000.04," +
+    "return 206 where Disposal Proceeds = 12,645.77, Incidental Disposal Costs = 1954.66, Acquisition Cost = 1000.04," +
       "Incidental Acquisition Costs = 0.99, Enhancement Costs = 2000.65, Acquisition Date 05/04/1967, Disposal Date 31/07/2016" in {
       val result = CalculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, "1967-04-05", "2016-07-31")
-      result shouldEqual 206.08
+      result shouldEqual 206
     }
   }
 
@@ -1296,16 +1296,16 @@ class CalculationServiceSpec extends UnitSpec {
           disposalDate = Some("2016-01-01")
         )
 
-        "have tax owed of £204.83" in {
-          result.taxOwed shouldEqual 204.83
+        "have tax owed of £204.80" in {
+          result.taxOwed shouldEqual 204.8
         }
 
         "have the total gain £13148.36" in {
-          result.totalGain shouldEqual 13148.36
+          result.totalGain shouldEqual 13148
         }
 
         "have the base tax gain of £2048.36" in {
-          result.baseTaxGain shouldEqual 2048.36
+          result.baseTaxGain shouldEqual 2048
         }
 
         "have the base tax rate of 10%" in {
@@ -1341,12 +1341,12 @@ class CalculationServiceSpec extends UnitSpec {
           disposalDate = Some("2016-01-01")
         )
 
-        "have tax owed of £2127.54" in {
-          result.taxOwed shouldEqual 2127.54
+        "have tax owed of £2127.44" in {
+          result.taxOwed shouldEqual 2127.44
         }
 
-        "have the total gain £13148.36" in {
-          result.totalGain shouldEqual 13148.36
+        "have the total gain £13148" in {
+          result.totalGain shouldEqual 13148
         }
 
         "have the base tax gain of £0.00" in {
@@ -1358,7 +1358,7 @@ class CalculationServiceSpec extends UnitSpec {
         }
 
         "have the upper tax gain of £7598.36" in {
-          result.upperTaxGain shouldEqual Some(7598.36)
+          result.upperTaxGain shouldEqual Some(7598)
         }
 
         "have the upper tax rate of 28%" in {
@@ -1399,13 +1399,9 @@ class CalculationServiceSpec extends UnitSpec {
           result.taxOwed shouldEqual 0
         }
 
-        "have the total gain £109,800.36" in {
-          result.totalGain shouldEqual 109800.36
+        "have the total gain £109,800" in {
+          result.totalGain shouldEqual 109800
         }
-        // ##### Rounding? #####
-//        "have the total gain £109,800" in {
-//          result.totalGain shouldEqual 109800
-//        }
 
         "have the base tax gain of 0.0" in {
           result.baseTaxGain shouldEqual 0.0
@@ -1476,7 +1472,7 @@ class CalculationServiceSpec extends UnitSpec {
         }
       }
 
-      "return £1,353.71 tax owed for an Individual claiming PRR and ER, with a prior disposal, a total gain of £45,577.16 and " +
+      "return £1,353.70 tax owed for an Individual claiming PRR and ER, with a prior disposal, a total gain of £45,577.16 and " +
         "PRR of £27,347" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "time",
@@ -1504,15 +1500,15 @@ class CalculationServiceSpec extends UnitSpec {
         )
 
         "have tax owed of £1,353.71" in {
-          result.taxOwed shouldEqual 1353.71
+          result.taxOwed shouldEqual 1353.70
         }
 
-        "have the total gain £45,577.16" in {
-          result.totalGain shouldEqual 45577.16
+        "have the total gain £45,577" in {
+          result.totalGain shouldEqual 45577
         }
 
-        "have the base tax gain of £13,537.16" in {
-          result.baseTaxGain shouldEqual 13537.16
+        "have the base tax gain of £13,537" in {
+          result.baseTaxGain shouldEqual 13537
         }
 
         "have the base tax rate of 10%" in {

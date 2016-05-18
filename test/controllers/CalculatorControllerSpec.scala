@@ -242,7 +242,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     "return a valid result" in {
       val data = contentAsString(result)
       val json = Json.parse(data)
-      (json \ "taxOwed").as[Double] shouldBe 204.83
+      (json \ "taxOwed").as[Double] shouldBe 204.80
     }
 
   }

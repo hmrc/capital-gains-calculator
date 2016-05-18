@@ -150,11 +150,11 @@ trait CalculationService {
     improvementsAmt: Double
   ): Double = {
 
-    round("result", round("down", disposalValue) -
+    round("down", disposalValue) -
       round("up", disposalCosts) -
       round("up", acquisitionValueAmt) -
       round("up", acquisitionCostsAmt) -
-      round("up", improvementsAmt))
+      round("up", improvementsAmt)
   }
 
   def calculateGainRebased
@@ -180,7 +180,7 @@ trait CalculationService {
     val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     val fractionOfOwnership = daysBetween(startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
 
-    round("result", flatGain * fractionOfOwnership)
+    round("down", flatGain * fractionOfOwnership)
 
   }
 
@@ -210,7 +210,7 @@ trait CalculationService {
     annualExemptAmount: Double
   ): Double = {
 
-    round("result", gain match {
+    gain match {
       case a if a <= 0 => a //gain less than 0, no need to deduct reliefs, losses or aea
       case b => b - round("up", reliefs) match { //gain greater than 0 so deduct the reliefs
         case c if c <= 0 => 0 //Reliefs cannot turn gain into a loss, hence return 0
@@ -219,7 +219,7 @@ trait CalculationService {
           case f => negativeToZero(f - round("up", annualExemptAmount)) //deduct AEA, if amount less than 0 return 0 else return amount
         }
       }
-    })
+    }
   }
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
