@@ -1300,11 +1300,11 @@ class CalculationServiceSpec extends UnitSpec {
           result.taxOwed shouldEqual 204.8
         }
 
-        "have the total gain £13148.36" in {
+        "have the total gain £13148" in {
           result.totalGain shouldEqual 13148
         }
 
-        "have the base tax gain of £2048.36" in {
+        "have the base tax gain of £2048" in {
           result.baseTaxGain shouldEqual 2048
         }
 
@@ -1357,7 +1357,7 @@ class CalculationServiceSpec extends UnitSpec {
           result.baseTaxRate shouldEqual 0
         }
 
-        "have the upper tax gain of £7598.36" in {
+        "have the upper tax gain of £7598" in {
           result.upperTaxGain shouldEqual Some(7598)
         }
 
@@ -1499,7 +1499,7 @@ class CalculationServiceSpec extends UnitSpec {
           daysClaimedAfter = Some(0)
         )
 
-        "have tax owed of £1,353.71" in {
+        "have tax owed of £1,353.70" in {
           result.taxOwed shouldEqual 1353.70
         }
 
