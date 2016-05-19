@@ -76,8 +76,9 @@ trait CalculationService {
 
     val prrAmount: Double = isClaimingPRR match {
       case Some("Yes") => calculationType match {
-        case "flat" => calculateFlatPRR(DateTime.parse(disposalDate.get), DateTime.parse(acquisitionDate.get),
-                                        daysClaimed.getOrElse(0), gain)
+        case "flat" => {println(s"######Acquisition date is defined: ${disposalDate.isDefined}")
+          calculateFlatPRR(DateTime.parse(disposalDate.get), DateTime.parse(acquisitionDate.get),
+                                        daysClaimed.getOrElse(0), gain)}
         case "rebased" => calculateRebasedPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
         case "time" => calculateTimeApportionmentPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
       }
