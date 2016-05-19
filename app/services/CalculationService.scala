@@ -16,28 +16,20 @@
 
 package services
 
+import config.YearlyParameters
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
 import org.joda.time.{DateTime, Days}
 import play.mvc.Results.Todo
 
-object CalculationService extends CalculationService
+object CalculationService extends CalculationService {
+  override val parameters = YearlyParameters.getParameters(2016)
+}
 
 trait CalculationService {
 
-  val maxAnnualExemptAmount = 11100
-  val notVulnerableMaxAnnualExemptAmount = 5550
-  val entrepreneursPercentage = 10
-  val basicRatePercentage = 18
-  val higherRatePercentage = 28
-  val entrepreneursRate = entrepreneursPercentage / 100.toDouble
-  val basicRate = basicRatePercentage / 100.toDouble
-  val higherRate = higherRatePercentage / 100.toDouble
-  val basicRateBand = 32000
-  val startOfTax = "2015-04-06"
-  val startOfTaxDateTime = DateTime.parse("2015-04-06")
-  val eighteenMonths = 18
+  val parameters: YearlyParameters
 
   //scalastyle:off
   def calculateCapitalGainsTax
@@ -106,37 +98,38 @@ trait CalculationService {
   ): CalculationResultModel = {
     entReliefClaimed match {
       case "Yes" => CalculationResultModel(
-        taxOwed = round("result", taxableGain * entrepreneursRate),
+        taxOwed = round("result", taxableGain * parameters.entrepreneursRate),
         totalGain = gain,
         baseTaxGain = gain match {
           case x if x > 0 => chargeableGain
           case _ => 0
         },
         baseTaxRate = chargeableGain match {
-          case x if x > 0 => entrepreneursPercentage
+          case x if x > 0 => parameters.entrepreneursPercentage
           case _ => 0
         })
       case _ => customerType match {
         case "individual" => CalculationResultModel(
-          taxOwed = round("result", min(basicRateRemaining, taxableGain) * basicRate + negativeToZero(taxableGain - basicRateRemaining) * higherRate),
+          taxOwed = round("result", min(basicRateRemaining, taxableGain) * parameters.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
+            parameters.higherRate),
           totalGain = gain,
           baseTaxGain = gain match {
             case x if x > 0 => min(basicRateRemaining, chargeableGain)
             case _ => 0
           },
           baseTaxRate = min(basicRateRemaining, chargeableGain) match {
-            case x if x > 0 => basicRatePercentage
+            case x if x > 0 => parameters.basicRatePercentage
             case _ => 0
           },
           upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
-          upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None)
+          upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None)
         case _ => CalculationResultModel(
-          taxOwed = round("result", taxableGain * higherRate),
+          taxOwed = round("result", taxableGain * parameters.higherRate),
           totalGain = gain,
           baseTaxGain = 0,
           baseTaxRate = 0,
           upperTaxGain = Some(chargeableGain),
-          upperTaxRate = Some(higherRatePercentage))
+          upperTaxRate = Some(parameters.higherRatePercentage))
       }
     }
   }
@@ -178,7 +171,7 @@ trait CalculationService {
   ): Double = {
 
     val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
-    val fractionOfOwnership = daysBetween(startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
+    val fractionOfOwnership = daysBetween(parameters.startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
 
     round("down", flatGain * fractionOfOwnership)
 
@@ -195,8 +188,8 @@ trait CalculationService {
     priorDisposal match {
       case "No" =>
         customerType match {
-          case "individual" | "personalRep" => maxAnnualExemptAmount
-          case "trustee" => if (isVulnerable.contains("Yes")) maxAnnualExemptAmount else notVulnerableMaxAnnualExemptAmount
+          case "individual" | "personalRep" => parameters.maxAnnualExemptAmount
+          case "trustee" => if (isVulnerable.contains("Yes")) parameters.maxAnnualExemptAmount else parameters.notVulnerableMaxAnnualExemptAmount
         }
       case _ => annualExemptAmount.getOrElse(0)
     }
@@ -223,7 +216,7 @@ trait CalculationService {
   }
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
-    negativeToZero(basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
+    negativeToZero(parameters.basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
   }
 
   def calculateFlatPRR
@@ -232,7 +225,7 @@ trait CalculationService {
    daysClaimed: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
+    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
       daysBetween(acquisitionDate, disposalDate))), gain)
   }
 
@@ -241,8 +234,8 @@ trait CalculationService {
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
-      daysBetween(startOfTaxDateTime, disposalDate))), gain)
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
+      daysBetween(parameters.startOfTaxDateTime, disposalDate))), gain)
 
   }
 
@@ -251,8 +244,8 @@ trait CalculationService {
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
-      daysBetween(startOfTaxDateTime, disposalDate))), gain)
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
+      daysBetween(parameters.startOfTaxDateTime, disposalDate))), gain)
 
   }
 }
