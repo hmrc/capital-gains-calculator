@@ -77,8 +77,8 @@ trait CalculatorController extends BaseController {
       reliefs,
       allowableLossesAmt,
       entReliefClaimed,
-      None,
-      None,
+      acquisitionDate,
+      disposalDate,
       isClaimingPRR,
       daysClaimed
     )
