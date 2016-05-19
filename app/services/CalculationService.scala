@@ -244,8 +244,8 @@ trait CalculationService {
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(eighteenMonths), disposalDate)) /
-      daysBetween(startOfTaxDateTime, disposalDate))), gain)
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
+      daysBetween(parameters.startOfTaxDateTime, disposalDate))), gain)
 
   }
 }
