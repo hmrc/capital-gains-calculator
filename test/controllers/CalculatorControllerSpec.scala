@@ -227,7 +227,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       allowableLossesAmt = 0,
       entReliefClaimed = "Yes",
       acquisitionDate = Some("2014-4-1"),
-      disposalDate = Some("2016-1-1")
+      disposalDate = Some("2016-1-1"),
+      isClaimingPRR = None,
+      daysClaimedAfter = None
     ) (fakeRequest)
 
     "return 200" in {
@@ -242,7 +244,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     "return a valid result" in {
       val data = contentAsString(result)
       val json = Json.parse(data)
-      (json \ "taxOwed").as[Double] shouldBe 204.83
+      (json \ "taxOwed").as[Double] shouldBe 204.80
     }
 
   }
