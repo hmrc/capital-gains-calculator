@@ -84,7 +84,7 @@ trait CalculationService {
       case _ => 0
     }
 
-    calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining)
+    calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"))
   }
 
   def calculationResult
@@ -94,7 +94,9 @@ trait CalculationService {
     gain: Double,
     taxableGain: Double,
     chargeableGain: Double,
-    basicRateRemaining: Double
+    basicRateRemaining: Double,
+    prrAmount: Double,
+    isClaimingPRR: String
   ): CalculationResultModel = {
     entReliefClaimed match {
       case "Yes" => CalculationResultModel(
@@ -107,7 +109,8 @@ trait CalculationService {
         baseTaxRate = chargeableGain match {
           case x if x > 0 => parameters.entrepreneursPercentage
           case _ => 0
-        })
+        },
+        simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
       case _ => customerType match {
         case "individual" => CalculationResultModel(
           taxOwed = round("result", min(basicRateRemaining, taxableGain) * parameters.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
@@ -122,14 +125,16 @@ trait CalculationService {
             case _ => 0
           },
           upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
-          upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None)
+          upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None,
+          simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
         case _ => CalculationResultModel(
           taxOwed = round("result", taxableGain * parameters.higherRate),
           totalGain = gain,
           baseTaxGain = 0,
           baseTaxRate = 0,
           upperTaxGain = Some(chargeableGain),
-          upperTaxRate = Some(parameters.higherRatePercentage))
+          upperTaxRate = Some(parameters.higherRatePercentage),
+          simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
       }
     }
   }
