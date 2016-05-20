@@ -132,6 +132,7 @@ trait CalculatorController extends BaseController {
       acquisitionDate,
       disposalDate,
       isClaimingPRR,
+      None,
       daysClaimedAfter
     )
 
@@ -184,6 +185,7 @@ trait CalculatorController extends BaseController {
       acquisitionDate,
       disposalDate,
       isClaimingPRR,
+      None,
       daysClaimedAfter
     )
 
