@@ -22,10 +22,8 @@ trait YearlyParameters {
   val taxYear: Int
   val maxAnnualExemptAmount: Int
   val notVulnerableMaxAnnualExemptAmount: Int
-  val entrepreneursPercentage: Int
   val basicRatePercentage: Int
   val higherRatePercentage: Int
-  val entrepreneursRate: Double
   val basicRate: Double
   val higherRate: Double
   val basicRateBand: Int
@@ -38,10 +36,8 @@ object ParametersFor20162017 extends YearlyParameters {
   override val taxYear = 2016
   override val maxAnnualExemptAmount = 11100
   override val notVulnerableMaxAnnualExemptAmount = 5550
-  override val entrepreneursPercentage = 10
   override val basicRatePercentage = 18
   override val higherRatePercentage = 28
-  override val entrepreneursRate = entrepreneursPercentage / 100.toDouble
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
   override val basicRateBand = 32000

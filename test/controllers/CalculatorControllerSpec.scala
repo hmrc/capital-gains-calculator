@@ -51,7 +51,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Matchers.anyDouble,
-      Matchers.anyString,
       Option(Matchers.anyString),
       Option(Matchers.anyString),
       Option(Matchers.anyString),
@@ -79,7 +78,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       improvementsAmt = 0,
       reliefs = 0,
       allowableLossesAmt = 0,
-      entReliefClaimed = "No",
       acquisitionDate = None,
       disposalDate = None,
       isClaimingPRR = None,
@@ -124,7 +122,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Matchers.anyDouble,
-      Matchers.anyString,
       Option(Matchers.anyString),
       Option(Matchers.anyString),
       Option(Matchers.anyString),
@@ -155,7 +152,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       acquisitionDate = None,
       disposalDate = None,
       isClaimingPRR = None,
-      entReliefClaimed = "No",
       daysClaimedAfter = None)(fakeRequest)
 
     "return 200" in {
@@ -197,7 +193,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Matchers.anyDouble,
-      Matchers.anyString,
       Option(Matchers.anyString),
       Option(Matchers.anyString),
       Option(Matchers.anyString),
@@ -225,7 +220,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       improvementsAmt = 0,
       reliefs = 0,
       allowableLossesAmt = 0,
-      entReliefClaimed = "Yes",
       acquisitionDate = Some("2014-4-1"),
       disposalDate = Some("2016-1-1"),
       isClaimingPRR = None,
@@ -244,7 +238,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     "return a valid result" in {
       val data = contentAsString(result)
       val json = Json.parse(data)
-      (json \ "taxOwed").as[Double] shouldBe 204.80
+      (json \ "taxOwed").as[Double] shouldBe 368.64
     }
 
   }
