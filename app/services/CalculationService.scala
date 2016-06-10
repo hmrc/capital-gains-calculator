@@ -162,7 +162,7 @@ trait CalculationService {
     val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     val fractionOfOwnership = daysBetween(parameters.startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
 
-    round("down", flatGain * fractionOfOwnership)
+    round("gain", flatGain * fractionOfOwnership)
 
   }
 
