@@ -51,7 +51,6 @@ trait CalculationService {
     improvementsAmt: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    entReliefClaimed: String,
     acquisitionDate: Option[String] = None,
     disposalDate: Option[String] = None,
     isClaimingPRR: Option[String] = None,
@@ -84,12 +83,11 @@ trait CalculationService {
       case _ => 0
     }
 
-    calculationResult(entReliefClaimed, customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"))
+    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"))
   }
 
   def calculationResult
   (
-    entReliefClaimed: String,
     customerType: String,
     gain: Double,
     taxableGain: Double,
@@ -98,44 +96,30 @@ trait CalculationService {
     prrAmount: Double,
     isClaimingPRR: String
   ): CalculationResultModel = {
-    entReliefClaimed match {
-      case "Yes" => CalculationResultModel(
-        taxOwed = round("result", taxableGain * parameters.entrepreneursRate),
+    customerType match {
+      case "individual" => CalculationResultModel(
+        taxOwed = round("result", min(basicRateRemaining, taxableGain) * parameters.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
+          parameters.higherRate),
         totalGain = gain,
         baseTaxGain = gain match {
-          case x if x > 0 => chargeableGain
+          case x if x > 0 => min(basicRateRemaining, chargeableGain)
           case _ => 0
         },
-        baseTaxRate = chargeableGain match {
-          case x if x > 0 => parameters.entrepreneursPercentage
+        baseTaxRate = min(basicRateRemaining, chargeableGain) match {
+          case x if x > 0 => parameters.basicRatePercentage
           case _ => 0
         },
+        upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
+        upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None,
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
-      case _ => customerType match {
-        case "individual" => CalculationResultModel(
-          taxOwed = round("result", min(basicRateRemaining, taxableGain) * parameters.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
-            parameters.higherRate),
-          totalGain = gain,
-          baseTaxGain = gain match {
-            case x if x > 0 => min(basicRateRemaining, chargeableGain)
-            case _ => 0
-          },
-          baseTaxRate = min(basicRateRemaining, chargeableGain) match {
-            case x if x > 0 => parameters.basicRatePercentage
-            case _ => 0
-          },
-          upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
-          upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None,
-          simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
-        case _ => CalculationResultModel(
-          taxOwed = round("result", taxableGain * parameters.higherRate),
-          totalGain = gain,
-          baseTaxGain = 0,
-          baseTaxRate = 0,
-          upperTaxGain = Some(chargeableGain),
-          upperTaxRate = Some(parameters.higherRatePercentage),
-          simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
-      }
+      case _ => CalculationResultModel(
+        taxOwed = round("result", taxableGain * parameters.higherRate),
+        totalGain = gain,
+        baseTaxGain = 0,
+        baseTaxRate = 0,
+        upperTaxGain = Some(chargeableGain),
+        upperTaxRate = Some(parameters.higherRatePercentage),
+        simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
     }
   }
 
