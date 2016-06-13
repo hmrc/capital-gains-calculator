@@ -77,6 +77,26 @@ class MathSpec extends UnitSpec {
       val result = round("result", 5000.9999)
       result shouldEqual 5000.99
     }
+
+    "return rounded down decimal of 500 for value of 500.99 rounding a gain" in {
+      val result = round("gain", 500.99)
+      result shouldEqual 500
+    }
+
+    "return rounded down decimal of 500 for value of 500.01 rounding a gain" in {
+      val result = round("gain", 500.01)
+      result shouldEqual 500
+    }
+
+    "return rounded down decimal of -500 for value of -499.01 when rounding a gain" in {
+      val result = round("gain", -499.01)
+      result shouldEqual -500
+    }
+
+    "return rounded down decimal of -500 for value of -499.99 when rounding a gain" in {
+      val result = round("gain", -499.99)
+      result shouldEqual -500
+    }
   }
 
   "calling common.Math.negativeToZero" should {

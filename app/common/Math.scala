@@ -25,6 +25,7 @@ object Math {
       case "down" => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
       case "up" => BigDecimal.valueOf(x).setScale(0, RoundingMode.UP).toDouble
       case "result" => BigDecimal.valueOf(x).setScale(2, RoundingMode.DOWN).toDouble
+      case "gain" => BigDecimal.valueOf(x).setScale(0, RoundingMode.FLOOR).toDouble
       case _ => x
     }
   }
