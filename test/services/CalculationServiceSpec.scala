@@ -916,4 +916,44 @@ class CalculationServiceSpec extends UnitSpec {
 
     }
   }
+
+  "Calling the partialAEAUsed method" should {
+
+    "return an AEA of £6000 used with no losses or reliefs" in {
+      val result = CalculationService.partialAEAUsed(6000, 0, 0)
+      result shouldEqual 6000
+    }
+
+    "return an AEA of £2000 used with losses and reliefs used" in {
+      val result = CalculationService.partialAEAUsed(6000, 2000, 2000)
+      result shouldEqual 2000
+    }
+
+    "return an AEA of £0 used when losses and reliefs eliminate the gain" in {
+      val result = CalculationService.partialAEAUsed(6000, 3000, 3000)
+      result shouldEqual 0
+    }
+
+    "return an AEA of £0 when losses and reliefs eliminate the gain through rounding" in {
+      val result = CalculationService.partialAEAUsed(6000, 2999.01, 2999.01)
+    }
+  }
+
+  "Calling the annualExemptAmountUsed method" should {
+
+    "return an AEA used equal to the max remaining when the chargeable gain is positive" in {
+      val result = CalculationService.annualExemptAmountUsed(11100, 50000, 38900, 5000, 5000)
+      result shouldEqual 11100
+    }
+
+    "return an AEA used of 0 when the chargeable gain is negative" in {
+      val result = CalculationService.annualExemptAmountUsed(11100, 20000, -10000, 15000, 15000)
+      result shouldEqual 0
+    }
+
+    "return an AEA from the partialAEAUsed method when chargeable gain is zero" in {
+      val result = CalculationService.annualExemptAmountUsed(11100, 20000, 0, 7000, 7000)
+      result shouldEqual 6000
+    }
+  }
 }

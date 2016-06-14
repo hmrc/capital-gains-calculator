@@ -77,13 +77,14 @@ trait CalculationService {
 
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
+    val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, calculatedChargeableGain, reliefs + prrAmount, allowableLossesAmt)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
       case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0))
       case _ => 0
     }
 
-    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"))
+    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA)
   }
 
   def calculationResult
@@ -94,7 +95,8 @@ trait CalculationService {
     chargeableGain: Double,
     basicRateRemaining: Double,
     prrAmount: Double,
-    isClaimingPRR: String
+    isClaimingPRR: String,
+    usedAEA: Double
   ): CalculationResultModel = {
     customerType match {
       case "individual" => CalculationResultModel(
@@ -109,6 +111,7 @@ trait CalculationService {
           case x if x > 0 => parameters.basicRatePercentage
           case _ => 0
         },
+        usedAnnualExemptAmount = usedAEA,
         upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
         upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None,
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
@@ -117,6 +120,7 @@ trait CalculationService {
         totalGain = gain,
         baseTaxGain = 0,
         baseTaxRate = 0,
+        usedAnnualExemptAmount = usedAEA,
         upperTaxGain = Some(chargeableGain),
         upperTaxRate = Some(parameters.higherRatePercentage),
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
@@ -236,5 +240,17 @@ trait CalculationService {
     min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
       daysBetween(parameters.startOfTaxDateTime, disposalDate))), gain)
 
+  }
+
+  def annualExemptAmountUsed (available: Double, totalGain: Double, chargeableGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
+    chargeableGain match {
+      case a if a < 0 => 0.toDouble
+      case b if b > 0 => available
+      case _ => partialAEAUsed(totalGain, reliefs, allowableLossesAmt)
+    }
+  }
+
+  def partialAEAUsed (totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
+    negativeToZero(round("down", totalGain - round("up", reliefs) - round("up", allowableLossesAmt)))
   }
 }

@@ -56,7 +56,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
       Option(Matchers.anyDouble)
-    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18))
+    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0))
 
     val target: CalculatorController = new CalculatorController {
       override val calculationService = mockCalculationService
@@ -127,7 +127,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
       Option(Matchers.anyDouble)
-    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18))
+    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0))
 
     val target: CalculatorController = new CalculatorController {
       override val calculationService = mockCalculationService
@@ -198,7 +198,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
       Option(Matchers.anyDouble)
-    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18))
+    )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0))
 
     val target: CalculatorController = new CalculatorController {
       override val calculationService = mockCalculationService
