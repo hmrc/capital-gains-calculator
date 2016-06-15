@@ -17,6 +17,8 @@
 package config
 
 import org.joda.time.DateTime
+import reflect.runtime.universe._
+import reflect.runtime.currentMirror
 
 trait YearlyParameters {
   val taxYear: Int
@@ -24,6 +26,7 @@ trait YearlyParameters {
   val notVulnerableMaxAnnualExemptAmount: Int
   val basicRatePercentage: Int
   val higherRatePercentage: Int
+  val maxPersonalAllowance: Int
   val basicRate: Double
   val higherRate: Double
   val basicRateBand: Int
@@ -38,6 +41,7 @@ object ParametersFor20162017 extends YearlyParameters {
   override val notVulnerableMaxAnnualExemptAmount = 5550
   override val basicRatePercentage = 18
   override val higherRatePercentage = 28
+  override val maxPersonalAllowance = 11000
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
   override val basicRateBand = 32000

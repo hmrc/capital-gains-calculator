@@ -57,12 +57,16 @@ class ParametersSpec extends UnitSpec with WithFakeApplication {
       ParametersFor20162017.maxAnnualExemptAmount shouldBe 11100
     }
 
-    "return 5550 as the non-vulnerable trustee Annual Excempt Amount" in {
+    "return 5550 as the non-vulnerable trustee Annual Exempt Amount" in {
       ParametersFor20162017.notVulnerableMaxAnnualExemptAmount shouldBe 5550
     }
 
     "return 32000 as the basic rate band" in {
       ParametersFor20162017.basicRateBand shouldBe 32000
+    }
+
+    "return 11000 as the maximum Personal Allowance" in {
+      ParametersFor20162017.maxPersonalAllowance shouldBe 11000
     }
 
   }
@@ -85,11 +89,11 @@ class ParametersSpec extends UnitSpec with WithFakeApplication {
         YearlyParameters.getParameters(2017).higherRatePercentage shouldBe 28
       }
 
-      "return 11100 as the maximum Annual Excempt Amount" in {
+      "return 11100 as the maximum Annual Exempt Amount" in {
         YearlyParameters.getParameters(2017).maxAnnualExemptAmount shouldBe 11100
       }
 
-      "return 5550 as the non-vulnerable trustee Annual Excempt Amount" in {
+      "return 5550 as the non-vulnerable trustee Annual Exempt Amount" in {
         YearlyParameters.getParameters(2017).notVulnerableMaxAnnualExemptAmount shouldBe 5550
       }
 
@@ -97,8 +101,11 @@ class ParametersSpec extends UnitSpec with WithFakeApplication {
         YearlyParameters.getParameters(2017).basicRateBand shouldBe 32000
       }
 
+      "return 11000 as the maximum Personal Allowance" in {
+        YearlyParameters.getParameters(2017).maxPersonalAllowance shouldBe 11000
+      }
+
     }
 
   }
-
 }
