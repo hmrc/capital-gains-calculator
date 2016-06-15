@@ -24,7 +24,7 @@ import org.joda.time.{DateTime, Days}
 import play.mvc.Results.Todo
 
 object CalculationService extends CalculationService {
-  override val parameters = YearlyParameters.getParameters(2016)
+  override val parameters = YearlyParameters.getParameters(2017)
 }
 
 trait CalculationService {

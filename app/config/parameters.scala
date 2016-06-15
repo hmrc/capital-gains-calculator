@@ -28,12 +28,12 @@ trait YearlyParameters {
   val higherRate: Double
   val basicRateBand: Int
   val startOfTax = "2015-04-06"
-  val startOfTaxDateTime = DateTime.parse("2015-04-06")
+  val startOfTaxDateTime = DateTime.parse(startOfTax)
   val eighteenMonths = 18
 }
 
 object ParametersFor20162017 extends YearlyParameters {
-  override val taxYear = 2016
+  override val taxYear = 2017
   override val maxAnnualExemptAmount = 11100
   override val notVulnerableMaxAnnualExemptAmount = 5550
   override val basicRatePercentage = 18
@@ -47,7 +47,7 @@ object YearlyParameters {
   val parameters = ParametersFor20162017 :: Nil
 
   def getParameters(year: Int): YearlyParameters = parameters.filter(_.taxYear == year) match {
-    case params => params.head
+    case params if params.nonEmpty => params.head
     case _ => parameters.maxBy(_.taxYear)
   }
 }
