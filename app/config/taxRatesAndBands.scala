@@ -18,7 +18,7 @@ package config
 
 import org.joda.time.DateTime
 
-trait YearlyParameters {
+trait TaxRatesAndBands {
   val taxYear: Int
   val maxAnnualExemptAmount: Int
   val notVulnerableMaxAnnualExemptAmount: Int
@@ -33,7 +33,16 @@ trait YearlyParameters {
   val eighteenMonths = 18
 }
 
-object ParametersFor20162017 extends YearlyParameters {
+object TaxRatesAndBands {
+  val rates = TaxRatesAndBands20162017 :: Nil
+
+  def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
+    case params if params.nonEmpty => params.head
+    case _ => rates.maxBy(_.taxYear)
+  }
+}
+
+object TaxRatesAndBands20162017 extends TaxRatesAndBands {
   override val taxYear = 2017
   override val maxAnnualExemptAmount = 11100
   override val notVulnerableMaxAnnualExemptAmount = 5550
@@ -43,17 +52,4 @@ object ParametersFor20162017 extends YearlyParameters {
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
   override val basicRateBand = 32000
-}
-
-object YearlyParameters {
-  val parameters = ParametersFor20162017 :: Nil
-
-  def getParameters(year: Int): YearlyParameters = parameters.filter(_.taxYear == year) match {
-    case params if params.nonEmpty => params.head
-    case _ => parameters.maxBy(_.taxYear)
-  }
-
-  def getMaxAEA(year: Int): Int = getParameters(year).maxAnnualExemptAmount
-  def getMaxNonVulnerableAEA(year: Int): Int = getParameters(year).notVulnerableMaxAnnualExemptAmount
-  def getMaxPersonalAllowance(year: Int): Int = getParameters(year).maxPersonalAllowance
 }
