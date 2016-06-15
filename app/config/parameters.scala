@@ -17,8 +17,6 @@
 package config
 
 import org.joda.time.DateTime
-import reflect.runtime.universe._
-import reflect.runtime.currentMirror
 
 trait YearlyParameters {
   val taxYear: Int
