@@ -18,36 +18,38 @@ package config
 
 import org.joda.time.DateTime
 
-trait YearlyParameters {
+trait TaxRatesAndBands {
   val taxYear: Int
   val maxAnnualExemptAmount: Int
   val notVulnerableMaxAnnualExemptAmount: Int
   val basicRatePercentage: Int
   val higherRatePercentage: Int
+  val maxPersonalAllowance: Int
   val basicRate: Double
   val higherRate: Double
   val basicRateBand: Int
   val startOfTax = "2015-04-06"
-  val startOfTaxDateTime = DateTime.parse("2015-04-06")
+  val startOfTaxDateTime = DateTime.parse(startOfTax)
   val eighteenMonths = 18
 }
 
-object ParametersFor20162017 extends YearlyParameters {
-  override val taxYear = 2016
+object TaxRatesAndBands {
+  val rates = TaxRatesAndBands20162017 :: Nil
+
+  def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
+    case params if params.nonEmpty => params.head
+    case _ => rates.maxBy(_.taxYear)
+  }
+}
+
+object TaxRatesAndBands20162017 extends TaxRatesAndBands {
+  override val taxYear = 2017
   override val maxAnnualExemptAmount = 11100
   override val notVulnerableMaxAnnualExemptAmount = 5550
   override val basicRatePercentage = 18
   override val higherRatePercentage = 28
+  override val maxPersonalAllowance = 11000
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
   override val basicRateBand = 32000
-}
-
-object YearlyParameters {
-  val parameters = ParametersFor20162017 :: Nil
-
-  def getParameters(year: Int): YearlyParameters = parameters.filter(_.taxYear == year) match {
-    case params => params.head
-    case _ => parameters.maxBy(_.taxYear)
-  }
 }

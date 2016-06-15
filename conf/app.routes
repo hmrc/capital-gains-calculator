@@ -1,7 +1,12 @@
 # microservice specific routes
 
+## Calculation Routes
 GET        /calculate-flat              controllers.CalculatorController.calculateFlat(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], otherPropertiesAmt: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,acquisitionValueAmt: Double,acquisitionCostsAmt: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,acquisitionDate: Option[String],disposalDate: Option[String],isClaimingPRR: Option[String],daysClaimed: Option[Double])
 GET        /calculate-rebased           controllers.CalculatorController.calculateRebased(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], otherPropertiesAmt: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,rebasedValue: Double,revaluationCost: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,acquisitionDate: Option[String],disposalDate: Option[String],isClaimingPRR: Option[String],daysClaimedAfter: Option[Double])
 GET        /calculate-time-apportioned  controllers.CalculatorController.calculateTA(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], otherPropertiesAmt: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,acquisitionValueAmt: Double,acquisitionCostsAmt: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,acquisitionDate: Option[String], disposalDate: Option[String],isClaimingPRR: Option[String],daysClaimedAfter: Option[Double])
 
+## Tax Rates and Bands Routes
+GET        /tax-rates-and-bands/max-full-aea        controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)
+GET        /tax-rates-and-bands/max-partial-aea     controllers.TaxRatesAndBandsController.getMaxNonVulnerableAEA(taxYear: Int)
+GET        /tax-rates-and-bands/max-pa              controllers.TaxRatesAndBandsController.getMaxPersonalAllowance(taxYear: Int)
 

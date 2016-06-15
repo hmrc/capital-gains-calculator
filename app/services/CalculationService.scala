@@ -16,7 +16,7 @@
 
 package services
 
-import config.YearlyParameters
+import config.TaxRatesAndBands
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
@@ -24,12 +24,12 @@ import org.joda.time.{DateTime, Days}
 import play.mvc.Results.Todo
 
 object CalculationService extends CalculationService {
-  override val parameters = YearlyParameters.getParameters(2016)
+  override val taxRatesAndBands = TaxRatesAndBands.getRates(2017)
 }
 
 trait CalculationService {
 
-  val parameters: YearlyParameters
+  val taxRatesAndBands: TaxRatesAndBands
 
   //scalastyle:off
   def calculateCapitalGainsTax
@@ -100,29 +100,29 @@ trait CalculationService {
   ): CalculationResultModel = {
     customerType match {
       case "individual" => CalculationResultModel(
-        taxOwed = round("result", min(basicRateRemaining, taxableGain) * parameters.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
-          parameters.higherRate),
+        taxOwed = round("result", min(basicRateRemaining, taxableGain) * taxRatesAndBands.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
+          taxRatesAndBands.higherRate),
         totalGain = gain,
         baseTaxGain = gain match {
           case x if x > 0 => min(basicRateRemaining, chargeableGain)
           case _ => 0
         },
         baseTaxRate = min(basicRateRemaining, chargeableGain) match {
-          case x if x > 0 => parameters.basicRatePercentage
+          case x if x > 0 => taxRatesAndBands.basicRatePercentage
           case _ => 0
         },
         usedAnnualExemptAmount = usedAEA,
         upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
-        upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(parameters.higherRatePercentage) else None,
+        upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(taxRatesAndBands.higherRatePercentage) else None,
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
       case _ => CalculationResultModel(
-        taxOwed = round("result", taxableGain * parameters.higherRate),
+        taxOwed = round("result", taxableGain * taxRatesAndBands.higherRate),
         totalGain = gain,
         baseTaxGain = 0,
         baseTaxRate = 0,
         usedAnnualExemptAmount = usedAEA,
         upperTaxGain = Some(chargeableGain),
-        upperTaxRate = Some(parameters.higherRatePercentage),
+        upperTaxRate = Some(taxRatesAndBands.higherRatePercentage),
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
     }
   }
@@ -164,7 +164,7 @@ trait CalculationService {
   ): Double = {
 
     val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
-    val fractionOfOwnership = daysBetween(parameters.startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
+    val fractionOfOwnership = daysBetween(taxRatesAndBands.startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
 
     round("gain", flatGain * fractionOfOwnership)
 
@@ -181,8 +181,8 @@ trait CalculationService {
     priorDisposal match {
       case "No" =>
         customerType match {
-          case "individual" | "personalRep" => parameters.maxAnnualExemptAmount
-          case "trustee" => if (isVulnerable.contains("Yes")) parameters.maxAnnualExemptAmount else parameters.notVulnerableMaxAnnualExemptAmount
+          case "individual" | "personalRep" => taxRatesAndBands.maxAnnualExemptAmount
+          case "trustee" => if (isVulnerable.contains("Yes")) taxRatesAndBands.maxAnnualExemptAmount else taxRatesAndBands.notVulnerableMaxAnnualExemptAmount
         }
       case _ => annualExemptAmount.getOrElse(0)
     }
@@ -209,7 +209,7 @@ trait CalculationService {
   }
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
-    negativeToZero(parameters.basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
+    negativeToZero(taxRatesAndBands.basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
   }
 
   def calculateFlatPRR
@@ -218,7 +218,7 @@ trait CalculationService {
    daysClaimed: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
+    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
       daysBetween(acquisitionDate, disposalDate))), gain)
   }
 
@@ -227,8 +227,8 @@ trait CalculationService {
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
-      daysBetween(parameters.startOfTaxDateTime, disposalDate))), gain)
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
+      daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
 
   }
 
@@ -237,8 +237,8 @@ trait CalculationService {
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(parameters.eighteenMonths), disposalDate)) /
-      daysBetween(parameters.startOfTaxDateTime, disposalDate))), gain)
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
+      daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
 
   }
 

@@ -16,7 +16,7 @@
 
 package services
 
-import config.YearlyParameters
+import config.TaxRatesAndBands
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -828,7 +828,7 @@ class CalculationServiceSpec extends UnitSpec {
                                      acquisitionCostsAmt: Double, improvementsAmt: Double,
                                      acquisitionDate: String, disposalDate: String) = 0.00
 
-        override val parameters = YearlyParameters.getParameters(2016)
+        override val taxRatesAndBands = TaxRatesAndBands.getRates(2017)
       }
 
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -845,7 +845,7 @@ class CalculationServiceSpec extends UnitSpec {
       override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
                                      acquisitionCostsAmt: Double, improvementsAmt: Double) = -200.00
 
-      override val parameters = YearlyParameters.getParameters(2016)
+      override val taxRatesAndBands = TaxRatesAndBands.getRates(2017)
     }
 
     "for an individual performing flat who is not claiming ER resulting in a £200 loss" should {
@@ -879,10 +879,7 @@ class CalculationServiceSpec extends UnitSpec {
       override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
                                      acquisitionCostsAmt: Double, improvementsAmt: Double) = 200.00
 
-      override val parameters = YearlyParameters.getParameters(2016)
-      //      override def calculateAEA(customerType: String, priorDisposal: String,
-      //                                     annualExemptAmount: Option[Double] = None,
-      //                                     isVulnerable: Option[String] = None) = 10000.0
+      override val taxRatesAndBands = TaxRatesAndBands.getRates(2017)
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
