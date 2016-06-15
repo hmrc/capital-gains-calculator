@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class PersonalAllowanceModel(personalAllowance: Int)
+case class PersonalAllowanceModel(personalAllowanceAmt: Int)
 
 object PersonalAllowanceModel {
   implicit val formats = Json.format[PersonalAllowanceModel]
