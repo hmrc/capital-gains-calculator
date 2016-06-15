@@ -54,4 +54,8 @@ object YearlyParameters {
     case params if params.nonEmpty => params.head
     case _ => parameters.maxBy(_.taxYear)
   }
+
+  def getMaxAEA(year: Int): Int = getParameters(year).maxAnnualExemptAmount
+  def getMaxNonVulnerableAEA(year: Int): Int = getParameters(year).notVulnerableMaxAnnualExemptAmount
+  def getMaxPersonalAllowance(year: Int): Int = getParameters(year).maxPersonalAllowance
 }

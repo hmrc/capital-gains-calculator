@@ -108,4 +108,34 @@ class ParametersSpec extends UnitSpec with WithFakeApplication {
     }
 
   }
+
+  "validating the getMaxAEA method" when {
+
+    "calling with the year 2017" should {
+
+      "return 11100 for the maximum Annual Exempt Amount" in {
+        YearlyParameters.getMaxAEA(2017) shouldBe 11100
+      }
+    }
+  }
+
+  "validating the getMaxNonVulnerableAEA method" when {
+
+    "calling with the year 2017" should {
+
+      "return 5550 for the maximum Annual Exempt Amount" in {
+        YearlyParameters.getMaxNonVulnerableAEA(2017) shouldBe 5550
+      }
+    }
+  }
+
+  "validating the getMaxPersonalAllowance method" when {
+
+    "calling with the year 2017" should {
+
+      "return 11000 for the maximum Annual Exempt Amount" in {
+        YearlyParameters.getMaxPersonalAllowance(2017) shouldBe 11000
+      }
+    }
+  }
 }
