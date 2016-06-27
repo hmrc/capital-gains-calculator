@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.nonresident
 
 import models.CalculationResultModel
 import play.api.libs.json.Json
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import play.api.mvc._
-import services.CalculationService._
-
 import scala.concurrent.Future
 
-object CalculatorController extends CalculatorController {
-  // $COVERAGE-OFF$
-  override val calculationService = CalculationService
-  // $COVERAGE-ON$
-}
 
 trait CalculatorController extends BaseController {
 
@@ -185,4 +178,10 @@ trait CalculatorController extends BaseController {
 
     Future.successful(Ok(Json.toJson(result)))
   }
+}
+
+object CalculatorController extends CalculatorController {
+  // $COVERAGE-OFF$
+  override val calculationService = CalculationService
+  // $COVERAGE-ON$
 }
