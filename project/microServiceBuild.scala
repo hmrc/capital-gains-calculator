@@ -38,7 +38,6 @@ private object AppDependencies {
   private val jsoupVersion = "1.8.3"
 
   val compile = Seq(
-
     ws,
     "uk.gov.hmrc" %% "microservice-bootstrap" % "4.2.1",
     "uk.gov.hmrc" %% "play-authorisation" % "3.1.0",
