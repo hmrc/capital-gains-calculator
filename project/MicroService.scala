@@ -26,7 +26,6 @@ trait MicroService {
   import uk.gov.hmrc._
   import DefaultBuildSettings._
   import uk.gov.hmrc.{SbtBuildInfo, ShellPrompt}
-  import play.PlayImport.PlayKeys._
 
   import TestPhases._
 
