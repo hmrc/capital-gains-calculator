@@ -16,6 +16,7 @@
 
 package controllers.resident
 
+import models.resident.ChargeableGainResultModel
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -41,6 +42,56 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         val data = contentAsString(result)
         val json = Json.parse(data)
         json.as[Option[BigDecimal]] shouldBe Some(BigDecimal(20000.0))
+      }
+    }
+  }
+
+  "CalculatorController.calculateChargeableGain" when {
+
+    lazy val fakeRequest = FakeRequest("GET", "")
+
+    "numeric values are passed" should {
+
+      lazy val result = CalculatorController.calculateChargeableGain(
+        disposalValue = 195000,
+        disposalCosts = 1000,
+        acquisitionValue = 160000,
+        acquisitionCosts = 1000,
+        improvements = 5000,
+        reliefs = None,
+        allowableLosses = Some(5000),
+        broughtForwardLosses = Some(20000),
+        annualExemptAmount = 11100
+      )(fakeRequest)
+
+      "return a 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) shouldBe Some("application/json")
+        }
+
+        "has the gain as 28000" in {
+          (json \ "gain").as[Double] shouldBe 28000
+        }
+
+        "has the chargeableGain as -8100" in {
+          (json \ "chargeableGain").as[Double] shouldBe -8100.0
+        }
+
+        "has the aeaUsed as -11000" in {
+          (json \ "aeaUsed").as[Double] shouldBe 11100.0
+        }
+
+        "has the deductions as 36100" in {
+          (json \ "deductions").as[Double] shouldBe 36100
+        }
       }
     }
   }

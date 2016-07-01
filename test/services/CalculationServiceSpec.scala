@@ -19,6 +19,7 @@ package services
 import config.TaxRatesAndBands
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
+import services.CalculationService._
 
 class CalculationServiceSpec extends UnitSpec {
 
@@ -103,6 +104,26 @@ class CalculationServiceSpec extends UnitSpec {
     "the total Chargeable Gain value of 4550 where total Gain = 5000, Relief = 200, In Year Losses = 150, AEA = 100" in {
       val result = CalculationService.calculateChargeableGain(5000, 200, 150, 100)
       result shouldEqual 4550
+    }
+
+    "the total Chargeable Gain Value should be 270 where total gain = 500, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(500, 10, 20, 30, 170)
+      result shouldEqual 270
+    }
+
+    "the total Chargeable Gain Value should be 0 where total gain = 230, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(230, 10, 20, 30, 170)
+      result shouldEqual 0
+    }
+
+    "the total Chargeable Gain Value should be -5 where total gain = 225, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(225, 10, 20, 30, 170)
+      result shouldEqual -5
+    }
+
+    "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(200, 0, 0, 150, 75)
+      result shouldEqual -25
     }
   }
 

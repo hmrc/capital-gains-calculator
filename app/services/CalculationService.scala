@@ -193,9 +193,9 @@ trait CalculationService {
     gain: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    annualExemptAmount: Double
-  ): Double = {
-
+    annualExemptAmount: Double,
+    broughtForwardLosses: Double = 0
+  ): Double = (
     gain match {
       case a if a <= 0 => a //gain less than 0, no need to deduct reliefs, losses or aea
       case b => b - round("up", reliefs) match { //gain greater than 0 so deduct the reliefs
@@ -206,7 +206,7 @@ trait CalculationService {
         }
       }
     }
-  }
+  ) - broughtForwardLosses // Finally, subtract any brought forward losses.
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
     negativeToZero(taxRatesAndBands.basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
