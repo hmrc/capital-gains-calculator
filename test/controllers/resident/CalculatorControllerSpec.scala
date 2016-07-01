@@ -16,6 +16,7 @@
 
 package controllers.resident
 
+import models.resident.ChargeableGainResultModel
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -67,14 +68,30 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         status(result) shouldBe 200
       }
 
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
+      "return a JSON result" which {
 
-      "return a Some" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[Option[BigDecimal]] shouldBe Some(BigDecimal(-8100.0))
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) shouldBe Some("application/json")
+        }
+
+        "has the gain as 28000" in {
+          (json \ "gain").as[Double] shouldBe 28000
+        }
+
+        "has the chargeableGain as -8100" in {
+          (json \ "chargeableGain").as[Double] shouldBe -8100.0
+        }
+
+        "has the aeaUsed as -11000" in {
+          (json \ "aeaUsed").as[Double] shouldBe 11100.0
+        }
+
+        "has the deductions as 36100" in {
+          (json \ "deductions").as[Double] shouldBe 36100
+        }
       }
     }
   }

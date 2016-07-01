@@ -20,10 +20,8 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
-
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
-
+import models.resident._
 object CalculatorController extends CalculatorController {
 
   override val calculationService = CalculationService
@@ -62,13 +60,20 @@ trait CalculatorController extends BaseController {
     annualExemptAmount: Double
   ): Action[AnyContent] = Action.async { implicit request =>
 
-    val result = calculationService.calculateChargeableGain(
-      calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements),
-      reliefs.getOrElse(0),
-      allowableLosses.getOrElse(0),
-      annualExemptAmount,
-      broughtForwardLosses.getOrElse(0)
+    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
+    val chargeableGain = calculationService.calculateChargeableGain(
+      gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
     )
+    val aeaUsed = calculationService.annualExemptAmountUsed(
+      annualExemptAmount,
+      gain,
+      calculationService.calculateChargeableGain(gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, 0),
+      reliefs.getOrElse(0),
+      allowableLosses.getOrElse(0)
+    )
+    val deductions = reliefs.getOrElse(0.0) + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
+
+    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, deductions)
 
     Future.successful(Ok(Json.toJson(result)))
   }

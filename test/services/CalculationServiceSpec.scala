@@ -120,6 +120,11 @@ class CalculationServiceSpec extends UnitSpec {
       val result = calculateChargeableGain(225, 10, 20, 30, 170)
       result shouldEqual -5
     }
+
+    "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(200, 0, 0, 150, 75)
+      result shouldEqual -25
+    }
   }
 
   "Calling CalculationService.brRemaining" should {
