@@ -48,4 +48,28 @@ trait CalculatorController extends BaseController {
 
     Future.successful(Ok(Json.toJson(result)))
   }
+
+  def calculateChargeableGain
+  (
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValue: Double,
+    acquisitionCosts: Double,
+    improvements: Double,
+    reliefs: Option[Double],
+    allowableLosses: Option[Double],
+    broughtForwardLosses: Option[Double],
+    annualExemptAmount: Double
+  ): Action[AnyContent] = Action.async { implicit request =>
+
+    val result = calculationService.calculateChargeableGain(
+      calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements),
+      reliefs.getOrElse(0),
+      allowableLosses.getOrElse(0),
+      annualExemptAmount,
+      broughtForwardLosses.getOrElse(0)
+    )
+
+    Future.successful(Ok(Json.toJson(result)))
+  }
 }

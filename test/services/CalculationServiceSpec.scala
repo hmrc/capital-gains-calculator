@@ -19,6 +19,7 @@ package services
 import config.TaxRatesAndBands
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
+import services.CalculationService._
 
 class CalculationServiceSpec extends UnitSpec {
 
@@ -103,6 +104,21 @@ class CalculationServiceSpec extends UnitSpec {
     "the total Chargeable Gain value of 4550 where total Gain = 5000, Relief = 200, In Year Losses = 150, AEA = 100" in {
       val result = CalculationService.calculateChargeableGain(5000, 200, 150, 100)
       result shouldEqual 4550
+    }
+
+    "the total Chargeable Gain Value should be 270 where total gain = 500, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(500, 10, 20, 30, 170)
+      result shouldEqual 270
+    }
+
+    "the total Chargeable Gain Value should be 0 where total gain = 230, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(230, 10, 20, 30, 170)
+      result shouldEqual 0
+    }
+
+    "the total Chargeable Gain Value should be -5 where total gain = 225, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
+      val result = calculateChargeableGain(225, 10, 20, 30, 170)
+      result shouldEqual -5
     }
   }
 
@@ -952,5 +968,22 @@ class CalculationServiceSpec extends UnitSpec {
       val result = CalculationService.annualExemptAmountUsed(11100, 20000, 0, 7000, 7000)
       result shouldEqual 6000
     }
+  }
+
+  "Calling the calculateRttTaxableGain method" should {
+
+    "return the amount 300 when the " +
+      "disposal value = 1000," +
+      "disposal costs = 10," +
+      "acquisition value = 500," +
+      "acquisition costs = 20," +
+      "improvements = 70," +
+      "reliefs = 100," +
+      "allowable losses = 0," +
+      "brought forward losses = 0" +
+      "annual excempt amount = 50" in {
+
+    }
+
   }
 }

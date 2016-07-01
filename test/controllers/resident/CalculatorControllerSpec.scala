@@ -44,4 +44,38 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
       }
     }
   }
+
+  "CalculatorController.calculateChargeableGain" when {
+
+    lazy val fakeRequest = FakeRequest("GET", "")
+
+    "numeric values are passed" should {
+
+      lazy val result = CalculatorController.calculateChargeableGain(
+        disposalValue = 195000,
+        disposalCosts = 1000,
+        acquisitionValue = 160000,
+        acquisitionCosts = 1000,
+        improvements = 5000,
+        reliefs = None,
+        allowableLosses = Some(5000),
+        broughtForwardLosses = Some(20000),
+        annualExemptAmount = 11100
+      )(fakeRequest)
+
+      "return a 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return a Some" in {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+        json.as[Option[BigDecimal]] shouldBe Some(BigDecimal(-8100.0))
+      }
+    }
+  }
 }

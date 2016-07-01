@@ -193,7 +193,8 @@ trait CalculationService {
     gain: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    annualExemptAmount: Double
+    annualExemptAmount: Double,
+    broughtForwardLosses: Double = 0
   ): Double = {
 
     gain match {
@@ -202,7 +203,7 @@ trait CalculationService {
         case c if c <= 0 => 0 //Reliefs cannot turn gain into a loss, hence return 0
         case d => d - round("up", allowableLossesAmt) match { //Gain greater than 0 still so deduct allowable loses
           case e if e <= 0 => e //Allowable losses turns gain into a loss so return the loss
-          case f => negativeToZero(f - round("up", annualExemptAmount)) //deduct AEA, if amount less than 0 return 0 else return amount
+          case f => negativeToZero(f - round("up", annualExemptAmount)) - broughtForwardLosses //deduct AEA, if amount less than 0 return 0 else return amount
         }
       }
     }
