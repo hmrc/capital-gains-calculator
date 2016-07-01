@@ -974,21 +974,4 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 6000
     }
   }
-
-  "Calling the calculateRttTaxableGain method" should {
-
-    "return the amount 300 when the " +
-      "disposal value = 1000," +
-      "disposal costs = 10," +
-      "acquisition value = 500," +
-      "acquisition costs = 20," +
-      "improvements = 70," +
-      "reliefs = 100," +
-      "allowable losses = 0," +
-      "brought forward losses = 0" +
-      "annual excempt amount = 50" in {
-
-    }
-
-  }
 }
