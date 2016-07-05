@@ -34,7 +34,7 @@ trait TaxRatesAndBands {
 }
 
 object TaxRatesAndBands {
-  val rates = TaxRatesAndBands20162017 :: Nil
+  val rates = TaxRatesAndBands20162017 :: TaxRatesAndBands20152016 :: Nil
 
   def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
     case params if params.nonEmpty => params.head
@@ -52,4 +52,16 @@ object TaxRatesAndBands20162017 extends TaxRatesAndBands {
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
   override val basicRateBand = 32000
+}
+
+object TaxRatesAndBands20152016 extends TaxRatesAndBands {
+  override val taxYear = 2016
+  override val maxAnnualExemptAmount = 11100
+  override val notVulnerableMaxAnnualExemptAmount = 5550
+  override val basicRatePercentage = 18
+  override val higherRatePercentage = 28
+  override val maxPersonalAllowance = 10600
+  override val basicRate = basicRatePercentage / 100.toDouble
+  override val higherRate = higherRatePercentage / 100.toDouble
+  override val basicRateBand = 31785
 }

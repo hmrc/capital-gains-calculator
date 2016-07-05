@@ -80,7 +80,7 @@ trait CalculationService {
     val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, calculatedChargeableGain, reliefs + prrAmount, allowableLossesAmt)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
-      case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0))
+      case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0), 2017)
       case _ => 0
     }
 
@@ -208,8 +208,8 @@ trait CalculationService {
     }
   ) - broughtForwardLosses // Finally, subtract any brought forward losses.
 
-  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double): Double = {
-    negativeToZero(taxRatesAndBands.basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
+  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int): Double = {
+    negativeToZero(TaxRatesAndBands.getRates(taxYear).basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
   }
 
   def calculateFlatPRR

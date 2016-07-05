@@ -20,11 +20,24 @@ import org.joda.time.{DateTime, Days}
 
 object Date {
 
+  val taxYearEnd = "04-05"
+  val taxYearStart = "04-06"
+
   def daysBetween(start: String, end: String): Double = {
     Days.daysBetween(DateTime.parse(start), DateTime.parse(end)).getDays + 1
   }
 
   def daysBetween(start: DateTime, end: DateTime): Double = {
     Days.daysBetween(start, end).getDays + 1
+  }
+
+  def getTaxYear(date: DateTime): Int = {
+    val year = date.getYear
+    if (date.isAfter(DateTime.parse(s"${year.toString}-$taxYearEnd"))) {
+      year + 1
+    }
+    else {
+      year
+    }
   }
 }
