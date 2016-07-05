@@ -16,10 +16,13 @@
 
 package controllers.resident
 
+import common.Math._
+import models.CalculationResultModel
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
+
 import scala.concurrent.Future
 import models.resident._
 object CalculatorController extends CalculatorController {
@@ -75,6 +78,58 @@ trait CalculatorController extends BaseController {
 
     val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, deductions)
 
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateTaxOwed
+  (
+    disposalValue: Double,
+    disposalCosts: Double,
+    acquisitionValue: Double,
+    acquisitionCosts: Double,
+    improvements: Double,
+    reliefs: Option[Double],
+    allowableLosses: Option[Double],
+    broughtForwardLosses: Option[Double],
+    annualExemptAmount: Double,
+    previousTaxableGain: Option[Double],
+    previousIncome: Double,
+    personalAllowance: Double
+  ): Action[AnyContent] = Action.async { implicit request =>
+
+    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
+    val chargeableGain = calculationService.calculateChargeableGain(
+      gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
+    )
+    val aeaUsed: Double = calculationService.annualExemptAmountUsed(
+      annualExemptAmount,
+      gain,
+      calculationService.calculateChargeableGain(gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, 0.0),
+      reliefs.getOrElse(0.0),
+      allowableLosses.getOrElse(0.0)
+    )
+    val deductions = reliefs.getOrElse(0.0) + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
+    val calculationResult: CalculationResultModel  = calculationService.calculationResult (
+      "individual",
+      gain,
+      chargeableGain,
+      negativeToZero(chargeableGain),
+      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0)),
+      0.0,
+      "No",
+      aeaUsed
+    )
+    val result: TaxOwedResultModel = TaxOwedResultModel(
+      gain,
+      chargeableGain,
+      aeaUsed,
+      deductions,
+      calculationResult.taxOwed,
+      calculationResult.baseTaxGain,
+      calculationResult.baseTaxRate,
+      calculationResult.upperTaxGain,
+      calculationResult.upperTaxRate
+    )
     Future.successful(Ok(Json.toJson(result)))
   }
 }
