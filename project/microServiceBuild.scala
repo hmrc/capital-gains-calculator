@@ -45,7 +45,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-url-binders" % "1.0.0",
     "uk.gov.hmrc" %% "play-config" % "2.0.1",
     "uk.gov.hmrc" %% "play-json-logger" % "2.1.1",
-    "uk.gov.hmrc" %% "domain" % "3.7.0"
+    "uk.gov.hmrc" %% "domain" % "3.7.0",
+    "joda-time" % "joda-time" % "2.9.4"
   )
 
   trait TestDependencies {

@@ -64,4 +64,27 @@ class DateSpec extends UnitSpec {
       result shouldEqual 366
     }
   }
+
+  "calling getTaxYear" should {
+
+    "return 2017 from a date after 5th April in 2016" in {
+      val result = getTaxYear(DateTime.parse("2016-10-10"))
+      result shouldBe 2017
+    }
+
+    "return 2017 from a date before 5th April in 2017" in {
+      val result = getTaxYear(DateTime.parse("2017-01-01"))
+      result shouldBe 2017
+    }
+
+    "return 2016 from a date after 5th April in 2015" in {
+      val result = getTaxYear(DateTime.parse("2015-10-10"))
+      result shouldBe 2016
+    }
+
+    "return 2016 from a date before 5th April in 2016" in {
+      val result = getTaxYear(DateTime.parse("2016-01-01"))
+      result shouldBe 2016
+    }
+  }
 }

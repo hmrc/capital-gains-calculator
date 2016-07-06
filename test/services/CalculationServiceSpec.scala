@@ -130,57 +130,57 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.brRemaining" should {
 
     "return a value of 32000 when Individual has Income of 8000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(8000, 11000, 0)
+      val result = CalculationService.brRemaining(8000, 11000, 0, 2017)
       result shouldEqual 32000
     }
 
     "return a value of 0 when Individual has Income of 50000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(50000, 11000, 0)
+      val result = CalculationService.brRemaining(50000, 11000, 0, 2017)
       result shouldEqual 0
     }
 
     "return a value of 3000 when Individual has Income of 50000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(40000, 11000, 0)
+      val result = CalculationService.brRemaining(40000, 11000, 0, 2017)
       result shouldEqual 3000
     }
 
     "return a value of 0 when Individual has Income of 33000 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(33000, 1000, 0)
+      val result = CalculationService.brRemaining(33000, 1000, 0, 2017)
       result shouldEqual 0
     }
 
     "return a value of 0 when Individual has Income of 33001 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(33001, 1000, 0)
+      val result = CalculationService.brRemaining(33001, 1000, 0, 2017)
       result shouldEqual 0
     }
 
     "return a value of 1 when Individual has Income of 32999 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(32999, 1000, 0)
+      val result = CalculationService.brRemaining(32999, 1000, 0, 2017)
       result shouldEqual 1
     }
 
     "return a value of 16000 when Individual has income of 8000, PA of 11000 and previous gain of 16000" in {
-      val result = CalculationService.brRemaining(8000, 11000, 16000)
+      val result = CalculationService.brRemaining(8000, 11000, 16000, 2017)
       result shouldEqual 16000
     }
 
     "return a value of 0 when Individual has Income of 50000, PA of 11000 and previous gain of 16000" in {
-      val result = CalculationService.brRemaining(50000, 11000, 16000)
+      val result = CalculationService.brRemaining(50000, 11000, 16000, 2017)
       result shouldEqual 0
     }
 
     "return a value of 0 when Individual has income of 8000, PA of 11000 and previous gain of 32000" in {
-      val result = CalculationService.brRemaining(8000, 11000, 32000)
+      val result = CalculationService.brRemaining(8000, 11000, 32000, 2017)
       result shouldEqual 0
     }
 
     "return a value of 2000 when Individual has income of 31000.99, PA of 10999.99 and previous gain of 10000.99" in {
-      val result = CalculationService.brRemaining(31000.99, 10999.99, 10000.99)
+      val result = CalculationService.brRemaining(31000.99, 10999.99, 10000.99, 2017)
       result shouldEqual 2000
     }
 
     "return a value of 2000 when Individual has income of 31000.01, PA of 10999.01 and previous gain of 10000.01" in {
-      val result = CalculationService.brRemaining(31000.01, 10999.01, 10000.01)
+      val result = CalculationService.brRemaining(31000.01, 10999.01, 10000.01, 2017)
       result shouldEqual 2000
     }
   }

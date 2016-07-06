@@ -16,6 +16,7 @@
 
 package controllers.resident
 
+import common.Date
 import common.Math._
 import models.CalculationResultModel
 import play.api.libs.json.Json
@@ -25,6 +26,7 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 
 import scala.concurrent.Future
 import models.resident._
+import org.joda.time.DateTime
 object CalculatorController extends CalculatorController {
 
   override val calculationService = CalculationService
@@ -94,7 +96,8 @@ trait CalculatorController extends BaseController {
     annualExemptAmount: Double,
     previousTaxableGain: Option[Double],
     previousIncome: Double,
-    personalAllowance: Double
+    personalAllowance: Double,
+    taxYear: DateTime = DateTime.parse("20151010")
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
@@ -114,7 +117,7 @@ trait CalculatorController extends BaseController {
       gain,
       chargeableGain,
       negativeToZero(chargeableGain),
-      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0)),
+      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(taxYear)),
       0.0,
       "No",
       aeaUsed
