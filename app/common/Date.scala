@@ -40,4 +40,10 @@ object Date {
       year
     }
   }
+
+  def taxYearToString(input: Int): String = {
+    val startYear = input - 1
+    val endYear = input.toString.takeRight(2)
+    s"$startYear/$endYear"
+  }
 }

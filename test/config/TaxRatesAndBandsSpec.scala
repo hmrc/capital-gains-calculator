@@ -108,4 +108,58 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
     }
 
   }
+
+  "calling the .filterRatesByTaxYear method" when {
+
+    "passed a tax year of 2017" should {
+      val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2017)
+
+      "return non-empty list" in {
+        taxYearList.nonEmpty shouldBe true
+      }
+
+      "return a list with a single value" in {
+        taxYearList.size shouldBe 1
+      }
+
+      "the listed item should be for the tax year 2017" in {
+        taxYearList.head.taxYear shouldBe 2017
+      }
+    }
+
+    "passed a tax year of 2016" should {
+      val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2016)
+
+      "return non-empty list" in {
+        taxYearList.nonEmpty shouldBe true
+      }
+
+      "return a list with a single value" in {
+        taxYearList.size shouldBe 1
+      }
+
+      "the listed item should be for the tax year 2016" in {
+        taxYearList.head.taxYear shouldBe 2016
+      }
+    }
+
+    "passed a tax year of 2015" should {
+      val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2015)
+
+      "return an empty list" in {
+        taxYearList.isEmpty shouldBe true
+      }
+    }
+  }
+
+  "calling .getClosestTaxYear" should {
+
+    "return 2017 for a tax year input of 2018" in {
+      TaxRatesAndBands.getClosestTaxYear(2018) shouldBe 2017
+    }
+
+    "return the year 2016 for a tax year input of 2015" in {
+      TaxRatesAndBands.getClosestTaxYear(2015) shouldBe 2016
+    }
+  }
 }

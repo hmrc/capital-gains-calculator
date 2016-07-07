@@ -16,12 +16,16 @@
 
 package controllers
 
+import common.Date
+import config.TaxRatesAndBands
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.microservice.controller.BaseController
+
 import scala.concurrent.Future
 import play.api.mvc.{Action, AnyContent}
 import config.TaxRatesAndBands._
 import models._
+import org.joda.time.DateTime
 
 object TaxRatesAndBandsController extends TaxRatesAndBandsController {
 }
@@ -31,11 +35,22 @@ trait TaxRatesAndBandsController extends BaseController {
   def getMaxAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(Json.toJson(AnnualExemptAmountModel(getRates(year).maxAnnualExemptAmount))))
   }
+
   def getMaxNonVulnerableAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(Json.toJson(AnnualExemptAmountModel(getRates(year).notVulnerableMaxAnnualExemptAmount))))
   }
+
   def getMaxPersonalAllowance(year: Int): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(Json.toJson(PersonalAllowanceModel(getRates(year).maxPersonalAllowance))))
+  }
+
+  def getTaxYear(dateString: String): Action[AnyContent] = Action.async { implicit request =>
+    val date = DateTime.parse(dateString)
+    val taxYear = Date.getTaxYear(date)
+    val result = TaxYearModel(Date.taxYearToString(taxYear),
+      TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
+      Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
+    Future.successful(Ok(Json.toJson(result)))
   }
 
 }
