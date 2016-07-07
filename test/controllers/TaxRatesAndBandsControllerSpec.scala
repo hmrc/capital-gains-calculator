@@ -76,9 +76,9 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
   "validating the getMaxPersonalAllowance method" when {
 
-    "calling with the year 2017" should {
+    "calling with the year 2017 and no BPA" should {
 
-      val result = getMaxPersonalAllowance(2017)(fakeRequest)
+      val result = getMaxPersonalAllowance(2017, None)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -93,6 +93,27 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
         val data = contentAsString(result)
         val json = Json.parse(data)
         (json \ "personalAllowanceAmt").as[Int] shouldBe 11000
+
+      }
+    }
+
+    "calling with the year 2016 and with BPA" should {
+
+      val result = getMaxPersonalAllowance(2016, Some(true))(fakeRequest)
+
+      "return status 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+        charset(result) shouldBe Some("utf-8")
+      }
+
+      "return 5550 as the annual exempt amount" in {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+        (json \ "personalAllowanceAmt").as[Int] shouldBe 12890
 
       }
     }
