@@ -245,7 +245,7 @@ trait CalculationService {
   def annualExemptAmountUsed (available: Double, totalGain: Double, chargeableGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
     chargeableGain match {
       case a if a < 0 => 0.toDouble
-      case b if b > 0 => available
+      case b if b > 0 => round("down", available)
       case _ => partialAEAUsed(totalGain, reliefs, allowableLossesAmt)
     }
   }
