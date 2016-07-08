@@ -97,7 +97,7 @@ trait CalculatorController extends BaseController {
     previousTaxableGain: Option[Double],
     previousIncome: Double,
     personalAllowance: Double,
-    taxYear: DateTime = DateTime.parse("20151010")
+    taxYear: DateTime = DateTime.parse("2015-10-10")
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
