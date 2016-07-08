@@ -87,4 +87,15 @@ class DateSpec extends UnitSpec {
       result shouldBe 2016
     }
   }
+
+  "calling taxYearToString" should {
+
+    "return a date of '2016/17' from 2017" in {
+      val result = taxYearToString(2017) shouldBe "2016/17"
+    }
+
+    "return a date of '2015/16' from 2016" in {
+      val result = taxYearToString(2016) shouldBe "2015/16"
+    }
+  }
 }

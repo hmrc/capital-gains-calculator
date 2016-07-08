@@ -41,6 +41,15 @@ object TaxRatesAndBands {
     case params if params.nonEmpty => params.head
     case _ => rates.maxBy(_.taxYear)
   }
+
+  def filterRatesByTaxYear (taxYear: Int): List[TaxRatesAndBands] = {
+    rates.filter(_.taxYear == taxYear)
+  }
+
+  def getClosestTaxYear (taxYear: Int): Int = {
+    val validYears = rates.map(_.taxYear)
+    validYears.minBy(year => math.abs(year - taxYear))
+  }
 }
 
 object TaxRatesAndBands20162017 extends TaxRatesAndBands {
