@@ -13,6 +13,7 @@ GET        /calculate-resident-capital-gains-tax    controllers.resident.Calcula
 ## Tax Rates and Bands Routes
 GET        /tax-rates-and-bands/max-full-aea        controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)
 GET        /tax-rates-and-bands/max-partial-aea     controllers.TaxRatesAndBandsController.getMaxNonVulnerableAEA(taxYear: Int)
-GET        /tax-rates-and-bands/max-pa              controllers.TaxRatesAndBandsController.getMaxPersonalAllowance(taxYear: Int)
+GET        /tax-rates-and-bands/max-pa              controllers.TaxRatesAndBandsController.getMaxPersonalAllowance(taxYear: Int, isEligibleBlindPersonsAllowance: Option[Boolean])
 GET        /tax-year                                controllers.TaxRatesAndBandsController.getTaxYear(disposalDate: String)
+
 

@@ -40,8 +40,11 @@ trait TaxRatesAndBandsController extends BaseController {
     Future.successful(Ok(Json.toJson(AnnualExemptAmountModel(getRates(year).notVulnerableMaxAnnualExemptAmount))))
   }
 
-  def getMaxPersonalAllowance(year: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(PersonalAllowanceModel(getRates(year).maxPersonalAllowance))))
+  def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>
+    isEligibleBlindPersonsAllowance match {
+      case Some(true) => Future.successful(Ok(Json.toJson(PersonalAllowanceModel(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance))))
+      case _ =>     Future.successful(Ok(Json.toJson(PersonalAllowanceModel(getRates(year).maxPersonalAllowance))))
+    }
   }
 
   def getTaxYear(dateString: String): Action[AnyContent] = Action.async { implicit request =>

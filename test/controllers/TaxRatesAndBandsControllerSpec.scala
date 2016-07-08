@@ -77,9 +77,9 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
   "validating the getMaxPersonalAllowance method" when {
 
-    "calling with the year 2017" should {
+    "calling with the year 2017 and no BPA" should {
 
-      val result = getMaxPersonalAllowance(2017)(fakeRequest)
+      val result = getMaxPersonalAllowance(2017, None)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -98,61 +98,81 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       }
     }
 
-    "validating the getTaxYear method" when {
+    "calling with the year 2016 and with BPA" should {
 
-      "calling with the date 10/10/2016" should {
-        val result = getTaxYear("2016-10-10")(fakeRequest)
-        val data = contentAsString(result)
-        val json = Json.parse(data)
+      val result = getMaxPersonalAllowance(2016, Some(true))(fakeRequest)
 
-        "return a status 200" in {
-          status(result) shouldBe 200
-        }
-
-        "return a JSON result" in {
-          contentType(result) shouldBe Some("application/json")
-          charset(result) shouldBe Some("utf-8")
-        }
-
-        "return a supplied TaxYearModel for 2016/17" in {
-          (json \ "taxYearSupplied").as[String] shouldBe "2016/17"
-        }
-
-        "return a supplied TaxYearModel with isValidYear as true" in {
-          (json \ "isValidYear").as[Boolean] shouldBe true
-        }
-
-        "return a supplied TaxYearModel with calculationTaxYear as 2016/17" in {
-          (json \ "calculationTaxYear").as[String] shouldBe "2016/17"
-        }
-
+      "return status 200" in {
+        status(result) shouldBe 200
       }
 
-      "calling with the date 10/10/2014" should {
-        val result = getTaxYear("2014-10-10")(fakeRequest)
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+        charset(result) shouldBe Some("utf-8")
+      }
+
+      "return 5550 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
+        (json \ "personalAllowanceAmt").as[Int] shouldBe 12890
+      }
+    }
+  }
 
-        "return a status 200" in {
-          status(result) shouldBe 200
-        }
+  "validating the getTaxYear method" when {
 
-        "return a JSON result" in {
-          contentType(result) shouldBe Some("application/json")
-          charset(result) shouldBe Some("utf-8")
-        }
+    "calling with the date 10/10/2016" should {
+      val result = getTaxYear("2016-10-10")(fakeRequest)
+      val data = contentAsString(result)
+      val json = Json.parse(data)
 
-        "return a supplied TaxYearModel for 2014/15" in {
-          (json \ "taxYearSupplied").as[String] shouldBe "2014/15"
-        }
+      "return a status 200" in {
+        status(result) shouldBe 200
+      }
 
-        "return a supplied TaxYearModel with isValidYear as false" in {
-          (json \ "isValidYear").as[Boolean] shouldBe false
-        }
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+        charset(result) shouldBe Some("utf-8")
+      }
 
-        "return a supplied TaxYearModel with calculationTaxYear as 2015/16" in {
-          (json \ "calculationTaxYear").as[String] shouldBe "2015/16"
-        }
+      "return a supplied TaxYearModel for 2016/17" in {
+        (json \ "taxYearSupplied").as[String] shouldBe "2016/17"
+      }
+
+      "return a supplied TaxYearModel with isValidYear as true" in {
+        (json \ "isValidYear").as[Boolean] shouldBe true
+      }
+
+      "return a supplied TaxYearModel with calculationTaxYear as 2016/17" in {
+        (json \ "calculationTaxYear").as[String] shouldBe "2016/17"
+      }
+
+    }
+
+    "calling with the date 10/10/2014" should {
+      val result = getTaxYear("2014-10-10")(fakeRequest)
+      val data = contentAsString(result)
+      val json = Json.parse(data)
+
+      "return a status 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+        charset(result) shouldBe Some("utf-8")
+      }
+
+      "return a supplied TaxYearModel for 2014/15" in {
+        (json \ "taxYearSupplied").as[String] shouldBe "2014/15"
+      }
+
+      "return a supplied TaxYearModel with isValidYear as false" in {
+        (json \ "isValidYear").as[Boolean] shouldBe false
+      }
+
+      "return a supplied TaxYearModel with calculationTaxYear as 2015/16" in {
+        (json \ "calculationTaxYear").as[String] shouldBe "2015/16"
       }
     }
   }
