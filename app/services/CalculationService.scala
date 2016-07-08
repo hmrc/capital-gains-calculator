@@ -206,7 +206,7 @@ trait CalculationService {
         }
       }
     }
-  ) - broughtForwardLosses // Finally, subtract any brought forward losses.
+  ) - round("up", broughtForwardLosses) // Finally, subtract any brought forward losses.
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int): Double = {
     negativeToZero(TaxRatesAndBands.getRates(taxYear).basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
