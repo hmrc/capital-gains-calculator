@@ -33,11 +33,11 @@ object TaxRatesAndBandsController extends TaxRatesAndBandsController {
 trait TaxRatesAndBandsController extends BaseController {
 
   def getMaxAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(AnnualExemptAmountModel(getRates(year).maxAnnualExemptAmount))))
+    Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
   }
 
   def getMaxNonVulnerableAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(AnnualExemptAmountModel(getRates(year).notVulnerableMaxAnnualExemptAmount))))
+    Future.successful(Ok(Json.toJson(getRates(year).notVulnerableMaxAnnualExemptAmount)))
   }
 
   def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>
