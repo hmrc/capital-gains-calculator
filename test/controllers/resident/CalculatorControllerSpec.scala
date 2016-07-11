@@ -89,8 +89,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
         }
 
-        "has the aeaRem as 0" in {
-          (json \ "aeaRem").as[Double] shouldBe 0.0
+        "has the aeaRemaining as 0" in {
+          (json \ "aeaRemaining").as[Double] shouldBe 0.0
         }
 
         "has the deductions as 36100" in {
@@ -136,6 +136,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the aeaUsed as -11000" in {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
+        }
+
+        "has the aeaRemaining as 0" in {
+          (json \ "aeaRemaining").as[Double] shouldBe 0.0
         }
 
         "has the deductions as 36100" in {
@@ -189,8 +193,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
         }
 
-        "has the aeaRem as 0" in {
-          (json \ "aeaRem").as[Double] shouldBe 0.0
+        "has the aeaRemaining as 0" in {
+          (json \ "aeaRemaining").as[Double] shouldBe 0.0
         }
 
         "has the deductions as 11100" in {
@@ -260,8 +264,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
         }
 
-        "has the aeaRem as 0" in {
-          (json \ "aeaRem").as[Double] shouldBe 0.0
+        "has the aeaRemaining as 0" in {
+          (json \ "aeaRemaining").as[Double] shouldBe 0.0
         }
 
         "has the deductions as 11100" in {

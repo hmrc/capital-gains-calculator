@@ -78,14 +78,14 @@ trait CalculationService {
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
     val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, calculatedChargeableGain, reliefs + prrAmount, allowableLossesAmt)
-    val remAEA = annualExemptAmountLeft(calculatedAEA, usedAEA)
+    val aeaRemaining = annualExemptAmountLeft(calculatedAEA, usedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
       case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0), 2017)
       case _ => 0
     }
 
-    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, remAEA)
+    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, aeaRemaining)
   }
 
   def calculationResult
@@ -98,7 +98,7 @@ trait CalculationService {
     prrAmount: Double,
     isClaimingPRR: String,
     usedAEA: Double,
-    remAEA: Double
+    aeaLeft: Double
   ): CalculationResultModel = {
     customerType match {
       case "individual" => CalculationResultModel(
@@ -114,7 +114,7 @@ trait CalculationService {
           case _ => 0
         },
         usedAnnualExemptAmount = usedAEA,
-        remAnnualExemptAmount = remAEA,
+        aeaRemaining = aeaLeft,
         upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
         upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(taxRatesAndBands.higherRatePercentage) else None,
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
@@ -124,7 +124,7 @@ trait CalculationService {
         baseTaxGain = 0,
         baseTaxRate = 0,
         usedAnnualExemptAmount = usedAEA,
-        remAnnualExemptAmount = remAEA,
+        aeaRemaining = aeaLeft,
         upperTaxGain = Some(chargeableGain),
         upperTaxRate = Some(taxRatesAndBands.higherRatePercentage),
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)

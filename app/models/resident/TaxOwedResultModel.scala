@@ -23,7 +23,7 @@ case class TaxOwedResultModel
   gain: Double,
   chargeableGain: Double,
   aeaUsed: Double,
-  aeaRem: Double,
+  aeaRemaining: Double,
   deductions: Double,
   taxOwed: Double,
   firstBand: Double,
