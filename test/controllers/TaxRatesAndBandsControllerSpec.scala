@@ -93,7 +93,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       "return 5550 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        (json \ "personalAllowanceAmt").as[Int] shouldBe 11000
+        json.as[Int] shouldBe 11000
 
       }
     }
@@ -114,7 +114,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       "return 5550 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        (json \ "personalAllowanceAmt").as[Int] shouldBe 12890
+        json.as[Int] shouldBe 12890
       }
     }
   }
