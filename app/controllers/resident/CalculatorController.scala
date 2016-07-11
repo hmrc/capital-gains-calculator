@@ -76,7 +76,7 @@ trait CalculatorController extends BaseController {
       reliefs.getOrElse(0),
       allowableLosses.getOrElse(0)
     )
-    val deductions = reliefs.getOrElse(0.0) + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
+    val deductions = round("up", reliefs.getOrElse(0.0)) + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
 
     val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, deductions)
 

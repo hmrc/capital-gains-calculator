@@ -121,8 +121,13 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual -5
     }
 
-    "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 170" in {
+    "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 75" in {
       val result = calculateChargeableGain(200, 0, 0, 150, 75)
+      result shouldEqual -25
+    }
+
+    "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 74.01" in {
+      val result = calculateChargeableGain(200, 0, 0, 150, 74.01)
       result shouldEqual -25
     }
   }
@@ -962,6 +967,11 @@ class CalculationServiceSpec extends UnitSpec {
     "return an AEA used equal to the max remaining when the chargeable gain is positive" in {
       val result = CalculationService.annualExemptAmountUsed(11100, 50000, 38900, 5000, 5000)
       result shouldEqual 11100
+    }
+
+    "return an AEA used equal to the max remaining rounded down when the chargeable gain is positive" in {
+      val result = CalculationService.annualExemptAmountUsed(10000.99, 50000, 38900, 5000, 5000)
+      result shouldEqual 10000
     }
 
     "return an AEA used of 0 when the chargeable gain is negative" in {
