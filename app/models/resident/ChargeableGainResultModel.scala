@@ -23,6 +23,7 @@ case class ChargeableGainResultModel
   gain: Double,
   chargeableGain: Double,
   aeaUsed: Double,
+  aeaRem: Double,
   deductions: Double
 )
 

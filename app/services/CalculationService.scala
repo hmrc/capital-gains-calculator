@@ -78,13 +78,14 @@ trait CalculationService {
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
     val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, calculatedChargeableGain, reliefs + prrAmount, allowableLossesAmt)
+    val remAEA = annualExemptAmountLeft(calculatedAEA, usedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
       case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0), 2017)
       case _ => 0
     }
 
-    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA)
+    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, remAEA)
   }
 
   def calculationResult
@@ -96,7 +97,8 @@ trait CalculationService {
     basicRateRemaining: Double,
     prrAmount: Double,
     isClaimingPRR: String,
-    usedAEA: Double
+    usedAEA: Double,
+    remAEA: Double
   ): CalculationResultModel = {
     customerType match {
       case "individual" => CalculationResultModel(
@@ -112,6 +114,7 @@ trait CalculationService {
           case _ => 0
         },
         usedAnnualExemptAmount = usedAEA,
+        remAnnualExemptAmount = remAEA,
         upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
         upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(taxRatesAndBands.higherRatePercentage) else None,
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
@@ -121,6 +124,7 @@ trait CalculationService {
         baseTaxGain = 0,
         baseTaxRate = 0,
         usedAnnualExemptAmount = usedAEA,
+        remAnnualExemptAmount = remAEA,
         upperTaxGain = Some(chargeableGain),
         upperTaxRate = Some(taxRatesAndBands.higherRatePercentage),
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
@@ -252,5 +256,9 @@ trait CalculationService {
 
   def partialAEAUsed (totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
     negativeToZero(round("down", totalGain - round("up", reliefs) - round("up", allowableLossesAmt)))
+  }
+
+  def annualExemptAmountLeft (available: Double, aeaUsed: Double)  = {
+    round("up", available) - aeaUsed
   }
 }
