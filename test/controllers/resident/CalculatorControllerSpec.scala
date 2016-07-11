@@ -256,24 +256,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "deductions").as[Double] shouldBe 50000.0
         }
 
-        "has the taxOwed as 11800" in {
-          (json \ "taxOwed").as[Double] shouldBe 11800.0
+        "has the taxOwed as 11821.5" in {
+          (json \ "taxOwed").as[Double] shouldBe 11821.5
         }
 
         "has a first tax rate of 18%" in {
           (json \ "firstRate").as[Int] shouldBe 18
         }
 
-        "has a first tax band of 22000" in {
-          (json \ "firstBand").as[Double] shouldBe 22000
+        "has a first tax band of 21785" in {
+          (json \ "firstBand").as[Double] shouldBe 21785
         }
 
         "has a second tax rate of 28%" in {
           (json \ "secondRate").as[Option[Int]] shouldBe Some(28)
         }
 
-        "has a second tax band of 28000" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe Some(28000)
+        "has a second tax band of 28215" in {
+          (json \ "secondBand").as[Option[Double]] shouldBe Some(28215)
         }
       }
     }
