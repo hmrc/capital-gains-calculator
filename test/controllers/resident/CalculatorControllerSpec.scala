@@ -85,8 +85,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "chargeableGain").as[Double] shouldBe -8100.0
         }
 
-        "has the aeaUsed as -11000" in {
+        "has the aeaUsed as 11000" in {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
+        }
+
+        "has the aeaRem as 0" in {
+          (json \ "aeaRem").as[Double] shouldBe 0.0
         }
 
         "has the deductions as 36100" in {
