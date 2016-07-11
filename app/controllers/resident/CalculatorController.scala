@@ -76,9 +76,10 @@ trait CalculatorController extends BaseController {
       reliefs.getOrElse(0),
       allowableLosses.getOrElse(0)
     )
+    val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
     val deductions = round("up", reliefs.getOrElse(0.0)) + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
 
-    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, deductions)
+    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions)
 
     Future.successful(Ok(Json.toJson(result)))
   }
@@ -120,7 +121,8 @@ trait CalculatorController extends BaseController {
       calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(taxYear)),
       0.0,
       "No",
-      aeaUsed
+      aeaUsed,
+      0.0
     )
     val result: TaxOwedResultModel = TaxOwedResultModel(
       gain,

@@ -23,6 +23,7 @@ case class CalculationResultModel(taxOwed: Double,
                                   baseTaxGain: Double,
                                   baseTaxRate: Int,
                                   usedAnnualExemptAmount: Double,
+                                  aeaRemaining: Double,
                                   upperTaxGain: Option[Double] = None,
                                   upperTaxRate: Option[Int] = None,
                                   simplePRR: Option[Double] = None)

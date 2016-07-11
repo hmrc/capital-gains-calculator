@@ -984,4 +984,27 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 6000
     }
   }
+
+  "Calling the annualExemptAmountLeft method" should {
+
+    "return an AEA remaining equal to £5,100 when calculated AEA is £11,100 and £6,000 is used" in {
+      val result = CalculationService.annualExemptAmountLeft(11100, 6000)
+      result shouldEqual 5100
+    }
+
+    "return an AEA remaining equal to £5,101 when calculated AEA is £11,100.99 rounded up and £6,000 is used" in {
+      val result = CalculationService.annualExemptAmountLeft(11100.99, 6000)
+      result shouldEqual 5101
+    }
+
+    "return an AEA remaining equal to £0 when calculated AEA is £11,100 and £11,100 is used" in {
+      val result = CalculationService.annualExemptAmountLeft(11100, 11100)
+      result shouldEqual 0
+    }
+
+    "return an AEA remaining equal to £0 when calculated AEA is £0 and £0 is used" in {
+      val result = CalculationService.annualExemptAmountLeft(0, 0)
+      result shouldEqual 0
+    }
+  }
 }
