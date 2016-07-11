@@ -42,8 +42,8 @@ trait TaxRatesAndBandsController extends BaseController {
 
   def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>
     isEligibleBlindPersonsAllowance match {
-      case Some(true) => Future.successful(Ok(Json.toJson(PersonalAllowanceModel(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance))))
-      case _ =>     Future.successful(Ok(Json.toJson(PersonalAllowanceModel(getRates(year).maxPersonalAllowance))))
+      case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
+      case _ =>     Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
     }
   }
 
