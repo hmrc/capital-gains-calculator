@@ -8,7 +8,7 @@ GET        /calculate-time-apportioned  controllers.nonresident.CalculatorContro
 ## Resident Calculation Routes
 GET        /calculate-total-gain        controllers.resident.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double)
 GET        /calculate-chargeable-gain   controllers.resident.CalculatorController.calculateChargeableGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, reliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double)
-GET        /calculate-resident-capital-gains-tax    controllers.resident.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, reliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double)
+GET        /calculate-resident-capital-gains-tax    controllers.resident.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, reliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
 
 ## Tax Rates and Bands Routes
 GET        /tax-rates-and-bands/max-full-aea        controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)
