@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class ShareShareCalculatorControllerSpec extends UnitSpec with WithFakeApplication {
+class ShareCalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
   "ShareCalculatorController.calculateTotalGain" when {
     lazy val fakeRequest = FakeRequest("GET", "")

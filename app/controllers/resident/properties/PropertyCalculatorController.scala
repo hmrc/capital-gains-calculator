@@ -28,7 +28,7 @@ import org.joda.time.DateTime
 
 import scala.concurrent.Future
 
-trait CalculatorController extends BaseController {
+trait PropertyCalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
@@ -134,7 +134,7 @@ trait CalculatorController extends BaseController {
   }
 }
 
-object CalculatorController extends CalculatorController {
+object PropertyCalculatorController extends PropertyCalculatorController {
 
   override val calculationService = CalculationService
 
