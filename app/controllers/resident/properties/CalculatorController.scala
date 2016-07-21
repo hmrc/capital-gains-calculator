@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package controllers.resident
+package controllers.resident.properties
 
 import common.Date
-import common.Math._
-import models.CalculationResultModel
+import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
+import common.Math._
+import models.CalculationResultModel
+import org.joda.time.DateTime
 
 import scala.concurrent.Future
-import models.resident._
-import org.joda.time.DateTime
-object CalculatorController extends CalculatorController {
-
-  override val calculationService = CalculationService
-
-}
 
 trait CalculatorController extends BaseController {
 
@@ -137,4 +132,10 @@ trait CalculatorController extends BaseController {
     )
     Future.successful(Ok(Json.toJson(result)))
   }
+}
+
+object CalculatorController extends CalculatorController {
+
+  override val calculationService = CalculationService
+
 }

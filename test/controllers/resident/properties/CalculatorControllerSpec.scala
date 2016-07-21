@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package controllers.resident
+package controllers.resident.properties
 
-import models.resident.ChargeableGainResultModel
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
