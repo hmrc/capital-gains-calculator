@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.resident.shares
+package controllers.resident.properties
 
 import common.Date
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
@@ -28,20 +28,21 @@ import org.joda.time.DateTime
 
 import scala.concurrent.Future
 
-trait ShareCalculatorController extends BaseController {
+trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
   def calculateTotalGain (disposalValue: Double,
-                          disposalCosts: Double,
-                          acquisitionValue: Double,
-                          acquisitionCosts: Double): Action[AnyContent] = Action.async { implicit request =>
+                         disposalCosts: Double,
+                         acquisitionValue: Double,
+                         acquisitionCosts: Double,
+                        improvements: Double): Action[AnyContent] = Action.async { implicit request =>
 
     val result = calculationService.calculateGainFlat(disposalValue,
       disposalCosts,
       acquisitionValue,
       acquisitionCosts,
-      0)
+      improvements)
 
     Future.successful(Ok(Json.toJson(result)))
   }
@@ -52,24 +53,26 @@ trait ShareCalculatorController extends BaseController {
     disposalCosts: Double,
     acquisitionValue: Double,
     acquisitionCosts: Double,
+    improvements: Double,
+    reliefs: Option[Double],
     allowableLosses: Option[Double],
     broughtForwardLosses: Option[Double],
     annualExemptAmount: Double
   ): Action[AnyContent] = Action.async { implicit request =>
 
-    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, 0)
+    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
+      gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
     )
     val aeaUsed = calculationService.annualExemptAmountUsed(
       annualExemptAmount,
       gain,
-      calculationService.calculateChargeableGain(gain, 0, allowableLosses.getOrElse(0), annualExemptAmount, 0),
-      0,
+      calculationService.calculateChargeableGain(gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, 0),
+      reliefs.getOrElse(0),
       allowableLosses.getOrElse(0)
     )
     val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-    val deductions = round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
+    val deductions = round("up", reliefs.getOrElse(0.0)) + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
 
     val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions)
 
@@ -82,6 +85,8 @@ trait ShareCalculatorController extends BaseController {
     disposalCosts: Double,
     acquisitionValue: Double,
     acquisitionCosts: Double,
+    improvements: Double,
+    reliefs: Option[Double],
     allowableLosses: Option[Double],
     broughtForwardLosses: Option[Double],
     annualExemptAmount: Double,
@@ -91,24 +96,24 @@ trait ShareCalculatorController extends BaseController {
     disposalDate: String = "2015-10-10"
   ): Action[AnyContent] = Action.async { implicit request =>
 
-    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, 0)
+    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
+      gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
     )
     val aeaUsed: Double = calculationService.annualExemptAmountUsed(
       annualExemptAmount,
       gain,
-      calculationService.calculateChargeableGain(gain, 0, allowableLosses.getOrElse(0.0), annualExemptAmount, 0.0),
-      0,
+      calculationService.calculateChargeableGain(gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, 0.0),
+      reliefs.getOrElse(0.0),
       allowableLosses.getOrElse(0.0)
     )
-    val deductions = 0 + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
+    val deductions = reliefs.getOrElse(0.0) + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
     val calculationResult: CalculationResultModel  = calculationService.calculationResult (
       "individual",
       gain,
       chargeableGain,
       negativeToZero(chargeableGain),
-      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(DateTime.parse("2015-10-10"))),
+      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(DateTime.parse(disposalDate))),
       0.0,
       "No",
       aeaUsed,
@@ -129,7 +134,7 @@ trait ShareCalculatorController extends BaseController {
   }
 }
 
-object ShareCalculatorController extends ShareCalculatorController {
+object CalculatorController extends CalculatorController {
 
   override val calculationService = CalculationService
 

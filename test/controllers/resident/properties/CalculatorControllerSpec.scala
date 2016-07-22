@@ -27,7 +27,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" should {
-      lazy val result = PropertyCalculatorController.calculateTotalGain(100000, 10000, 50000, 10000, 10000)(fakeRequest)
+      lazy val result = CalculatorController.calculateTotalGain(100000, 10000, 50000, 10000, 10000)(fakeRequest)
 
       "return a 200" in {
         status(result) shouldBe 200
@@ -51,7 +51,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed" should {
 
-      lazy val result = PropertyCalculatorController.calculateChargeableGain(
+      lazy val result = CalculatorController.calculateChargeableGain(
         disposalValue = 195000,
         disposalCosts = 1000,
         acquisitionValue = 160000,
@@ -100,7 +100,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed with correct rounding" should {
 
-      lazy val result = PropertyCalculatorController.calculateChargeableGain(
+      lazy val result = CalculatorController.calculateChargeableGain(
         disposalValue = 195000,
         disposalCosts = 1000,
         acquisitionValue = 160000,
@@ -152,7 +152,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" should {
-      lazy val result = PropertyCalculatorController.calculateTaxOwed(
+      lazy val result = CalculatorController.calculateTaxOwed(
         disposalValue = 195000,
         disposalCosts = 1000,
         acquisitionValue = 160000,
@@ -219,7 +219,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "all optional values are provided" should {
-      lazy val result = PropertyCalculatorController.calculateTaxOwed(
+      lazy val result = CalculatorController.calculateTaxOwed(
         disposalValue = 250000,
         disposalCosts = 10000,
         acquisitionValue = 100000,
