@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package controllers.resident
+package controllers.resident.shares
 
-import models.resident.ChargeableGainResultModel
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -24,11 +23,11 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
-  "CalculatorController.calculateTotalGain" when {
+  "ShareCalculatorController.calculateTotalGain" when {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" should {
-      lazy val result = CalculatorController.calculateTotalGain(100000, 10000, 50000, 10000, 10000)(fakeRequest)
+      lazy val result = CalculatorController.calculateTotalGain(100000, 10000, 50000, 10000)(fakeRequest)
 
       "return a 200" in {
         status(result) shouldBe 200
@@ -41,12 +40,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
       "return a Some" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Option[BigDecimal]] shouldBe Some(BigDecimal(20000.0))
+        json.as[Option[BigDecimal]] shouldBe Some(BigDecimal(30000.0))
       }
     }
   }
 
-  "CalculatorController.calculateChargeableGain" when {
+  "ShareCalculatorController.calculateChargeableGain" when {
 
     lazy val fakeRequest = FakeRequest("GET", "")
 
@@ -57,8 +56,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         disposalCosts = 1000,
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
-        improvements = 5000,
-        reliefs = None,
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
         annualExemptAmount = 11100
@@ -77,12 +74,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           contentType(result) shouldBe Some("application/json")
         }
 
-        "has the gain as 28000" in {
-          (json \ "gain").as[Double] shouldBe 28000
+        "has the gain as 33000" in {
+          (json \ "gain").as[Double] shouldBe 33000
         }
 
-        "has the chargeableGain as -8100" in {
-          (json \ "chargeableGain").as[Double] shouldBe -8100.0
+        "has the chargeableGain as -3100" in {
+          (json \ "chargeableGain").as[Double] shouldBe -3100.0
         }
 
         "has the aeaUsed as 11000" in {
@@ -106,8 +103,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         disposalCosts = 1000,
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
-        improvements = 5000,
-        reliefs = None,
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
         annualExemptAmount = 11100
@@ -126,12 +121,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           contentType(result) shouldBe Some("application/json")
         }
 
-        "has the gain as 28000" in {
-          (json \ "gain").as[Double] shouldBe 28000
+        "has the gain as 33000" in {
+          (json \ "gain").as[Double] shouldBe 33000
         }
 
-        "has the chargeableGain as -8100" in {
-          (json \ "chargeableGain").as[Double] shouldBe -8100.0
+        "has the chargeableGain as -3100" in {
+          (json \ "chargeableGain").as[Double] shouldBe -3100.0
         }
 
         "has the aeaUsed as -11000" in {
@@ -149,7 +144,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
-  "CalculatorController.calculateTaxOwed" when {
+  "ShareCalculatorController.calculateTaxOwed" when {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" should {
@@ -158,8 +153,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         disposalCosts = 1000,
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
-        improvements = 5000,
-        reliefs = None,
         allowableLosses = None,
         broughtForwardLosses = None,
         annualExemptAmount = 11100,
@@ -181,12 +174,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           contentType(result) shouldBe Some("application/json")
         }
 
-        "has the gain as 28000" in {
-          (json \ "gain").as[Double] shouldBe 28000
+        "has the gain as 33000" in {
+          (json \ "gain").as[Double] shouldBe 33000
         }
 
-        "has the chargeableGain as 16900" in {
-          (json \ "chargeableGain").as[Double] shouldBe 16900.0
+        "has the chargeableGain as 21900" in {
+          (json \ "chargeableGain").as[Double] shouldBe 21900.0
         }
 
         "has the aeaUsed as 11100" in {
@@ -197,16 +190,16 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "deductions").as[Double] shouldBe 11100.0
         }
 
-        "has the taxOwed as 3042" in {
-          (json \ "taxOwed").as[Double] shouldBe 3042.0
+        "has the taxOwed as 3942" in {
+          (json \ "taxOwed").as[Double] shouldBe 3942.0
         }
 
         "has a first tax rate of 18%" in {
           (json \ "firstRate").as[Int] shouldBe 18
         }
 
-        "has a first tax band of 16900" in {
-          (json \ "firstBand").as[Double] shouldBe 16900
+        "has a first tax band of 21900" in {
+          (json \ "firstBand").as[Double] shouldBe 21900
         }
 
         "has no second tax rate" in {
@@ -225,8 +218,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         disposalCosts = 10000,
         acquisitionValue = 100000,
         acquisitionCosts = 10000,
-        improvements = 30000,
-        reliefs = Some(8900),
         allowableLosses = Some(20000),
         broughtForwardLosses = Some(10000),
         annualExemptAmount = 11100,
@@ -248,24 +239,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           contentType(result) shouldBe Some("application/json")
         }
 
-        "has the gain as 100000" in {
-          (json \ "gain").as[Double] shouldBe 100000
+        "has the gain as 130000" in {
+          (json \ "gain").as[Double] shouldBe 130000
         }
 
-        "has the chargeableGain as 16900" in {
-          (json \ "chargeableGain").as[Double] shouldBe 50000.0
+        "has the chargeableGain as 88900" in {
+          (json \ "chargeableGain").as[Double] shouldBe 88900.0
         }
 
         "has the aeaUsed as 11100" in {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
         }
 
-        "has the deductions as 11100" in {
-          (json \ "deductions").as[Double] shouldBe 50000.0
+        "has the deductions as 41100" in {
+          (json \ "deductions").as[Double] shouldBe 41100.0
         }
 
-        "has the taxOwed as 11821.5" in {
-          (json \ "taxOwed").as[Double] shouldBe 11821.5
+        "has the taxOwed as 22713.5" in {
+          (json \ "taxOwed").as[Double] shouldBe 22713.5
         }
 
         "has a first tax rate of 18%" in {
@@ -280,8 +271,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "secondRate").as[Option[Int]] shouldBe Some(28)
         }
 
-        "has a second tax band of 28215" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe Some(28215)
+        "has a second tax band of 67115" in {
+          (json \ "secondBand").as[Option[Double]] shouldBe Some(67115)
         }
       }
     }
