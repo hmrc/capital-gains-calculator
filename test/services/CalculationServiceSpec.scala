@@ -1007,4 +1007,28 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 0
     }
   }
+
+  "Calling the allowableLossesLeft method" should {
+
+    "return allowableLosses remaining equal to £90 when Gain is £50, reliefs are £40 and £100 allowableLosses" in {
+      val result = CalculationService.allowableLossesLeft(50,40,100)
+      result shouldEqual 90
+    }
+
+    "return allowableLosses remaining equal to £1 when Gain is £50, reliefs are £49.97 and £0.01 allowableLosses" in {
+      val result = CalculationService.allowableLossesLeft(50,49.97,0.01)
+      result shouldEqual 1
+    }
+
+    "return allowableLosses remaining equal to £0 when Gain is £50 and reliefs are £49.99 and £0.00 allowableLoses " in {
+      val result = CalculationService.allowableLossesLeft(50,40,0)
+      result shouldEqual 0
+    }
+
+    "return allowableLosses remaining equal to £0 when Gain is £50 and reliefs are £1200 and £100 allowableLoses " in {
+      val result = CalculationService.allowableLossesLeft(50,1200,100)
+      result shouldEqual 100
+    }
+
+  }
 }
