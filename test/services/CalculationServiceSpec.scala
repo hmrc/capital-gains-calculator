@@ -1008,52 +1008,28 @@ class CalculationServiceSpec extends UnitSpec {
     }
   }
 
-  "Calling the allowableLossesLeft method" should {
+  "Calling the determineLossLeft method" should {
 
-    "return allowableLosses remaining equal to £90 when Gain is £50, reliefs are £40 and £100 allowableLosses" in {
-      val result = CalculationService.allowableLossesLeft(50,40,100)
+    "return loss remaining equal to £90 when Gain is £10 and £100 loss" in {
+      val result = CalculationService.determineLossLeft(10,100)
       result shouldEqual 90
     }
 
-    "return allowableLosses remaining equal to £1 when Gain is £50, reliefs are £49.97 and £0.01 allowableLosses" in {
-      val result = CalculationService.allowableLossesLeft(50,49.97,0.01)
+    "return loss remaining equal to £1 when Gain is £0 and £0.01 loss" in {
+      val result = CalculationService.determineLossLeft(0,0.01)
       result shouldEqual 1
     }
 
-    "return allowableLosses remaining equal to £0 when Gain is £50 and reliefs are £0 and £0.00 allowableLoses " in {
-      val result = CalculationService.allowableLossesLeft(50,40,0)
+    "return loss remaining equal to £0 when Gain is £50 and £0.00 loss " in {
+      val result = CalculationService.determineLossLeft(50,0)
       result shouldEqual 0
     }
 
-    "return allowableLosses remaining equal to £100 when Gain is £50 and reliefs are £1200 and £100 allowableLoses " in {
-      val result = CalculationService.allowableLossesLeft(50,1200,100)
-      result shouldEqual 100
+    "return loss remaining equal to £0 when Gain is £0 and £0 loss " in {
+      val result = CalculationService.determineLossLeft(0,0)
+      result shouldEqual 0
     }
 
   }
 
-
-  "Calling the broughtForwardLossesLeft method" should {
-
-    "return broughtForwardLosses remaining equal to £90 when ChargeableGain is £10 and £100 broughtForwardLosses" in {
-      val result = CalculationService.broughtForwardLossesLeft(10,100)
-      result shouldEqual 90
-    }
-
-    "return broughtForwardLosses remaining equal to £1 when Gain is £0 and £0.01 broughtForwardLosses" in {
-      val result = CalculationService.broughtForwardLossesLeft(0,0.01)
-      result shouldEqual 1
-    }
-
-    "return broughtForwardLosses remaining equal to £0 when Gain is £50 and £0.00 broughtForwardLosses " in {
-      val result = CalculationService.broughtForwardLossesLeft(50,0)
-      result shouldEqual 0
-    }
-
-    "return broughtForwardLosses remaining equal to £0 when Gain is £100 and £20 broughtForwardLosses " in {
-      val result = CalculationService.broughtForwardLossesLeft(100,20)
-      result shouldEqual 0
-    }
-
-  }
 }
