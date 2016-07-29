@@ -1020,14 +1020,39 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 1
     }
 
-    "return allowableLosses remaining equal to £0 when Gain is £50 and reliefs are £49.99 and £0.00 allowableLoses " in {
+    "return allowableLosses remaining equal to £0 when Gain is £50 and reliefs are £0 and £0.00 allowableLoses " in {
       val result = CalculationService.allowableLossesLeft(50,40,0)
       result shouldEqual 0
     }
 
-    "return allowableLosses remaining equal to £0 when Gain is £50 and reliefs are £1200 and £100 allowableLoses " in {
+    "return allowableLosses remaining equal to £100 when Gain is £50 and reliefs are £1200 and £100 allowableLoses " in {
       val result = CalculationService.allowableLossesLeft(50,1200,100)
       result shouldEqual 100
+    }
+
+  }
+
+
+  "Calling the broughtForwardLossesLeft method" should {
+
+    "return broughtForwardLosses remaining equal to £90 when ChargeableGain is £10 and £100 broughtForwardLosses" in {
+      val result = CalculationService.broughtForwardLossesLeft(10,100)
+      result shouldEqual 90
+    }
+
+    "return broughtForwardLosses remaining equal to £1 when Gain is £0 and £0.01 broughtForwardLosses" in {
+      val result = CalculationService.broughtForwardLossesLeft(0,0.01)
+      result shouldEqual 1
+    }
+
+    "return broughtForwardLosses remaining equal to £0 when Gain is £50 and £0.00 broughtForwardLosses " in {
+      val result = CalculationService.broughtForwardLossesLeft(50,0)
+      result shouldEqual 0
+    }
+
+    "return broughtForwardLosses remaining equal to £0 when Gain is £100 and £20 broughtForwardLosses " in {
+      val result = CalculationService.broughtForwardLossesLeft(100,20)
+      result shouldEqual 0
     }
 
   }

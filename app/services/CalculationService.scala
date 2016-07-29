@@ -263,10 +263,14 @@ trait CalculationService {
   }
 
   def allowableLossesLeft (totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
-    (round("down", totalGain - round("up", reliefs)),round("up",allowableLossesAmt)) match {
-      case (gain, losses) if gain > losses => 0.toDouble
-      case (gain, losses) if gain < 0 => losses
-      case (gain, losses) => losses - gain
-    }
+    determineLossLeft(round("down", totalGain - round("up", reliefs)), round("up",allowableLossesAmt))
+  }
+
+  def broughtForwardLossesLeft (chargeableGainExcludingBFLosses: Double, broughtForwardLosses: Double) = {
+    determineLossLeft(chargeableGainExcludingBFLosses, round("up", broughtForwardLosses))
+  }
+
+  def determineLossLeft(gain: Double, loss: Double) = {
+     if (gain > loss) 0.toDouble else if (gain < 0) loss else loss - gain
   }
 }
