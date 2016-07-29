@@ -24,7 +24,9 @@ case class ChargeableGainResultModel
   chargeableGain: Double,
   aeaUsed: Double,
   aeaRemaining: Double,
-  deductions: Double
+  deductions: Double,
+  allowableLossesRemaining: Double,
+  broughtForwardLossesRemaining: Double
 )
 
 object ChargeableGainResultModel {

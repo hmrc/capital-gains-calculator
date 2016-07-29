@@ -1007,4 +1007,29 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 0
     }
   }
+
+  "Calling the determineLossLeft method" should {
+
+    "return loss remaining equal to £90 when Gain is £10 and £100 loss" in {
+      val result = CalculationService.determineLossLeft(10,100)
+      result shouldEqual 90
+    }
+
+    "return loss remaining equal to £1 when Gain is £0 and £0.01 loss" in {
+      val result = CalculationService.determineLossLeft(0,0.01)
+      result shouldEqual 1
+    }
+
+    "return loss remaining equal to £0 when Gain is £50 and £0.00 loss " in {
+      val result = CalculationService.determineLossLeft(50,0)
+      result shouldEqual 0
+    }
+
+    "return loss remaining equal to £0 when Gain is £0 and £0 loss " in {
+      val result = CalculationService.determineLossLeft(0,0)
+      result shouldEqual 0
+    }
+
+  }
+
 }

@@ -261,4 +261,12 @@ trait CalculationService {
   def annualExemptAmountLeft (available: Double, aeaUsed: Double)  = {
     round("up", available) - aeaUsed
   }
+
+  def determineLossLeft(gain: Double, loss: Double) = {
+    round("down", round("up", loss) match {
+      case a if gain > a => 0.toDouble
+      case b if gain < 0 => b
+      case c => c - gain
+    })
+  }
 }
