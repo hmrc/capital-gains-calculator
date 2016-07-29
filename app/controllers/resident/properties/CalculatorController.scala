@@ -64,6 +64,9 @@ trait CalculatorController extends BaseController {
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
     )
+    val chargeableGainExcludingBFLosses = calculationService.calculateChargeableGain (
+      gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, 0
+    )
     val aeaUsed = calculationService.annualExemptAmountUsed(
       annualExemptAmount,
       gain,
@@ -73,8 +76,10 @@ trait CalculatorController extends BaseController {
     )
     val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
     val deductions = round("up", reliefs.getOrElse(0.0)) + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
+    val allowableLossesRemaining = CalculationService.allowableLossesLeft(gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0))
+    val broughtForwardLossesRemaining = CalculationService.broughtForwardLossesLeft(chargeableGainExcludingBFLosses, broughtForwardLosses.getOrElse(0))
 
-    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions)
+    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining)
 
     Future.successful(Ok(Json.toJson(result)))
   }
