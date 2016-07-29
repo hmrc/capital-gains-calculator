@@ -61,9 +61,6 @@ trait CalculatorController extends BaseController {
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, 0, allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
     )
-    val chargeableGainExcludingBFLosses = calculationService.calculateChargeableGain (
-      gain, 0, allowableLosses.getOrElse(0), annualExemptAmount, 0
-    )
     val aeaUsed = calculationService.annualExemptAmountUsed(
       annualExemptAmount,
       gain,
