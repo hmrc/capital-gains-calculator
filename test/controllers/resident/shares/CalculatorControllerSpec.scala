@@ -174,7 +174,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         annualExemptAmount = 11100,
         previousTaxableGain = None,
         previousIncome = 20000,
-        personalAllowance = 11000
+        personalAllowance = 11000,
+        disposalDate = "2015-10-10"
       )(fakeRequest)
 
       "return a 200" in {
@@ -239,7 +240,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         annualExemptAmount = 11100,
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
-        personalAllowance = 11000
+        personalAllowance = 11000,
+        disposalDate = "2015-10-10"
       )(fakeRequest)
 
       "return a 200" in {
@@ -337,24 +339,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "deductions").as[Double] shouldBe 41100.0
         }
 
-        "has the taxOwed as 15601.5" in {
-          (json \ "taxOwed").as[Double] shouldBe 15601.5
+        "has the taxOwed as 15580.0" in {
+          (json \ "taxOwed").as[Double] shouldBe 15580.0
         }
 
         "has a first tax rate of 10%" in {
           (json \ "firstRate").as[Int] shouldBe 10
         }
 
-        "has a first tax band of 21785" in {
-          (json \ "firstBand").as[Double] shouldBe 21785
+        "has a first tax band of 22000" in {
+          (json \ "firstBand").as[Double] shouldBe 22000
         }
 
         "has a second tax rate of 20%" in {
           (json \ "secondRate").as[Option[Int]] shouldBe Some(20)
         }
 
-        "has a second tax band of 67115" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe Some(67115)
+        "has a second tax band of 66900" in {
+          (json \ "secondBand").as[Option[Double]] shouldBe Some(66900)
         }
       }
     }

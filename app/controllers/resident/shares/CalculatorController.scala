@@ -92,7 +92,7 @@ trait CalculatorController extends BaseController {
     previousTaxableGain: Option[Double],
     previousIncome: Double,
     personalAllowance: Double,
-    disposalDate: String = "2015-10-10"
+    disposalDate: String
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val taxYear = getTaxYear(DateTime.parse(disposalDate))
@@ -114,7 +114,7 @@ trait CalculatorController extends BaseController {
       gain,
       chargeableGain,
       negativeToZero(chargeableGain),
-      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(DateTime.parse("2015-10-10"))),
+      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(DateTime.parse(disposalDate))),
       0.0,
       "No",
       aeaUsed,
