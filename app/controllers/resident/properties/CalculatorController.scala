@@ -17,12 +17,14 @@
 package controllers.resident.properties
 
 import common.Date
+import common.Date._
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import common.Math._
+import config.TaxRatesAndBands
 import models.CalculationResultModel
 import org.joda.time.DateTime
 
@@ -98,6 +100,9 @@ trait CalculatorController extends BaseController {
     disposalDate: String = "2015-10-10"
   ): Action[AnyContent] = Action.async { implicit request =>
 
+    val taxYear = getTaxYear(DateTime.parse(disposalDate))
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
@@ -119,7 +124,9 @@ trait CalculatorController extends BaseController {
       0.0,
       "No",
       aeaUsed,
-      0.0
+      0.0,
+      calcTaxYear,
+      true
     )
     val result: TaxOwedResultModel = TaxOwedResultModel(
       gain,

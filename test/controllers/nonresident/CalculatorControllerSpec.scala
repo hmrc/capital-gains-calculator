@@ -52,10 +52,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Option(Matchers.anyString),
-      Option(Matchers.anyString),
+      Matchers.anyString,
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
-      Option(Matchers.anyDouble)
+      Option(Matchers.anyDouble),
+      Matchers.anyBoolean()
     )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0, 0))
 
     val target: CalculatorController = new CalculatorController {
@@ -79,7 +80,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       reliefs = 0,
       allowableLossesAmt = 0,
       acquisitionDate = None,
-      disposalDate = None,
+      disposalDate = "2016-10-10",
       isClaimingPRR = None,
       daysClaimed = None)(fakeRequest)
 
@@ -123,10 +124,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Option(Matchers.anyString),
-      Option(Matchers.anyString),
+      Matchers.anyString,
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
-      Option(Matchers.anyDouble)
+      Option(Matchers.anyDouble),
+      Matchers.anyBoolean()
     )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0, 0))
 
     val target: CalculatorController = new CalculatorController {
@@ -150,7 +152,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       reliefs = 0,
       allowableLossesAmt = 0,
       acquisitionDate = None,
-      disposalDate = None,
+      disposalDate = "2016-10-10",
       isClaimingPRR = None,
       daysClaimedAfter = None)(fakeRequest)
 
@@ -194,10 +196,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Option(Matchers.anyString),
-      Option(Matchers.anyString),
+      Matchers.anyString,
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
-      Option(Matchers.anyDouble)
+      Option(Matchers.anyDouble),
+      Matchers.anyBoolean()
     )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0, 0))
 
     val target: CalculatorController = new CalculatorController {
@@ -221,7 +224,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       reliefs = 0,
       allowableLossesAmt = 0,
       acquisitionDate = Some("2014-4-1"),
-      disposalDate = Some("2016-1-1"),
+      disposalDate = "2016-1-1",
       isClaimingPRR = None,
       daysClaimedAfter = None
     ) (fakeRequest)
