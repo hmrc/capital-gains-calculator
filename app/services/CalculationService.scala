@@ -82,7 +82,7 @@ trait CalculationService {
     val aeaRemaining = annualExemptAmountLeft(calculatedAEA, usedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
-      case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0), 2017)
+      case "individual" => brRemaining(currentIncome.getOrElse(0), personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0), calcTaxYear)
       case _ => 0
     }
 
