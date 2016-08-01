@@ -29,6 +29,8 @@ trait TaxRatesAndBands {
   val maxPersonalAllowance: Int
   val basicRate: Double
   val higherRate: Double
+  val shareBasicRate: Double
+  val shareHigherRate: Double
   val basicRateBand: Int
   val blindPersonsAllowance: Int
   val startOfTax = "2015-04-06"
@@ -65,6 +67,8 @@ object TaxRatesAndBands20162017 extends TaxRatesAndBands {
   override val maxPersonalAllowance = 11000
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
   override val basicRateBand = 32000
   override val blindPersonsAllowance = 2290
 }
@@ -80,6 +84,8 @@ object TaxRatesAndBands20152016 extends TaxRatesAndBands {
   override val maxPersonalAllowance = 10600
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
   override val basicRateBand = 31785
   override val blindPersonsAllowance = 2290
 }

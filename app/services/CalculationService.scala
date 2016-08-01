@@ -21,15 +21,12 @@ import models.CalculationResultModel
 import common.Math._
 import common.Date._
 import org.joda.time.{DateTime, Days}
-import play.mvc.Results.Todo
 
 object CalculationService extends CalculationService {
-  override val taxRatesAndBands = TaxRatesAndBands.getRates(2017)
+
 }
 
 trait CalculationService {
-
-  val taxRatesAndBands: TaxRatesAndBands
 
   //scalastyle:off
   def calculateCapitalGainsTax
@@ -52,30 +49,34 @@ trait CalculationService {
     reliefs: Double,
     allowableLossesAmt: Double,
     acquisitionDate: Option[String] = None,
-    disposalDate: Option[String] = None,
+    disposalDate: String,
     isClaimingPRR: Option[String] = None,
     daysClaimed: Option[Double] = None,
-    daysClaimedAfter: Option[Double] = None
+    daysClaimedAfter: Option[Double] = None,
+    isProperty: Boolean
   ): CalculationResultModel = {
+
+    val taxYear = getTaxYear(DateTime.parse(disposalDate))
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
       case "rebased" => calculateGainRebased(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
       case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt,
-        acquisitionDate.getOrElse(""), disposalDate.getOrElse(""))
+        acquisitionDate.getOrElse(""), disposalDate)
     }
 
     val prrAmount: Double = isClaimingPRR match {
       case Some("Yes") => calculationType match {
-        case "flat" => calculateFlatPRR(DateTime.parse(disposalDate.get), DateTime.parse(acquisitionDate.get),
+        case "flat" => calculateFlatPRR(DateTime.parse(disposalDate), DateTime.parse(acquisitionDate.get),
                                         daysClaimed.getOrElse(0), gain)
-        case "rebased" => calculateRebasedPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
-        case "time" => calculateTimeApportionmentPRR(DateTime.parse(disposalDate.get), daysClaimedAfter.getOrElse(0), gain)
+        case "rebased" => calculateRebasedPRR(DateTime.parse(disposalDate), daysClaimedAfter.getOrElse(0), gain)
+        case "time" => calculateTimeApportionmentPRR(DateTime.parse(disposalDate), daysClaimedAfter.getOrElse(0), gain)
       }
       case _ => 0
     }
 
-    val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable)
+    val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable, disposalDate)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
     val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, calculatedChargeableGain, reliefs + prrAmount, allowableLossesAmt)
     val aeaRemaining = annualExemptAmountLeft(calculatedAEA, usedAEA)
@@ -85,7 +86,7 @@ trait CalculationService {
       case _ => 0
     }
 
-    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, aeaRemaining)
+    calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, aeaRemaining, calcTaxYear, isProperty)
   }
 
   def calculationResult
@@ -98,35 +99,42 @@ trait CalculationService {
     prrAmount: Double,
     isClaimingPRR: String,
     usedAEA: Double,
-    aeaLeft: Double
+    aeaLeft: Double,
+    taxYear: Int,
+    isProperty: Boolean
   ): CalculationResultModel = {
+    val taxRates = TaxRatesAndBands.getRates(taxYear)
+    val basicRate = if(isProperty) taxRates.basicRate else taxRates.shareBasicRate
+    val higherRate = if(isProperty) taxRates.higherRate else taxRates.shareHigherRate
+    val basicRatePercentage = if(isProperty) taxRates.basicRatePercentage else taxRates.shareBasicRatePercentage
+    val higherRatePercentage = if(isProperty) taxRates.higherRatePercentage else taxRates.shareHigherRatePercentage
     customerType match {
       case "individual" => CalculationResultModel(
-        taxOwed = round("result", min(basicRateRemaining, taxableGain) * taxRatesAndBands.basicRate + negativeToZero(taxableGain - basicRateRemaining) *
-          taxRatesAndBands.higherRate),
+        taxOwed = round("result", min(basicRateRemaining, taxableGain) * basicRate + negativeToZero(taxableGain - basicRateRemaining) *
+          higherRate),
         totalGain = gain,
         baseTaxGain = gain match {
           case x if x > 0 => min(basicRateRemaining, chargeableGain)
           case _ => 0
         },
         baseTaxRate = min(basicRateRemaining, chargeableGain) match {
-          case x if x > 0 => taxRatesAndBands.basicRatePercentage
+          case x if x > 0 => basicRatePercentage
           case _ => 0
         },
         usedAnnualExemptAmount = usedAEA,
         aeaRemaining = aeaLeft,
         upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
-        upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(taxRatesAndBands.higherRatePercentage) else None,
+        upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None,
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
       case _ => CalculationResultModel(
-        taxOwed = round("result", taxableGain * taxRatesAndBands.higherRate),
+        taxOwed = round("result", taxableGain * higherRate),
         totalGain = gain,
         baseTaxGain = 0,
         baseTaxRate = 0,
         usedAnnualExemptAmount = usedAEA,
         aeaRemaining = aeaLeft,
         upperTaxGain = Some(chargeableGain),
-        upperTaxRate = Some(taxRatesAndBands.higherRatePercentage),
+        upperTaxRate = Some(higherRatePercentage),
         simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
     }
   }
@@ -167,6 +175,9 @@ trait CalculationService {
     disposalDate: String
   ): Double = {
 
+    val taxYear = getTaxYear(DateTime.parse(disposalDate))
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
     val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     val fractionOfOwnership = daysBetween(taxRatesAndBands.startOfTax, disposalDate) / daysBetween(acquisitionDate, disposalDate)
 
@@ -179,8 +190,13 @@ trait CalculationService {
     customerType: String,
     priorDisposal: String,
     annualExemptAmount: Option[Double] = None,
-    isVulnerable: Option[String] = None
+    isVulnerable: Option[String] = None,
+    disposalDate: String
   ): Double = {
+
+    val taxYear = getTaxYear(DateTime.parse(disposalDate))
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
     priorDisposal match {
       case "No" =>
@@ -222,6 +238,10 @@ trait CalculationService {
    daysClaimed: Double,
    gain: Double): Double = {
 
+    val taxYear = getTaxYear(disposalDate)
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
+
     min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
       daysBetween(acquisitionDate, disposalDate))), gain)
   }
@@ -230,6 +250,10 @@ trait CalculationService {
   (disposalDate: DateTime,
    daysClaimedAfter: Double,
    gain: Double): Double = {
+
+    val taxYear = getTaxYear(disposalDate)
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
     min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
       daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
@@ -240,6 +264,10 @@ trait CalculationService {
   (disposalDate: DateTime,
    daysClaimedAfter: Double,
    gain: Double): Double = {
+
+    val taxYear = getTaxYear(disposalDate)
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
     min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
       daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)

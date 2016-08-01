@@ -292,5 +292,71 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         }
       }
     }
+
+    "when using 2016/17 tax year values" should {
+      lazy val result = CalculatorController.calculateTaxOwed(
+        disposalValue = 250000,
+        disposalCosts = 10000,
+        acquisitionValue = 100000,
+        acquisitionCosts = 10000,
+        allowableLosses = Some(20000),
+        broughtForwardLosses = Some(10000),
+        annualExemptAmount = 11100,
+        previousTaxableGain = Some(10000),
+        previousIncome = 10000,
+        personalAllowance = 11000,
+        disposalDate = "2016-10-10"
+      )(fakeRequest)
+
+      "return a 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) shouldBe Some("application/json")
+        }
+
+        "has the gain as 130000" in {
+          (json \ "gain").as[Double] shouldBe 130000
+        }
+
+        "has the chargeableGain as 88900" in {
+          (json \ "chargeableGain").as[Double] shouldBe 88900.0
+        }
+
+        "has the aeaUsed as 11100" in {
+          (json \ "aeaUsed").as[Double] shouldBe 11100.0
+        }
+
+        "has the deductions as 41100" in {
+          (json \ "deductions").as[Double] shouldBe 41100.0
+        }
+
+        "has the taxOwed as 15601.5" in {
+          (json \ "taxOwed").as[Double] shouldBe 15601.5
+        }
+
+        "has a first tax rate of 10%" in {
+          (json \ "firstRate").as[Int] shouldBe 10
+        }
+
+        "has a first tax band of 21785" in {
+          (json \ "firstBand").as[Double] shouldBe 21785
+        }
+
+        "has a second tax rate of 20%" in {
+          (json \ "secondRate").as[Option[Int]] shouldBe Some(20)
+        }
+
+        "has a second tax band of 67115" in {
+          (json \ "secondBand").as[Option[Double]] shouldBe Some(67115)
+        }
+      }
+    }
   }
 }

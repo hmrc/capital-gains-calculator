@@ -21,6 +21,7 @@ import play.api.libs.json.Json
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import play.api.mvc._
+
 import scala.concurrent.Future
 
 
@@ -45,7 +46,7 @@ trait CalculatorController extends BaseController {
     reliefs: Double,
     allowableLossesAmt: Double,
     acquisitionDate: Option[String] = None,
-    disposalDate: Option[String] = None,
+    disposalDate: String,
     isClaimingPRR: Option[String],
     daysClaimed: Option[Double]
   ): Action[AnyContent] = Action.async { implicit request =>
@@ -71,7 +72,8 @@ trait CalculatorController extends BaseController {
       acquisitionDate,
       disposalDate,
       isClaimingPRR,
-      daysClaimed
+      daysClaimed,
+      isProperty = true
     )
 
     Future.successful(Ok(Json.toJson(result)))
@@ -94,7 +96,7 @@ trait CalculatorController extends BaseController {
     reliefs: Double,
     allowableLossesAmt: Double,
     acquisitionDate: Option[String] = None,
-    disposalDate: Option[String] = None,
+    disposalDate: String,
     isClaimingPRR: Option[String],
     daysClaimedAfter: Option[Double]
 
@@ -122,7 +124,8 @@ trait CalculatorController extends BaseController {
       disposalDate,
       isClaimingPRR,
       None,
-      daysClaimedAfter
+      daysClaimedAfter,
+      isProperty = true
     )
 
     Future.successful(Ok(Json.toJson(result)))
@@ -146,7 +149,7 @@ trait CalculatorController extends BaseController {
     reliefs: Double,
     allowableLossesAmt: Double,
     acquisitionDate: Option[String],
-    disposalDate: Option[String],
+    disposalDate: String,
     isClaimingPRR: Option[String],
     daysClaimedAfter: Option[Double]
   ): Action[AnyContent] = Action.async { implicit request =>
@@ -173,7 +176,8 @@ trait CalculatorController extends BaseController {
       disposalDate,
       isClaimingPRR,
       None,
-      daysClaimedAfter
+      daysClaimedAfter,
+      isProperty = true
     )
 
     Future.successful(Ok(Json.toJson(result)))
