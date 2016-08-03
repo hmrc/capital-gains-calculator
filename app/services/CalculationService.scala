@@ -297,4 +297,12 @@ trait CalculationService {
       case c => c - gain
     })
   }
+
+  def determineReliefsUsed(gain: Double, reliefs: Option[Double]): Double = {
+    reliefs match {
+      case Some(a) if a < gain => round("up", a)
+      case Some(b) => gain
+      case None => 0
+    }
+  }
 }
