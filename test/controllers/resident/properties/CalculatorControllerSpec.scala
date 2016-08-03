@@ -57,7 +57,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
-        reliefs = None,
+        reliefs = Some(1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
         annualExemptAmount = 11100
@@ -80,8 +80,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "gain").as[Double] shouldBe 28000
         }
 
-        "has the chargeableGain as -8100" in {
-          (json \ "chargeableGain").as[Double] shouldBe -8100.0
+        "has the chargeableGain as -9100" in {
+          (json \ "chargeableGain").as[Double] shouldBe -9100.0
         }
 
         "has the aeaUsed as 11000" in {
@@ -92,16 +92,20 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "aeaRemaining").as[Double] shouldBe 0.0
         }
 
-        "has the deductions as 36100" in {
-          (json \ "deductions").as[Double] shouldBe 36100
+        "has the deductions as 37100" in {
+          (json \ "deductions").as[Double] shouldBe 37100
         }
 
         "has the allowableLossesRemaining as £0" in {
           (json \ "allowableLossesRemaining").as[Double] shouldBe 0
         }
 
-        "has the broughtForwardLossesRemaining as £8100" in {
-          (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 8100
+        "has the broughtForwardLossesRemaining as £9100" in {
+          (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 9100
+        }
+
+        "has the reliefs used as £1000" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 1000
         }
       }
     }
@@ -159,6 +163,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the broughtForwardLossesRemaining as £8100" in {
           (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 8100
+        }
+
+        "has the reliefs used as £0" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 0
         }
       }
     }
