@@ -63,6 +63,7 @@ trait CalculatorController extends BaseController {
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
+    val reliefsUsed = CalculationService.determineReliefsUsed(gain, reliefs)
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
     )
@@ -74,10 +75,9 @@ trait CalculatorController extends BaseController {
       allowableLosses.getOrElse(0)
     )
     val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-    val deductions = round("up", reliefs.getOrElse(0.0)) + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
+    val deductions = reliefsUsed + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
     val allowableLossesRemaining = CalculationService.determineLossLeft(gain - reliefs.getOrElse(0.0), allowableLosses.getOrElse(0))
     val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + broughtForwardLosses.getOrElse(0.0), broughtForwardLosses.getOrElse(0))
-    val reliefsUsed = CalculationService.determineReliefsUsed(gain, reliefs)
 
     val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining, Some(reliefsUsed))
 
@@ -116,7 +116,7 @@ trait CalculatorController extends BaseController {
       reliefs.getOrElse(0.0),
       allowableLosses.getOrElse(0.0)
     )
-    val deductions = reliefs.getOrElse(0.0) + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
+    val deductions = reliefsUsed + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
     val calculationResult: CalculationResultModel  = calculationService.calculationResult (
       "individual",
       gain,
