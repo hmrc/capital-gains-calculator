@@ -274,6 +274,14 @@ trait CalculationService {
 
   }
 
+  def determinePRRUsed (gain: Double, prrUsed: Option[Double]): Double = {
+    prrUsed match {
+      case Some(a) if a < gain => round("up", a)
+      case Some(b) => gain
+      case None => 0
+    }
+  }
+
   def annualExemptAmountUsed (available: Double, totalGain: Double, chargeableGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
     chargeableGain match {
       case a if a < 0 => 0.toDouble
