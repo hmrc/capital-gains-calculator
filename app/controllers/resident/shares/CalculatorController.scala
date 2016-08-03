@@ -131,7 +131,8 @@ trait CalculatorController extends BaseController {
       calculationResult.baseTaxGain,
       calculationResult.baseTaxRate,
       calculationResult.upperTaxGain,
-      calculationResult.upperTaxRate
+      calculationResult.upperTaxRate,
+      None
     )
     Future.successful(Ok(Json.toJson(result)))
   }

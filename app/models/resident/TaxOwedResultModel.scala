@@ -28,7 +28,8 @@ case class TaxOwedResultModel
   firstBand: Double,
   firstRate: Int,
   secondBand: Option[Double],
-  secondRate: Option[Int]
+  secondRate: Option[Int],
+  reliefsUsed: Option[Double]
 )
 
 object TaxOwedResultModel {

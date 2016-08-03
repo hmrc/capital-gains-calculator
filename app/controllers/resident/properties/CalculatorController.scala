@@ -105,6 +105,7 @@ trait CalculatorController extends BaseController {
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
 
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
+    val reliefsUsed = CalculationService.determineReliefsUsed(gain, reliefs)
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
     )
@@ -138,7 +139,8 @@ trait CalculatorController extends BaseController {
       calculationResult.baseTaxGain,
       calculationResult.baseTaxRate,
       calculationResult.upperTaxGain,
-      calculationResult.upperTaxRate
+      calculationResult.upperTaxRate,
+      Some(reliefsUsed)
     )
     Future.successful(Ok(Json.toJson(result)))
   }

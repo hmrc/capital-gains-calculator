@@ -239,6 +239,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has no second tax band" in {
           (json \ "secondBand").as[Option[Double]] shouldBe None
         }
+
+        "has the reliefs used as £0" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -305,6 +309,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has a second tax band of 28215" in {
           (json \ "secondBand").as[Option[Double]] shouldBe Some(28215)
+        }
+
+        "has the reliefs used as £8900" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 8900
         }
       }
     }
