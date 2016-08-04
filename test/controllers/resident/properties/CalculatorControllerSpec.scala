@@ -57,7 +57,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
-        reliefs = None,
+        reliefs = Some(1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
         annualExemptAmount = 11100
@@ -80,8 +80,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "gain").as[Double] shouldBe 28000
         }
 
-        "has the chargeableGain as -8100" in {
-          (json \ "chargeableGain").as[Double] shouldBe -8100.0
+        "has the chargeableGain as -9100" in {
+          (json \ "chargeableGain").as[Double] shouldBe -9100.0
         }
 
         "has the aeaUsed as 11000" in {
@@ -92,16 +92,20 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "aeaRemaining").as[Double] shouldBe 0.0
         }
 
-        "has the deductions as 36100" in {
-          (json \ "deductions").as[Double] shouldBe 36100
+        "has the deductions as 37100" in {
+          (json \ "deductions").as[Double] shouldBe 37100
         }
 
         "has the allowableLossesRemaining as £0" in {
           (json \ "allowableLossesRemaining").as[Double] shouldBe 0
         }
 
-        "has the broughtForwardLossesRemaining as £8100" in {
-          (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 8100
+        "has the broughtForwardLossesRemaining as £9100" in {
+          (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 9100
+        }
+
+        "has the reliefs used as £1000" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 1000
         }
       }
     }
@@ -159,6 +163,71 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the broughtForwardLossesRemaining as £8100" in {
           (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 8100
+        }
+
+        "has the reliefs used as £0" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 0
+        }
+      }
+    }
+
+    "numeric values are passed with reliefs greater than gain" should {
+
+      lazy val result = CalculatorController.calculateChargeableGain(
+        disposalValue = 195000,
+        disposalCosts = 1000,
+        acquisitionValue = 160000,
+        acquisitionCosts = 1000,
+        improvements = 5000,
+        reliefs = Some(50000),
+        allowableLosses = Some(4999.01),
+        broughtForwardLosses = Some(19999.01),
+        annualExemptAmount = 11100
+      )(fakeRequest)
+
+      "return a 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) shouldBe Some("application/json")
+        }
+
+        "has the gain as 28000" in {
+          (json \ "gain").as[Double] shouldBe 28000
+        }
+
+        "has the chargeableGain as -20000" in {
+          (json \ "chargeableGain").as[Double] shouldBe -20000.0
+        }
+
+        "has the aeaUsed as 0" in {
+          (json \ "aeaUsed").as[Double] shouldBe 0
+        }
+
+        "has the aeaRemaining as 11100.0" in {
+          (json \ "aeaRemaining").as[Double] shouldBe 11100.0
+        }
+
+        "has the deductions as 53000" in {
+          (json \ "deductions").as[Double] shouldBe 53000
+        }
+
+        "has the allowableLossesRemaining as £5000" in {
+          (json \ "allowableLossesRemaining").as[Double] shouldBe 5000
+        }
+
+        "has the broughtForwardLossesRemaining as 20000" in {
+          (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 20000
+        }
+
+        "has the reliefs used as £28000" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 28000
         }
       }
     }
@@ -231,6 +300,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has no second tax band" in {
           (json \ "secondBand").as[Option[Double]] shouldBe None
         }
+
+        "has the reliefs used as £0" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -297,6 +370,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has a second tax band of 28215" in {
           (json \ "secondBand").as[Option[Double]] shouldBe Some(28215)
+        }
+
+        "has the reliefs used as £8900" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 8900
         }
       }
     }
