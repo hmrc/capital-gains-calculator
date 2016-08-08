@@ -108,6 +108,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the reliefs used as £1000" in {
           (json \ "reliefsUsed").as[Double] shouldBe 1000
         }
+
+        "has the prr used as £0" in {
+          (json \ "prrUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -170,6 +174,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the reliefs used as £0" in {
           (json \ "reliefsUsed").as[Double] shouldBe 0
         }
+
+        "has the prr used as £0" in {
+          (json \ "prrUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -231,6 +239,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the reliefs used as £27800" in {
           (json \ "reliefsUsed").as[Double] shouldBe 27800
+        }
+
+        "has the prr used as £200" in {
+          (json \ "prrUsed").as[Double] shouldBe 200
         }
       }
     }
@@ -308,6 +320,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the reliefs used as £0" in {
           (json \ "reliefsUsed").as[Double] shouldBe 0
         }
+
+        "has the prr used as £0" in {
+          (json \ "prrUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -379,6 +395,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the reliefs used as £8900" in {
           (json \ "reliefsUsed").as[Double] shouldBe 8900
+        }
+
+        "has the prr used as £1000" in {
+          (json \ "prrUsed").as[Double] shouldBe 1000
         }
       }
     }

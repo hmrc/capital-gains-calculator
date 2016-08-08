@@ -81,7 +81,7 @@ trait CalculatorController extends BaseController {
     val allowableLossesRemaining = CalculationService.determineLossLeft(gain - reliefs.getOrElse(0.0), allowableLosses.getOrElse(0))
     val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + broughtForwardLosses.getOrElse(0.0), broughtForwardLosses.getOrElse(0))
 
-    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining, Some(reliefsUsed))
+    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining, Some(reliefsUsed), Some(prrUsed))
 
     Future.successful(Ok(Json.toJson(result)))
   }
@@ -144,7 +144,8 @@ trait CalculatorController extends BaseController {
       calculationResult.baseTaxRate,
       calculationResult.upperTaxGain,
       calculationResult.upperTaxRate,
-      Some(reliefsUsed)
+      Some(reliefsUsed),
+      Some(prrUsed)
     )
     Future.successful(Ok(Json.toJson(result)))
   }
