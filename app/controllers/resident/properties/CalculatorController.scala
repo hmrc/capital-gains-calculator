@@ -67,7 +67,7 @@ trait CalculatorController extends BaseController {
     val prrUsed = CalculationService.determinePRRUsed(gain, prr)
     val reliefsUsed = CalculationService.determineReliefsUsed(gain - prrUsed, reliefs)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, reliefs.getOrElse(0), allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
+      gain, reliefs.getOrElse(0.toDouble) + prr.getOrElse(0.toDouble), allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
     )
     val aeaUsed = calculationService.annualExemptAmountUsed(
       annualExemptAmount,
@@ -111,7 +111,7 @@ trait CalculatorController extends BaseController {
     val prrUsed = CalculationService.determinePRRUsed(gain, prr)
     val reliefsUsed = CalculationService.determineReliefsUsed(gain - prrUsed, reliefs)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, reliefs.getOrElse(0.0), allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
+      gain, reliefs.getOrElse(0.toDouble) + prr.getOrElse(0.toDouble), allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
     )
     val aeaUsed: Double = calculationService.annualExemptAmountUsed(
       annualExemptAmount,

@@ -345,8 +345,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "gain").as[Double] shouldBe 100000
         }
 
-        "has the chargeableGain as 16900" in {
-          (json \ "chargeableGain").as[Double] shouldBe 50000.0
+        "has the chargeableGain as 49000.0" in {
+          (json \ "chargeableGain").as[Double] shouldBe 49000.0
         }
 
         "has the aeaUsed as 11100" in {
@@ -357,8 +357,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "deductions").as[Double] shouldBe 51000.0
         }
 
-        "has the taxOwed as 11821.5" in {
-          (json \ "taxOwed").as[Double] shouldBe 11821.5
+        "has the taxOwed as 11541.5" in {
+          (json \ "taxOwed").as[Double] shouldBe 11541.5
         }
 
         "has a first tax rate of 18%" in {
@@ -373,8 +373,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "secondRate").as[Option[Int]] shouldBe Some(28)
         }
 
-        "has a second tax band of 28215" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe Some(28215)
+        "has a second tax band of 27215" in {
+          (json \ "secondBand").as[Option[Double]] shouldBe Some(27215)
         }
 
         "has the reliefs used as £8900" in {
