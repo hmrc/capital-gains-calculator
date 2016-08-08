@@ -57,6 +57,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prr = None,
         reliefs = Some(1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
@@ -118,6 +119,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prr = None,
         reliefs = None,
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
@@ -179,6 +181,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prr = Some(200),
         reliefs = Some(50000),
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
@@ -226,8 +229,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 20000
         }
 
-        "has the reliefs used as £28000" in {
-          (json \ "reliefsUsed").as[Double] shouldBe 28000
+        "has the reliefs used as £27800" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 27800
         }
       }
     }
@@ -243,6 +246,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prr = None,
         reliefs = None,
         allowableLosses = None,
         broughtForwardLosses = None,
@@ -314,6 +318,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 100000,
         acquisitionCosts = 10000,
         improvements = 30000,
+        prr = Some(1000),
         reliefs = Some(8900),
         allowableLosses = Some(20000),
         broughtForwardLosses = Some(10000),
@@ -348,8 +353,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
         }
 
-        "has the deductions as 11100" in {
-          (json \ "deductions").as[Double] shouldBe 50000.0
+        "has the deductions as 51000" in {
+          (json \ "deductions").as[Double] shouldBe 51000.0
         }
 
         "has the taxOwed as 11821.5" in {
