@@ -27,7 +27,8 @@ case class ChargeableGainResultModel
   deductions: Double,
   allowableLossesRemaining: Double,
   broughtForwardLossesRemaining: Double,
-  reliefsUsed: Option[Double]
+  reliefsUsed: Option[Double],
+  prrUsed: Option[Double]
 )
 
 object ChargeableGainResultModel {

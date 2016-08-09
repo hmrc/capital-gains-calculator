@@ -57,6 +57,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prrType = "None",
+        prrValue = None,
         reliefs = Some(1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
@@ -107,6 +109,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the reliefs used as £1000" in {
           (json \ "reliefsUsed").as[Double] shouldBe 1000
         }
+
+        "has the prr used as £0" in {
+          (json \ "prrUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -118,6 +124,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prrType = "None",
+        prrValue = None,
         reliefs = None,
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
@@ -168,6 +176,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the reliefs used as £0" in {
           (json \ "reliefsUsed").as[Double] shouldBe 0
         }
+
+        "has the prr used as £0" in {
+          (json \ "prrUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -179,6 +191,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prrType = "Part",
+        prrValue = Some(200),
         reliefs = Some(50000),
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
@@ -202,8 +216,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "gain").as[Double] shouldBe 28000
         }
 
-        "has the chargeableGain as -20000" in {
-          (json \ "chargeableGain").as[Double] shouldBe -20000.0
+        "has the chargeableGain as 0" in {
+          (json \ "chargeableGain").as[Double] shouldBe 0.0
         }
 
         "has the aeaUsed as 0" in {
@@ -226,8 +240,79 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 20000
         }
 
-        "has the reliefs used as £28000" in {
-          (json \ "reliefsUsed").as[Double] shouldBe 28000
+        "has the reliefs used as £27800" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 27800
+        }
+
+        "has the prr used as £200" in {
+          (json \ "prrUsed").as[Double] shouldBe 200
+        }
+      }
+    }
+
+    "numeric values are passed with full PRR claimed" should {
+
+      lazy val result = CalculatorController.calculateChargeableGain(
+        disposalValue = 195000,
+        disposalCosts = 1000,
+        acquisitionValue = 160000,
+        acquisitionCosts = 1000,
+        improvements = 5000,
+        prrType = "Full",
+        prrValue = None,
+        reliefs = None,
+        allowableLosses = Some(4999.01),
+        broughtForwardLosses = Some(19999.01),
+        annualExemptAmount = 11100
+      )(fakeRequest)
+
+      "return a 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) shouldBe Some("application/json")
+        }
+
+        "has the gain as 28000" in {
+          (json \ "gain").as[Double] shouldBe 28000
+        }
+
+        "has the chargeableGain as 0" in {
+          (json \ "chargeableGain").as[Double] shouldBe 0.0
+        }
+
+        "has the aeaUsed as 0" in {
+          (json \ "aeaUsed").as[Double] shouldBe 0.0
+        }
+
+        "has the aeaRemaining as 11,100" in {
+          (json \ "aeaRemaining").as[Double] shouldBe 11100.0
+        }
+
+        "has the deductions as 53000" in {
+          (json \ "deductions").as[Double] shouldBe 53000.0
+        }
+
+        "has the allowableLossesRemaining as £5000" in {
+          (json \ "allowableLossesRemaining").as[Double] shouldBe 5000
+        }
+
+        "has the broughtForwardLossesRemaining as £20000" in {
+          (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 20000.0
+        }
+
+        "has the reliefs used as £0" in {
+          (json \ "reliefsUsed").as[Double] shouldBe 0
+        }
+
+        "has the prr used as £28000" in {
+          (json \ "prrUsed").as[Double] shouldBe 28000
         }
       }
     }
@@ -243,6 +328,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 160000,
         acquisitionCosts = 1000,
         improvements = 5000,
+        prrType = "None",
+        prrValue = None,
         reliefs = None,
         allowableLosses = None,
         broughtForwardLosses = None,
@@ -304,6 +391,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the reliefs used as £0" in {
           (json \ "reliefsUsed").as[Double] shouldBe 0
         }
+
+        "has the prr used as £0" in {
+          (json \ "prrUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -314,6 +405,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         acquisitionValue = 100000,
         acquisitionCosts = 10000,
         improvements = 30000,
+        prrType = "Part",
+        prrValue = Some(1000),
         reliefs = Some(8900),
         allowableLosses = Some(20000),
         broughtForwardLosses = Some(10000),
@@ -340,20 +433,20 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "gain").as[Double] shouldBe 100000
         }
 
-        "has the chargeableGain as 16900" in {
-          (json \ "chargeableGain").as[Double] shouldBe 50000.0
+        "has the chargeableGain as 49000.0" in {
+          (json \ "chargeableGain").as[Double] shouldBe 49000.0
         }
 
         "has the aeaUsed as 11100" in {
           (json \ "aeaUsed").as[Double] shouldBe 11100.0
         }
 
-        "has the deductions as 11100" in {
-          (json \ "deductions").as[Double] shouldBe 50000.0
+        "has the deductions as 51000" in {
+          (json \ "deductions").as[Double] shouldBe 51000.0
         }
 
-        "has the taxOwed as 11821.5" in {
-          (json \ "taxOwed").as[Double] shouldBe 11821.5
+        "has the taxOwed as 11541.5" in {
+          (json \ "taxOwed").as[Double] shouldBe 11541.5
         }
 
         "has a first tax rate of 18%" in {
@@ -368,12 +461,16 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
           (json \ "secondRate").as[Option[Int]] shouldBe Some(28)
         }
 
-        "has a second tax band of 28215" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe Some(28215)
+        "has a second tax band of 27215" in {
+          (json \ "secondBand").as[Option[Double]] shouldBe Some(27215)
         }
 
         "has the reliefs used as £8900" in {
           (json \ "reliefsUsed").as[Double] shouldBe 8900
+        }
+
+        "has the prr used as £1000" in {
+          (json \ "prrUsed").as[Double] shouldBe 1000
         }
       }
     }
