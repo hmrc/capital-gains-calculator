@@ -221,12 +221,11 @@ trait CalculationService {
       case b => b - round("up", reliefs) match { //gain greater than 0 so deduct the reliefs
         case c if c <= 0 => 0 //Reliefs cannot turn gain into a loss, hence return 0
         case d => d - round("up", allowableLossesAmt) match { //Gain greater than 0 still so deduct allowable loses
-          case e if e <= 0 => e - round("up", broughtForwardLosses) //Allowable losses turns gain into a loss so return the loss
-          case f => negativeToZero(f - round("up", annualExemptAmount)) - round("up", broughtForwardLosses) //deduct AEA, if amount less than 0 return 0 else return amount
+          case e if e <= 0 => e - round("up", broughtForwardLosses) //Allowable losses turns gain into a loss so return the loss and finally, subtract any brought forward losses.
+          case f => negativeToZero(f - round("up", annualExemptAmount)) - round("up", broughtForwardLosses) //deduct AEA, if amount less than 0 return 0 else return amount and finally, subtract any brought forward losses.
         }
       }
     }
-   // Finally, subtract any brought forward losses.
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int): Double = {
     negativeToZero(TaxRatesAndBands.getRates(taxYear).basicRateBand - negativeToZero(round("down",currentIncome) - round("up",personalAllowanceAmt)) - round("down",otherPropertiesAmt))
@@ -274,12 +273,12 @@ trait CalculationService {
 
   }
 
-  def determinePRRUsed (gain: Double, prrUsed: Option[Double], prr: String): Double = {
-    prrUsed match {
-      case a if prr.equals("Full") => gain
-      case Some(b) if b < gain && prr.equals("Part") => round("up", b)
-      case Some(c) if prr.equals("Part") => gain
-      case None => 0
+  def determinePRRUsed (gain: Double, prrValue: Option[Double], prrType: String): Double = {
+    prrValue match {
+      case a if prrType.equals("Full") => gain
+      case Some(b) if b < gain && prrType.equals("Part") => round("up", b)
+      case Some(c) if prrType.equals("Part") => gain
+      case _ => 0
     }
   }
 

@@ -56,7 +56,7 @@ trait CalculatorController extends BaseController {
     acquisitionValue: Double,
     acquisitionCosts: Double,
     improvements: Double,
-    prr: String,
+    prrType: String,
     prrValue: Option[Double],
     reliefs: Option[Double],
     allowableLosses: Option[Double],
@@ -65,7 +65,7 @@ trait CalculatorController extends BaseController {
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
-    val prrUsed = CalculationService.determinePRRUsed(gain, prrValue, prr)
+    val prrUsed = CalculationService.determinePRRUsed(gain, prrValue, prrType)
     val reliefsUsed = CalculationService.determineReliefsUsed(gain - prrUsed, reliefs)
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, reliefsUsed + prrUsed, allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
@@ -93,7 +93,7 @@ trait CalculatorController extends BaseController {
     acquisitionValue: Double,
     acquisitionCosts: Double,
     improvements: Double,
-    prr: String,
+    prrType: String,
     prrValue: Option[Double],
     reliefs: Option[Double],
     allowableLosses: Option[Double],
@@ -109,7 +109,7 @@ trait CalculatorController extends BaseController {
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
 
     val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
-    val prrUsed = CalculationService.determinePRRUsed(gain, prrValue, prr)
+    val prrUsed = CalculationService.determinePRRUsed(gain, prrValue, prrType)
     val reliefsUsed = CalculationService.determineReliefsUsed(gain - prrUsed, reliefs)
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, reliefsUsed + prrUsed, allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
