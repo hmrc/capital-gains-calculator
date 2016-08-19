@@ -195,8 +195,8 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
-  "Calling getTaxEndDate" should {
-    val result = getTaxEndDate()(fakeRequest)
+  "Calling getTaxDateAfterOctober" should {
+    val result = getTaxDateAfterOctober()(fakeRequest)
     val data = contentAsString(result)
     val json = Json.parse(data)
 
@@ -208,8 +208,8 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       contentType(result) shouldBe Some("application/json")
     }
 
-    "return a datestring for the start date" in {
-      json.as[String] shouldBe "2017-04-05"
+    "return a datestring for the date" in {
+      json.as[String] shouldBe "2016-10-06"
     }
   }
 }
