@@ -73,26 +73,18 @@ trait CalculatorController extends BaseController {
     val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
     val deductions = round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
     val allowableLossesRemaining = CalculationService.determineLossLeft(gain, allowableLosses.getOrElse(0))
-    val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + broughtForwardLosses.getOrElse(0.0), broughtForwardLosses.getOrElse(0))
-
-    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining, None, None)
+    val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + broughtForwardLosses.getOrElse(0.0),
+      broughtForwardLosses.getOrElse(0))
+    val broughtForwardLossesUsed = CalculationService.determineBFLossLeft(round("up", broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
+    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining,
+      broughtForwardLossesRemaining, None, None, Some(broughtForwardLossesUsed))
 
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTaxOwed
-  (
-    disposalValue: Double,
-    disposalCosts: Double,
-    acquisitionValue: Double,
-    acquisitionCosts: Double,
-    allowableLosses: Option[Double],
-    broughtForwardLosses: Option[Double],
-    annualExemptAmount: Double,
-    previousTaxableGain: Option[Double],
-    previousIncome: Double,
-    personalAllowance: Double,
-    disposalDate: String
+  def calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+    allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
+    previousIncome: Double, personalAllowance: Double, disposalDate: String
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val taxYear = getTaxYear(DateTime.parse(disposalDate))
@@ -110,17 +102,9 @@ trait CalculatorController extends BaseController {
     )
     val deductions = 0 + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
     val calculationResult: CalculationResultModel  = calculationService.calculationResult (
-      "individual",
-      gain,
-      chargeableGain,
-      negativeToZero(chargeableGain),
+      "individual", gain, chargeableGain, negativeToZero(chargeableGain),
       calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(DateTime.parse(disposalDate))),
-      0.0,
-      "No",
-      aeaUsed,
-      0.0,
-      calcTaxYear,
-      false
+      0.0, "No", aeaUsed, 0.0, calcTaxYear, false
     )
     val result: TaxOwedResultModel = TaxOwedResultModel(
       gain,
@@ -133,7 +117,10 @@ trait CalculatorController extends BaseController {
       calculationResult.upperTaxGain,
       calculationResult.upperTaxRate,
       None,
-      None
+      None,
+      //Logic here is that there has been a total gain made.  Therefore any brought forward losses claimed have been used entirely.
+      //As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
+      Some(broughtForwardLosses.getOrElse(0))
     )
     Future.successful(Ok(Json.toJson(result)))
   }
