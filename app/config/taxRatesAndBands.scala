@@ -40,6 +40,8 @@ trait TaxRatesAndBands {
 
 object TaxRatesAndBands {
   val rates = TaxRatesAndBands20162017 :: TaxRatesAndBands20152016 :: Nil
+  val startOfTax = "2015-04-06"
+  val taxDateAfterOctober = "2016-10-06"
 
   def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
     case params if params.nonEmpty => params.head

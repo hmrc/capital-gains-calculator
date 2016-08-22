@@ -56,4 +56,11 @@ trait TaxRatesAndBandsController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
+  def getTaxStartDate: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(Json.toJson(TaxRatesAndBands.startOfTax)))
+  }
+
+  def getTaxDateAfterOctober: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(Json.toJson(TaxRatesAndBands.taxDateAfterOctober)))
+  }
 }
