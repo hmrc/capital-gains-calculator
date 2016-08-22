@@ -29,7 +29,8 @@ case class ChargeableGainResultModel
   broughtForwardLossesRemaining: Double,
   reliefsUsed: Option[Double],
   prrUsed: Option[Double],
-  broughtForwardLossesUsed: Option[Double]
+  broughtForwardLossesUsed: Option[Double],
+  allowableLossesUsed: Double
 )
 
 object ChargeableGainResultModel {

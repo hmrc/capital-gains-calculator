@@ -31,7 +31,8 @@ case class TaxOwedResultModel
   secondRate: Option[Int],
   reliefsUsed: Option[Double],
   prrUsed: Option[Double],
-  broughtForwardLossesUsed: Option[Double]
+  broughtForwardLossesUsed: Option[Double],
+  allowableLossesUsed: Double
 )
 
 object TaxOwedResultModel {

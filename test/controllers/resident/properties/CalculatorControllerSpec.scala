@@ -117,6 +117,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the broughtForwardLossesUsed as £10900" in {
           (json \ "broughtForwardLossesUsed").as[Double] shouldBe 10900
         }
+
+        "has the allowableLossesUsed as £5000" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 5000
+        }
       }
     }
 
@@ -187,6 +191,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the broughtForwardLossesUsed as £11900" in {
           (json \ "broughtForwardLossesUsed").as[Double] shouldBe 11900
+        }
+
+        "has the allowableLossesUsed as £5000" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 5000
         }
       }
     }
@@ -259,6 +267,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the broughtForwardLossesUsed as £0" in {
           (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
         }
+
+        "has the allowableLossesUsed as £0.00" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -329,6 +341,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the broughtForwardLossesUsed as £0" in {
           (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
+        }
+
+        "has the allowableLossesUsed as £0.00" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 0
         }
       }
     }
@@ -415,6 +431,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the broughtForwardLossesUsed as £0" in {
           (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
         }
+
+        "has the allowableLossesUsed as £0.00" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -495,6 +515,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the broughtForwardLossesUsed as £10000" in {
           (json \ "broughtForwardLossesUsed").as[Double] shouldBe 10000
+        }
+
+        "has the allowableLossesUsed as £20000" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 20000
         }
       }
     }

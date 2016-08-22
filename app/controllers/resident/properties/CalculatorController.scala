@@ -82,9 +82,10 @@ trait CalculatorController extends BaseController {
     val allowableLossesRemaining = CalculationService.determineLossLeft(gain - (reliefsUsed + prrUsed), round("up", allowableLosses.getOrElse(0)))
     val broughtForwardLossesRemaining = CalculationService.determineLossLeft(gain - (reliefsUsed + prrUsed + round("up", allowableLosses.getOrElse(0.0)) +
       aeaUsed), broughtForwardLosses.getOrElse(0))
-    val broughtForwardLossesUsed = CalculationService.determineBFLossLeft(round("up", broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
+    val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up", broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
+    val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up", allowableLosses.getOrElse(0)), allowableLossesRemaining)
     val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining,
-      Some(reliefsUsed), Some(prrUsed), Some(broughtForwardLossesUsed))
+      Some(reliefsUsed), Some(prrUsed), Some(broughtForwardLossesUsed), allowableLossesUsed)
 
     Future.successful(Ok(Json.toJson(result)))
   }
@@ -127,7 +128,8 @@ trait CalculatorController extends BaseController {
       Some(prrUsed),
       //Logic here is that there has been a total gain made.  Therefore any brought forward losses gained have been used entirely.
       //As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
-      Some(broughtForwardLosses.getOrElse(0))
+      Some(broughtForwardLosses.getOrElse(0)),
+      allowableLosses.getOrElse(0)
     )
     Future.successful(Ok(Json.toJson(result)))
   }
