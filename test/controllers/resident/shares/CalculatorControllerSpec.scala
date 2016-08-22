@@ -400,5 +400,55 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         }
       }
     }
+
+    "Part allowableLossesUsed" should {
+      lazy val result = CalculatorController.calculateChargeableGain(
+        disposalValue = 50000,
+        disposalCosts = 0,
+        acquisitionValue = 0,
+        acquisitionCosts = 0,
+        allowableLosses = Some(100000),
+        broughtForwardLosses = Some(0),
+        annualExemptAmount = 11100
+      )(fakeRequest)
+
+      "return a 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) shouldBe Some("application/json")
+        }
+
+        "has the gain as 50000" in {
+          (json \ "gain").as[Double] shouldBe 50000
+        }
+
+        "has the chargeableGain as 49000.0" in {
+          (json \ "chargeableGain").as[Double] shouldBe -50000
+        }
+
+        "has the aeaUsed as 0" in {
+          (json \ "aeaUsed").as[Double] shouldBe 0.0
+        }
+
+        "has the deductions as 100000" in {
+          (json \ "deductions").as[Double] shouldBe 100000
+        }
+
+        "has the broughtForwardLossesUsed as £0" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
+        }
+
+        "has the allowableLossesUsed as £50000" in {
+          (json \ "allowableLossesUsed").as[Double] shouldBe 50000
+        }
+      }
+    }
   }
 }
