@@ -101,6 +101,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the broughtForwardLossesRemaining as £3100" in {
           (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 3100
         }
+
+        "has the broughtForwardLossesUsed as £16900" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 16900
+        }
       }
     }
 
@@ -155,6 +159,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the broughtForwardLossesRemaining as £3100" in {
           (json \ "broughtForwardLossesRemaining").as[Double] shouldBe 3100
+        }
+
+        "has the broughtForwardLossesUsed as £16900" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 16900
         }
       }
     }
@@ -226,6 +234,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has no second tax band" in {
           (json \ "secondBand").as[Option[Double]] shouldBe None
         }
+
+        "has the broughtForwardLossesUsed as £0" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -292,6 +304,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has a second tax band of 67115" in {
           (json \ "secondBand").as[Option[Double]] shouldBe Some(67115)
         }
+
+        "has the broughtForwardLossesUsed as £10000" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 10000
+        }
       }
     }
 
@@ -357,6 +373,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has a second tax band of 66900" in {
           (json \ "secondBand").as[Option[Double]] shouldBe Some(66900)
+        }
+
+        "has the broughtForwardLossesUsed as £10000" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 10000
         }
       }
     }

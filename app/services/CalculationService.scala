@@ -313,4 +313,8 @@ trait CalculationService {
       case None => 0
     }
   }
+
+  def determineBFLossLeft(lossesBeforeCalculation: Double, lossesUsed: Double): Double = {
+    round("up", lossesBeforeCalculation - lossesUsed)
+  }
 }

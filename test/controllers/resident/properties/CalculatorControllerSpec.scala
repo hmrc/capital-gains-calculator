@@ -113,6 +113,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the prr used as £0" in {
           (json \ "prrUsed").as[Double] shouldBe 0
         }
+
+        "has the broughtForwardLossesUsed as £10900" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 10900
+        }
       }
     }
 
@@ -179,6 +183,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the prr used as £0" in {
           (json \ "prrUsed").as[Double] shouldBe 0
+        }
+
+        "has the broughtForwardLossesUsed as £11900" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 11900
         }
       }
     }
@@ -247,6 +255,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the prr used as £200" in {
           (json \ "prrUsed").as[Double] shouldBe 200
         }
+
+        "has the broughtForwardLossesUsed as £0" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -313,6 +325,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the prr used as £28000" in {
           (json \ "prrUsed").as[Double] shouldBe 28000
+        }
+
+        "has the broughtForwardLossesUsed as £0" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
         }
       }
     }
@@ -395,6 +411,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the prr used as £0" in {
           (json \ "prrUsed").as[Double] shouldBe 0
         }
+
+        "has the broughtForwardLossesUsed as £0" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -471,6 +491,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the prr used as £1000" in {
           (json \ "prrUsed").as[Double] shouldBe 1000
+        }
+
+        "has the broughtForwardLossesUsed as £10000" in {
+          (json \ "broughtForwardLossesUsed").as[Double] shouldBe 10000
         }
       }
     }

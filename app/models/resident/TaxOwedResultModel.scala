@@ -30,7 +30,8 @@ case class TaxOwedResultModel
   secondBand: Option[Double],
   secondRate: Option[Int],
   reliefsUsed: Option[Double],
-  prrUsed: Option[Double]
+  prrUsed: Option[Double],
+  broughtForwardLossesUsed: Option[Double]
 )
 
 object TaxOwedResultModel {
