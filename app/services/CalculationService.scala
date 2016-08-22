@@ -314,7 +314,5 @@ trait CalculationService {
     }
   }
 
-  def determineBFLossLeft(lossesBeforeCalculation: Double, lossesUsed: Double): Double = {
-    round("up", lossesBeforeCalculation - lossesUsed)
-  }
+  def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
 }
