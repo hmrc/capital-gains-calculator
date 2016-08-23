@@ -78,12 +78,14 @@ trait CalculatorController extends BaseController {
       allowableLosses.getOrElse(0)
     )
     val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-    val deductions = prrUsed + reliefsUsed + round("up", allowableLosses.getOrElse(0.0)) + aeaUsed + round("up", broughtForwardLosses.getOrElse(0.0))
     val allowableLossesRemaining = CalculationService.determineLossLeft(gain - (reliefsUsed + prrUsed), round("up", allowableLosses.getOrElse(0)))
     val broughtForwardLossesRemaining = CalculationService.determineLossLeft(gain - (reliefsUsed + prrUsed + round("up", allowableLosses.getOrElse(0.0)) +
       aeaUsed), broughtForwardLosses.getOrElse(0))
     val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up", broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
     val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up", allowableLosses.getOrElse(0)), allowableLossesRemaining)
+
+    val deductions = round("up", prrUsed + reliefsUsed + round("up", allowableLossesUsed) + aeaUsed + round("up", broughtForwardLossesUsed))
+
     val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining, broughtForwardLossesRemaining,
       Some(reliefsUsed), Some(prrUsed), Some(broughtForwardLossesUsed), allowableLossesUsed)
 
