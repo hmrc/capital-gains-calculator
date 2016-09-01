@@ -313,4 +313,6 @@ trait CalculationService {
       case None => 0
     }
   }
+
+  def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
 }

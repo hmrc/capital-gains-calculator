@@ -1124,4 +1124,18 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 800
     }
   }
+
+  "Calling the calculateAmountUsed method" should {
+    "return 0 when supplied with 10 and 10" in {
+      calculateAmountUsed(10,10) shouldEqual 0
+    }
+
+    "return 1 when supplied with 10 and 9" in {
+      calculateAmountUsed(10,9) shouldEqual 1
+    }
+
+    "return 0 when supplied with 9 and 10" in {
+      calculateAmountUsed(9,10) shouldEqual 0
+    }
+  }
 }
