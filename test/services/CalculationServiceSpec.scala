@@ -982,37 +982,37 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determinePRRUsed method" should {
 
     "return a value of PRR claimed when less than total gain" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(500), "Part")
+      val result = CalculationService.determinePRRUsed(1000, Some(500), Some("Part"))
       result shouldEqual 500
     }
 
     "return a value of PRR claimed when equal to total gain" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(1000), "Part")
+      val result = CalculationService.determinePRRUsed(1000, Some(1000), Some("Part"))
       result shouldEqual 1000
     }
 
     "return a value equal to the total gain when PRR claimed is greater" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(1200), "Part")
+      val result = CalculationService.determinePRRUsed(1000, Some(1200), Some("Part"))
       result shouldEqual 1000
     }
 
     "return a value of PRR claimed with correct rounding when less than total gain" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(500.01), "Part")
+      val result = CalculationService.determinePRRUsed(1000, Some(500.01), Some("Part"))
       result shouldEqual 501
     }
 
     "return a value equal to the total gain when PRR claimed is greater with correct rounding" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(1000.01), "Part")
+      val result = CalculationService.determinePRRUsed(1000, Some(1000.01), Some("Part"))
       result shouldEqual 1000
     }
 
     "return a value of gain when Full PRR is claimed" in {
-      val result = CalculationService.determinePRRUsed(1000, None, "Full")
+      val result = CalculationService.determinePRRUsed(1000, None, Some("Full"))
       result shouldEqual 1000
     }
 
     "return a value of 0 when PRR is not claimed" in {
-      val result = CalculationService.determinePRRUsed(1000, None, "None")
+      val result = CalculationService.determinePRRUsed(1000, None, Some("None"))
       result shouldEqual 0
     }
   }
