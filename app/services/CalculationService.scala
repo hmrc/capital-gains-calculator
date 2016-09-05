@@ -273,11 +273,11 @@ trait CalculationService {
 
   }
 
-  def determinePRRUsed (gain: Double, prrValue: Option[Double], prrType: String): Double = {
-    prrValue match {
-      case a if prrType.equals("Full") => gain
-      case Some(b) if b < gain && prrType.equals("Part") => round("up", b)
-      case Some(c) if prrType.equals("Part") => gain
+  def determinePRRUsed (gain: Double, prrValue: Option[Double], prrType: Option[String]): Double = {
+    (prrValue, prrType) match {
+      case (_, Some(b)) if b.equals("Full") => gain
+      case (Some(a), Some(b)) if a < gain && b.equals("Part") => round("up", a)
+      case (Some(a), Some(b)) if b.equals("Part") => gain
       case _ => 0
     }
   }

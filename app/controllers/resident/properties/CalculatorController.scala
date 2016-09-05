@@ -56,7 +56,7 @@ trait CalculatorController extends BaseController {
     acquisitionValue: Double,
     acquisitionCosts: Double,
     improvements: Double,
-    prrType: String,
+    prrType: Option[String],
     prrValue: Option[Double],
     reliefs: Option[Double],
     allowableLosses: Option[Double],
@@ -93,7 +93,7 @@ trait CalculatorController extends BaseController {
   }
 
   def calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
-    improvements: Double, prrType: String, prrValue: Option[Double], reliefs: Option[Double], allowableLosses: Option[Double],
+    improvements: Double, prrType: Option[String], prrValue: Option[Double], reliefs: Option[Double], allowableLosses: Option[Double],
     broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
     previousIncome: Double, personalAllowance: Double, disposalDate: String = "2015-10-10"
   ): Action[AnyContent] = Action.async { implicit request =>
