@@ -1090,37 +1090,37 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determineReliefsUsed method" should {
 
     "return the full value of reliefs submitted when less than the gain" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(500))
+      val result = CalculationService.determineLettingsReliefsUsed(1000, Some(500))
       result shouldEqual 500
     }
 
     "return the full value of reliefs submitted when equal to the gain" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(1000))
+      val result = CalculationService.determineLettingsReliefsUsed(1000, Some(1000))
       result shouldEqual 1000
     }
 
     "return the value of the gain when reliefs submitted greater than the gain" in {
-      val result = CalculationService.determineReliefsUsed(1200, Some(1500))
+      val result = CalculationService.determineLettingsReliefsUsed(1200, Some(1500))
       result shouldEqual 1200
     }
 
     "return a result of 0 if no reliefs are submitted" in {
-      val result = CalculationService.determineReliefsUsed(1000, None)
+      val result = CalculationService.determineLettingsReliefsUsed(1000, None)
       result shouldEqual 0
     }
 
     "return a result rounded up if reliefs is a fractional value" in {
-      val result = CalculationService.determineReliefsUsed(2000, Some(499.01))
+      val result = CalculationService.determineLettingsReliefsUsed(2000, Some(499.01))
       result shouldEqual 500
     }
 
     "return a result equal to the gain when reliefs is fractionally above the gain" in {
-      val result = CalculationService.determineReliefsUsed(800, Some(800.01))
+      val result = CalculationService.determineLettingsReliefsUsed(800, Some(800.01))
       result shouldEqual 800
     }
 
     "return a result equal to the gain when reliefs is fractionally below the gain" in {
-      val result = CalculationService.determineReliefsUsed(800, Some(799.01))
+      val result = CalculationService.determineLettingsReliefsUsed(800, Some(799.01))
       result shouldEqual 800
     }
   }
