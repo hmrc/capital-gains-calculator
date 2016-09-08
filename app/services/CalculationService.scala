@@ -306,26 +306,8 @@ trait CalculationService {
   }
 
   def determineLettingsReliefsUsed(gain: Double, prr: Double, reliefs: Option[Double]): Double = {
-
-    val letRelValue: Double = reliefs.getOrElse(0)
-    val gainMinusPRR: Double = gain - prr
-
-    val greaterThanGain: List[Double] = {
-      if (letRelValue > (gainMinusPRR)) List(round("up", gainMinusPRR))
-      else List(round("up", letRelValue))
-    }
-
-    val greaterThanMax: List[Double] = {
-      if (letRelValue > 40000) greaterThanGain.::(round("up", 40000))
-      else greaterThanGain.::(round("up", letRelValue))
-    }
-
-    val greaterThanPRR: List[Double] = {
-      if (letRelValue > prr) greaterThanMax.::(round("up", prr))
-      else greaterThanMax.::(round("up", letRelValue))
-    }
-
-    greaterThanPRR.min
+    val maxLettingRelief = 40000.0
+    round("up", List(gain - prr, prr, reliefs.getOrElse(0.0), maxLettingRelief).min)
   }
 
   def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
