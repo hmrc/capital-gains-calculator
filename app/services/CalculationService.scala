@@ -305,9 +305,9 @@ trait CalculationService {
     })
   }
 
-  def determineLettingsReliefsUsed(gain: Double, prr: Double, reliefs: Option[Double]): Double = {
+  def determineLettingsReliefsUsed(gain: Double, prrUsed: Double, reliefs: Option[Double]): Double = {
     val maxLettingRelief = 40000.0
-    round("up", List(gain - prr, prr, reliefs.getOrElse(0.0), maxLettingRelief).min)
+    round("up", List(gain - prrUsed, prrUsed, reliefs.getOrElse(0.0), maxLettingRelief).min)
   }
 
   def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
