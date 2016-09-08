@@ -27,7 +27,7 @@ case class ChargeableGainResultModel
   deductions: Double,
   allowableLossesRemaining: Double,
   broughtForwardLossesRemaining: Double,
-  reliefsUsed: Option[Double],
+  lettingReliefsUsed: Option[Double],
   prrUsed: Option[Double],
   broughtForwardLossesUsed: Option[Double],
   allowableLossesUsed: Double

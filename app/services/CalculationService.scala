@@ -273,11 +273,10 @@ trait CalculationService {
 
   }
 
-  def determinePRRUsed (gain: Double, prrValue: Option[Double], prrType: Option[String]): Double = {
-    (prrValue, prrType) match {
-      case (_, Some(b)) if b.equals("Full") => gain
-      case (Some(a), Some(b)) if a < gain && b.equals("Part") => round("up", a)
-      case (Some(a), Some(b)) if b.equals("Part") => gain
+  def determinePRRUsed (gain: Double, prrValue: Option[Double]): Double = {
+    prrValue match {
+      case (Some(a)) if a < gain => round("up", a)
+      case (Some(a)) => gain
       case _ => 0
     }
   }
@@ -306,12 +305,27 @@ trait CalculationService {
     })
   }
 
-  def determineLettingsReliefsUsed(gain: Double, reliefs: Option[Double]): Double = {
-    reliefs match {
-      case Some(a) if a < gain => round("up", a)
-      case Some(b) => gain
-      case None => 0
+  def determineLettingsReliefsUsed(gain: Double, prr: Double, reliefs: Option[Double]): Double = {
+
+    val letRelValue: Double = reliefs.getOrElse(0)
+    val gainMinusPRR: Double = gain - prr
+
+    val greaterThanGain: List[Double] = {
+      if (letRelValue > (gainMinusPRR)) List(round("up", gainMinusPRR))
+      else List(round("up", letRelValue))
     }
+
+    val greaterThanMax: List[Double] = {
+      if (letRelValue > 40000) greaterThanGain.::(round("up", 40000))
+      else greaterThanGain.::(round("up", letRelValue))
+    }
+
+    val greaterThanPRR: List[Double] = {
+      if (letRelValue > prr) greaterThanMax.::(round("up", prr))
+      else greaterThanMax.::(round("up", letRelValue))
+    }
+
+    greaterThanPRR.min
   }
 
   def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
