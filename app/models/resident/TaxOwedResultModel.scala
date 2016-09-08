@@ -29,7 +29,7 @@ case class TaxOwedResultModel
   firstRate: Int,
   secondBand: Option[Double],
   secondRate: Option[Int],
-  reliefsUsed: Option[Double],
+  lettingReliefsUsed: Option[Double],
   prrUsed: Option[Double],
   broughtForwardLossesUsed: Option[Double],
   allowableLossesUsed: Double
