@@ -305,8 +305,9 @@ trait CalculationService {
     })
   }
 
-  def determineLettingsReliefsUsed(gain: Double, prrUsed: Double, reliefs: Option[Double]): Double = {
-    val maxLettingRelief = 40000.0
+  def determineLettingsReliefsUsed(gain: Double, prrUsed: Double, reliefs: Option[Double], calcTaxYear: Int): Double = {
+    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
+    val maxLettingRelief = taxRatesAndBands.maxLettingsRelief
     round("up", List(gain - prrUsed, prrUsed, reliefs.getOrElse(0.0), maxLettingRelief).min)
   }
 

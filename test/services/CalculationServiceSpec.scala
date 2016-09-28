@@ -1085,58 +1085,63 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determineReliefsUsed method" should {
 
     "return the a value limited to the prr of letting relief submitted when less than the gain - prr" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 20000, Some(30000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 20000, Some(30000), 2015)
       result shouldEqual 20000
     }
 
     "return a value of 40000 letting relief submitted when prr and lettings greater than 40000" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(50000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(50000), 2015)
       result shouldEqual 40000
     }
 
     "return a value of 40000 letting relief submitted when prr and lettings greater than 40000 again" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000), 2015)
       result shouldEqual 40000
     }
 
     "return the value of the gain when reliefs submitted greater than the gain" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(30000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(30000), 2015)
       result shouldEqual 30000
     }
 
     "return a value of gain-prr when the letting relief submitted exceeds this" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 70000, Some(40000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 70000, Some(40000), 2015)
       result shouldEqual 30000
     }
 
     "return a value of letting relief when the letting relief submitted is less than 40000 and gain-prr" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 80000, Some(18000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 80000, Some(18000), 2015)
       result shouldEqual 18000
     }
 
     "return the value of 0 if there is no prr claimed" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 0, Some(30000))
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 0, Some(30000), 2015)
       result shouldEqual 0
     }
 
     "return a result of 0 if no reliefs are submitted" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, None)
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, None, 2015)
       result shouldEqual 0
     }
 
     "return a result rounded up if reliefs is a fractional value" in {
-      val result = CalculationService.determineLettingsReliefsUsed(2000, 1000, Some(499.01))
+      val result = CalculationService.determineLettingsReliefsUsed(2000, 1000, Some(499.01), 2013)
       result shouldEqual 500
     }
 
     "return a result equal to the gain when reliefs is fractionally above the gain" in {
-      val result = CalculationService.determineLettingsReliefsUsed(800, 400, Some(800.01))
+      val result = CalculationService.determineLettingsReliefsUsed(800, 400, Some(800.01), 2014)
       result shouldEqual 400
     }
 
     "return a result equal to the gain when reliefs is fractionally below the gain" in {
-      val result = CalculationService.determineLettingsReliefsUsed(800, 400, Some(799.01))
+      val result = CalculationService.determineLettingsReliefsUsed(800, 400, Some(799.01), 2015)
       result shouldEqual 400
+    }
+
+    "return a result equal to the max reliefs for the latest year when provided with a date in the future" in {
+      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000), 2020)
+      result shouldEqual 40000
     }
   }
 

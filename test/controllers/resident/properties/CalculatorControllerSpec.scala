@@ -61,7 +61,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         lettingReliefs = Some(1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100,
+        disposalDate = "2015-05-06"
       )(fakeRequest)
 
       "return a 200" in {
@@ -135,7 +136,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         lettingReliefs = None,
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100,
+        disposalDate = "2015-05-06"
       )(fakeRequest)
 
       "return a 200" in {
@@ -209,7 +211,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         lettingReliefs = Some(30000),
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100,
+        disposalDate = "2015-05-06"
       )(fakeRequest)
 
       "return a 200" in {
@@ -283,7 +286,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         lettingReliefs = Some(45000),
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100,
+        disposalDate = "2015-05-06"
       )(fakeRequest)
 
       "return a 200" in {
@@ -528,7 +532,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         lettingReliefs = None,
         allowableLosses = Some(100000),
         broughtForwardLosses = Some(0),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100,
+        disposalDate = "2015-05-06"
       )(fakeRequest)
 
       "return a 200" in {
