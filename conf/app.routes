@@ -11,7 +11,7 @@ GET        /calculate-chargeable-gain   controllers.resident.properties.Calculat
 GET        /calculate-resident-capital-gains-tax    controllers.resident.properties.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
 
 ## Resident Share Calculation Routes
-GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double)
+GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
 GET        /shares/calculate-chargeable-gain   controllers.resident.shares.CalculatorController.calculateChargeableGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double)
 GET        /shares/calculate-resident-capital-gains-tax    controllers.resident.shares.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
 
