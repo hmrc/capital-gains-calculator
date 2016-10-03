@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 import common.Math._
 import config.TaxRatesAndBands
 import models.CalculationResultModel
+import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 
 import scala.concurrent.Future
@@ -34,15 +35,14 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculateTotalGain (disposalValue: Double,
-                          disposalCosts: Double,
-                          acquisitionValue: Double,
-                          acquisitionCosts: Double): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalGain (totalGainModel: TotalGainModel): Action[AnyContent] =
+    Action.async { implicit request =>
 
-    val result = calculationService.calculateGainFlat(disposalValue,
-      disposalCosts,
-      acquisitionValue,
-      acquisitionCosts,
+    val result = calculationService.calculateGainFlat(
+      totalGainModel.disposalValue,
+      totalGainModel.disposalCosts,
+      totalGainModel.acquisitionValue,
+      totalGainModel.acquisitionCosts,
       0)
 
     Future.successful(Ok(Json.toJson(result)))
