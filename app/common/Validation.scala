@@ -18,7 +18,7 @@ package common
 
 object Validation {
 
-  def validationErrorMessage(inputs: Seq[Either[String, Any]]): String = {
+  def getFirstErrorMessage(inputs: Seq[Either[String, Any]]): String = {
     inputs.find(_.isLeft).fold("")(_.left.get)
   }
 }

@@ -36,7 +36,7 @@ object TotalGainModel {
           inputs match {
             case Seq(Right(disposalValue), Right(disposalCosts), Right(acquisitionValue), Right(acquisitionCosts)) =>
               Right(TotalGainModel(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts))
-            case fail => Left(Validation.validationErrorMessage(fail))
+            case fail => Left(Validation.getFirstErrorMessage(fail))
           }
         }
       }

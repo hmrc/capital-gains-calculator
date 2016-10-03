@@ -26,28 +26,28 @@ class ValidationSpec extends UnitSpec {
 
       "provided with a single Left input" in {
         val seq = Seq(Left("First error string"))
-        val result = Validation.validationErrorMessage(seq)
+        val result = Validation.getFirstErrorMessage(seq)
 
         result shouldBe "First error string"
       }
 
       "provided with a single Left input after the first element" in {
         val seq = Seq(Right(BigDecimal(0)), Left("First error string"))
-        val result = Validation.validationErrorMessage(seq)
+        val result = Validation.getFirstErrorMessage(seq)
 
         result shouldBe "First error string"
       }
 
       "provided with a single Left input after a Right element with a string" in {
         val seq = Seq(Right("First valid string"), Left("First error string"))
-        val result = Validation.validationErrorMessage(seq)
+        val result = Validation.getFirstErrorMessage(seq)
 
         result shouldBe "First error string"
       }
 
       "provided with multiple Left inputs" in {
         val seq = Seq(Right("First valid string"), Left("First error string"), Left("Second error string"))
-        val result = Validation.validationErrorMessage(seq)
+        val result = Validation.getFirstErrorMessage(seq)
 
         result shouldBe "First error string"
       }
