@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-/**
-  * Copyright 2016 HM Revenue & Customs
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
 
 package models.properties
 
@@ -126,9 +111,6 @@ class PropertyTotalGainModelSpec extends UnitSpec with MockitoSugar {
       }
 
       "return an error message when one component fails" in {
-//        val totalGain = new TotalGainModel(2000, 2500, 3000, 3500)
-//        implicit val mockDoubleBinder = setupMockDoubleBinder(Some(Right(1000.0)), "")
-//        implicit val mockTotalGainBinder = setupMockTotalGainBinder(Some(Right(totalGain)), "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0")
 
         val binder = PropertyTotalGainModel.propertyTotalGainBinder
 
