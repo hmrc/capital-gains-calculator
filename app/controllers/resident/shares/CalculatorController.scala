@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 import common.Math._
 import config.TaxRatesAndBands
 import models.CalculationResultModel
-import models.resident.shares.TotalGainModel
+import models.resident.shares.{ChargeableGainModel, TotalGainModel}
 import org.joda.time.DateTime
 
 import scala.concurrent.Future
@@ -50,32 +50,29 @@ trait CalculatorController extends BaseController {
 
   def calculateChargeableGain
   (
-    disposalValue: Double,
-    disposalCosts: Double,
-    acquisitionValue: Double,
-    acquisitionCosts: Double,
-    allowableLosses: Option[Double],
-    broughtForwardLosses: Option[Double],
-    annualExemptAmount: Double
+    chargeableGainModel: ChargeableGainModel
   ): Action[AnyContent] = Action.async { implicit request =>
+    val totalGainModel = chargeableGainModel.totalGainModel
 
-    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, 0)
+    val gain = calculationService.calculateGainFlat(totalGainModel.disposalValue, totalGainModel.disposalCosts,
+      totalGainModel.acquisitionValue, totalGainModel.acquisitionCosts, 0)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
+      gain, 0, chargeableGainModel.allowableLosses.getOrElse(0), chargeableGainModel.annualExemptAmount, chargeableGainModel.broughtForwardLosses.getOrElse(0)
     )
     val aeaUsed = calculationService.annualExemptAmountUsed(
-      annualExemptAmount,
+      chargeableGainModel.annualExemptAmount,
       gain,
-      calculationService.calculateChargeableGain(gain, 0, allowableLosses.getOrElse(0), annualExemptAmount, 0),
+      calculationService.calculateChargeableGain(gain, 0, chargeableGainModel.allowableLosses.getOrElse(0), chargeableGainModel.annualExemptAmount, 0),
       0,
-      allowableLosses.getOrElse(0)
+      chargeableGainModel.allowableLosses.getOrElse(0)
     )
-    val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-    val allowableLossesRemaining = CalculationService.determineLossLeft(gain, allowableLosses.getOrElse(0))
-    val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + broughtForwardLosses.getOrElse(0.0),
-      broughtForwardLosses.getOrElse(0))
-    val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up", broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
-    val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up", allowableLosses.getOrElse(0)), allowableLossesRemaining)
+    val aeaRemaining = calculationService.annualExemptAmountLeft(chargeableGainModel.annualExemptAmount, aeaUsed)
+    val allowableLossesRemaining = CalculationService.determineLossLeft(gain, chargeableGainModel.allowableLosses.getOrElse(0))
+    val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + chargeableGainModel.broughtForwardLosses.getOrElse(0.0),
+      chargeableGainModel.broughtForwardLosses.getOrElse(0))
+    val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up", chargeableGainModel.broughtForwardLosses.getOrElse(0)),
+      broughtForwardLossesRemaining)
+    val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up", chargeableGainModel.allowableLosses.getOrElse(0)), allowableLossesRemaining)
 
     val deductions = round("up", allowableLossesUsed) + aeaUsed + round("up", broughtForwardLossesUsed)
 
