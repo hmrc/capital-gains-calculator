@@ -12,7 +12,7 @@ GET        /calculate-resident-capital-gains-tax    controllers.resident.propert
 
 ## Resident Share Calculation Routes
 GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
-GET        /shares/calculate-chargeable-gain   controllers.resident.shares.CalculatorController.calculateChargeableGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double)
+GET        /shares/calculate-chargeable-gain   controllers.resident.shares.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.shares.ChargeableGainModel)
 GET        /shares/calculate-resident-capital-gains-tax    controllers.resident.shares.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
 
 ## Tax Rates and Bands Routes

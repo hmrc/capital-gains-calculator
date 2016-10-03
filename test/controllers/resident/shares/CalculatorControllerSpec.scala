@@ -16,7 +16,7 @@
 
 package controllers.resident.shares
 
-import models.resident.shares.TotalGainModel
+import models.resident.shares.{ChargeableGainModel, TotalGainModel}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -53,14 +53,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 195000,
+      lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
+        TotalGainModel(disposalValue = 195000,
         disposalCosts = 1000,
         acquisitionValue = 160000,
-        acquisitionCosts = 1000,
+        acquisitionCosts = 1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100)
       )(fakeRequest)
 
       "return a 200" in {
@@ -116,14 +116,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed with correct rounding" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 195000,
+      lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
+        TotalGainModel(disposalValue = 195000,
         disposalCosts = 1000,
         acquisitionValue = 160000,
-        acquisitionCosts = 1000,
+        acquisitionCosts = 1000),
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100)
       )(fakeRequest)
 
       "return a 200" in {
@@ -404,14 +404,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "Part allowableLossesUsed" should {
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 50000,
+      lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
+        TotalGainModel(disposalValue = 50000,
         disposalCosts = 0,
         acquisitionValue = 0,
-        acquisitionCosts = 0,
+        acquisitionCosts = 0),
         allowableLosses = Some(100000),
         broughtForwardLosses = Some(0),
-        annualExemptAmount = 11100
+        annualExemptAmount = 11100)
       )(fakeRequest)
 
       "return a 200" in {
