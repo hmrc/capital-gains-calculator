@@ -42,10 +42,10 @@ object TotalGainModel {
       }
 
       override def unbind(key: String, totalGainModel: TotalGainModel): String = {
-        s"${doubleBinder.unbind("disposalValue", totalGainModel.disposalValue)}&" +
-          s"${doubleBinder.unbind("disposalCosts", totalGainModel.disposalCosts)}&" +
-          s"${doubleBinder.unbind("acquisitionValue", totalGainModel.acquisitionValue)}&" +
-          s"${doubleBinder.unbind("acquisitionCosts", totalGainModel.acquisitionCosts)}&"
+        s"disposalValue=${doubleBinder.unbind("disposalValue", totalGainModel.disposalValue)}&" +
+          s"disposalCosts=${doubleBinder.unbind("disposalCosts", totalGainModel.disposalCosts)}&" +
+          s"acquisitionValue=${doubleBinder.unbind("acquisitionValue", totalGainModel.acquisitionValue)}&" +
+          s"acquisitionCosts=${doubleBinder.unbind("acquisitionCosts", totalGainModel.acquisitionCosts)}"
       }
     }
 }
