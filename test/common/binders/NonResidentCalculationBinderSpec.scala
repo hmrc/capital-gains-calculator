@@ -37,7 +37,8 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.currentIncome -> Seq("333.33"),
     keys.personalAllowanceAmount -> Seq("444.44"),
     keys.disposalValue -> Seq("555.55"),
-    keys.disposalCosts  -> Seq("666.66")
+    keys.disposalCosts  -> Seq("666.66"),
+    keys.acquisitionValue -> Seq("777.77")
   )
 
   // the expected result of binding valid requests
@@ -50,11 +51,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     Some(333.33),
     Some(444.44),
     555.55,
-    666.66
+    666.66,
+    777.77
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00)
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00)
 
   "Binding a valid non resident calculation request" when {
 
@@ -167,6 +169,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         result.disposalCosts shouldBe expectedRequest.disposalCosts
       }
     }
+
+    "a acquisition value is defined" should {
+      "return a CalculationRequest with the acquisition value populated" in {
+        result.acquisitionValue shouldBe expectedRequest.acquisitionValue
+      }
+    }
   }
 
   "Binding a invalid non resident calculation request" when {
@@ -263,6 +271,23 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Left(doubleParseError(keys.disposalCosts, badData)))
       }
     }
+
+    "an acquisition value is not supplied" should {
+      "return an error message" in {
+        val request = badRequest(keys.acquisitionValue, None)
+        val result = target.bind("", request)
+        result shouldBe Some(Left(s"${keys.acquisitionValue} is required."))
+      }
+    }
+
+    "an acquisition value with an invalid value" should {
+      "return an error message" in {
+        val badData = "bad data"
+        val request = badRequest(keys.acquisitionValue, Some(badData))
+        val result = target.bind("", request)
+        result shouldBe Some(Left(doubleParseError(keys.acquisitionValue, badData)))
+      }
+    }
   }
 
   "Unbinding a non resident calculation request" when {
@@ -306,6 +331,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "output the disposal costs key and value" in {
         result should include(s"&${keys.disposalCosts}=666.66")
+      }
+
+      "output the acquisition value key and value" in {
+        result should include(s"&${keys.acquisitionValue}=777.77")
       }
     }
 
