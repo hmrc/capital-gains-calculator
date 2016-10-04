@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package models.properties
 
 import models.resident.properties.PropertyTotalGainModel
