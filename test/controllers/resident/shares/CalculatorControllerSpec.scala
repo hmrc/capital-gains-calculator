@@ -16,8 +16,6 @@
 
 package controllers.resident.shares
 
-import java.time.LocalDate
-
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import org.joda.time.DateTime
 import play.api.libs.json.Json

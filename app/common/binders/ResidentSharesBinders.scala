@@ -18,10 +18,13 @@ package common.binders
 
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => queryKeys}
 import common.Validation
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
+import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
+import org.joda.time.DateTime
 import play.api.mvc.QueryStringBindable
 
-trait ResidentSharesBinders {
+object ResidentSharesBinders extends ResidentSharesBinders
+
+trait ResidentSharesBinders extends CommonBinders {
 
   val totalGainParameters = Seq(queryKeys.disposalValue, queryKeys.disposalCosts, queryKeys.acquisitionValue, queryKeys.acquisitionCosts)
   val chargeableGainParameters = totalGainParameters ++ Seq(queryKeys.annualExemptAmount)
@@ -94,6 +97,41 @@ trait ResidentSharesBinders {
           optionDoubleBinder.unbind(queryKeys.broughtForwardLosses, chargeableGainModel.broughtForwardLosses),
           doubleBinder.unbind(queryKeys.annualExemptAmount, chargeableGainModel.annualExemptAmount)
         ).filter(!_.isEmpty).mkString("&")
+
+    }
+
+  implicit def calculateTaxOwedBinder(implicit doubleBinder: QueryStringBindable[Double],
+                                      optionDoubleBinder: QueryStringBindable[Option[Double]],
+                                      chargeableGainBinder: QueryStringBindable[ChargeableGainModel],
+                                      localDateBinder: QueryStringBindable[DateTime]): QueryStringBindable[CalculateTaxOwedModel] =
+    new QueryStringBindable[CalculateTaxOwedModel] {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CalculateTaxOwedModel]] = {
+        for {
+          chargeableGainModelEither <- chargeableGainBinder.bind("chargeableGain", params)
+          previousTaxableGainEither <- optionDoubleBinder.bind("previousTaxableGain", params)
+          previousIncomeEither <- doubleBinder.bind("previousIncome", params)
+          personalAllowanceEither <- doubleBinder.bind("personalAllowance", params)
+          disposalDateEither <- localDateBinder.bind("disposalDate", params)
+        } yield {
+          val inputs = (chargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither,
+            disposalDateEither)
+          inputs match {
+            case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance), Right(disposalDate)) =>
+              Right(CalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance, disposalDate))
+            case _ =>
+              val inputs = Seq(chargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither,
+                disposalDateEither)
+              Left(Validation.getFirstErrorMessage(inputs))
+          }
+        }
+      }
+
+      override def unbind(key: String, calculateTaxOwedModel: CalculateTaxOwedModel): String =
+        s"${chargeableGainBinder.unbind("chargeableGain", calculateTaxOwedModel.chargeableGainModel)}&" +
+          s"${optionDoubleBinder.unbind("previousTaxableGain", calculateTaxOwedModel.previousTaxableGain)}&" +
+          s"${doubleBinder.unbind("previousIncome", calculateTaxOwedModel.previousIncome)}&" +
+          s"${doubleBinder.unbind("personalAllowance", calculateTaxOwedModel.personalAllowance)}&" +
+          s"${localDateBinder.unbind("disposalDate", calculateTaxOwedModel.disposalDate)}"
 
     }
 }

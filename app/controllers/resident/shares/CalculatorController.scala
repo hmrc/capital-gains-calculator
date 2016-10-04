@@ -94,7 +94,8 @@ trait CalculatorController extends BaseController {
       chargeableGainModel.totalGainModel.disposalCosts, chargeableGainModel.totalGainModel.acquisitionValue,
       chargeableGainModel.totalGainModel.acquisitionCosts, 0)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, chargeableGainModel.allowableLosses.getOrElse(0.0), chargeableGainModel.annualExemptAmount, chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
+      gain, 0, chargeableGainModel.allowableLosses.getOrElse(0.0), chargeableGainModel.annualExemptAmount,
+      chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
     )
     val aeaUsed: Double = calculationService.annualExemptAmountUsed(
       chargeableGainModel.annualExemptAmount,
@@ -106,7 +107,9 @@ trait CalculatorController extends BaseController {
     val deductions = 0 + chargeableGainModel.allowableLosses.getOrElse(0.0) + aeaUsed + chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
     val calculationResult: CalculationResultModel  = calculationService.calculationResult (
       "individual", gain, chargeableGain, negativeToZero(chargeableGain),
-      calculationService.brRemaining(calculateTaxOwedModel.previousIncome, calculateTaxOwedModel.personalAllowance, calculateTaxOwedModel.previousTaxableGain.getOrElse(0.0), Date.getTaxYear(calculateTaxOwedModel.disposalDate)),
+      calculationService.brRemaining(calculateTaxOwedModel.previousIncome,
+        calculateTaxOwedModel.personalAllowance, calculateTaxOwedModel.previousTaxableGain.getOrElse(0.0),
+        Date.getTaxYear(calculateTaxOwedModel.disposalDate)),
       0.0, "No", aeaUsed, 0.0, calcTaxYear, false
     )
     val result: TaxOwedResultModel = TaxOwedResultModel(
