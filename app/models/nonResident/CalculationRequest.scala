@@ -26,8 +26,8 @@ case class CalculationRequest(customerType: String,
                               disposalValue: Double,
                               disposalCosts: Double,
                               acquisitionValue: Double,
-                              acquisitionCosts: Double)
-//                              improvementsAmt: Double,
+                              acquisitionCosts: Double,
+                              improvementsAmount: Double)
 //                              reliefs: Double,
 //                              allowableLossesAmt: Double,
 //                              acquisitionDate: Option[String],

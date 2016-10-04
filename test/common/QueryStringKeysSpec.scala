@@ -66,5 +66,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a acquisition costs key with the value ${target.acquisitionCosts}" in {
       target.acquisitionCosts shouldBe "acquisitionCostsAmt"
     }
+
+    s"have an improvements amount key with the value ${target.improvementsAmount}" in {
+      target.improvementsAmount shouldBe "improvementsAmt"
+    }
   }
 }
