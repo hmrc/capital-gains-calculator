@@ -54,5 +54,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a disposal value key with the value ${target.disposalValue}" in {
       target.disposalValue shouldBe "disposalValue"
     }
+
+    s"have a disposal costs key with the value ${target.disposalCosts}" in {
+      target.disposalCosts shouldBe "disposalCosts"
+    }
   }
 }

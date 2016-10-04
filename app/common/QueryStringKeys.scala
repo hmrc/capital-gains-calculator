@@ -27,6 +27,7 @@ object QueryStringKeys {
     val currentIncome = "currentIncome"
     val personalAllowanceAmount = "personalAllowanceAmt"
     val disposalValue = "disposalValue"
+    val disposalCosts = "disposalCosts"
   }
 
   object ResidentSharesCalculationKeys {

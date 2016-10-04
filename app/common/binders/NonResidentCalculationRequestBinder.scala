@@ -23,7 +23,7 @@ import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 
 trait NonResidentCalculationRequestBinder {
 
-  val requiredParams = Seq(keys.customerType, keys.priorDisposal, keys.disposalValue)
+  val requiredParams = Seq(keys.customerType, keys.priorDisposal, keys.disposalValue, keys.disposalCosts)
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
@@ -45,6 +45,7 @@ trait NonResidentCalculationRequestBinder {
           currentIncomeParam <- optionalDoubleBinder.bind(keys.currentIncome, params)
           personalAllowanceParam <- optionalDoubleBinder.bind(keys.personalAllowanceAmount, params)
           disposalValueParam <- doubleBinder.bind(keys.disposalValue, params)
+          disposalCostsParam <- doubleBinder.bind(keys.disposalCosts, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
@@ -53,7 +54,8 @@ trait NonResidentCalculationRequestBinder {
             vulnerableParam,
             currentIncomeParam,
             personalAllowanceParam,
-            disposalValueParam) match {
+            disposalValueParam,
+            disposalCostsParam) match {
             case (
               Right(customerType),
               Right(priorDisposal),
@@ -62,14 +64,16 @@ trait NonResidentCalculationRequestBinder {
               Right(vulnerable),
               Right(currentIncome),
               Right(personalAllowance),
-              Right(disposalValue)) => Right(CalculationRequest(customerType,
+              Right(disposalValue),
+              Right(disposalCosts)) => Right(CalculationRequest(customerType,
                                                               priorDisposal,
                                                               aea,
                                                               otherProperties,
                                                               vulnerable,
                                                               currentIncome,
                                                               personalAllowance,
-                                                              disposalValue))
+                                                              disposalValue,
+                                                              disposalCosts))
             case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
                                                                   priorDisposalParam,
                                                                   aeaParam,
@@ -77,7 +81,8 @@ trait NonResidentCalculationRequestBinder {
                                                                   vulnerableParam,
                                                                   currentIncomeParam,
                                                                   personalAllowanceParam,
-                                                                  disposalValueParam)))
+                                                                  disposalValueParam,
+                                                                  disposalCostsParam)))
           }
         }
       }
@@ -91,7 +96,8 @@ trait NonResidentCalculationRequestBinder {
           optionalStringBinder.unbind(keys.vulnerable, request.isVulnerable),
           optionalDoubleBinder.unbind(keys.currentIncome, request.currentIncome),
           optionalDoubleBinder.unbind(keys.personalAllowanceAmount, request.personalAllowanceAmount),
-          doubleBinder.unbind(keys.disposalValue, request.disposalValue)
+          doubleBinder.unbind(keys.disposalValue, request.disposalValue),
+          doubleBinder.unbind(keys.disposalCosts, request.disposalCosts)
         ).filterNot(_.isEmpty).mkString("&")
 
     }

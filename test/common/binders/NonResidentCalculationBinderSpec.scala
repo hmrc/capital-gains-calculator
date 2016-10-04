@@ -36,31 +36,32 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.vulnerable -> Seq("yes"),
     keys.currentIncome -> Seq("333.33"),
     keys.personalAllowanceAmount -> Seq("444.44"),
-    keys.disposalValue -> Seq("555.55")
+    keys.disposalValue -> Seq("555.55"),
+    keys.disposalCosts  -> Seq("666.66")
   )
+
+  // the expected result of binding valid requests
+  val expectedRequest = CalculationRequest(
+    "individual",
+    "yes",
+    Some(111.11),
+    Some(222.22),
+    Some("yes"),
+    Some(333.33),
+    Some(444.44),
+    555.55,
+    666.66
+  )
+
+  // the opposite of the expectedRequest
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00)
 
   "Binding a valid non resident calculation request" when {
 
-    // the expected result of binding valid requests
-    val expectedRequest = CalculationRequest(
-      "individual",
-      "yes",
-      Some(111.11),
-      Some(222.22),
-      Some("yes"),
-      Some(333.33),
-      Some(444.44),
-      555.55
-    )
-
-    // the opposite of the expectedRequest
-    val invalidCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00)
-
     val result = target.bind("", validRequest) match {
       case Some(Right(data)) => data
-      case _ => invalidCalculationRequest
+      case _ => emptyCalculationRequest
     }
-
     "a customer type is defined" should {
       "return a CalculationRequest with the customer type populated" in {
         result.customerType shouldBe expectedRequest.customerType
@@ -84,10 +85,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         val request = validRequest.filterKeys(key => key != keys.annualExemptAmount)
         val result = target.bind("", request) match {
           case Some(Right(data)) => data
-          case _ => invalidCalculationRequest
+          case _ => emptyCalculationRequest
         }
 
-        result should not be invalidCalculationRequest
+        result should not be emptyCalculationRequest
         result.annualExemptAmount shouldBe None
       }
     }
@@ -103,10 +104,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         val request = validRequest.filterKeys(key => key != keys.otherPropertiesAmount)
         val result = target.bind("", request) match {
           case Some(Right(data)) => data
-          case _ => invalidCalculationRequest
+          case _ => emptyCalculationRequest
         }
 
-        result should not be invalidCalculationRequest
+        result should not be emptyCalculationRequest
         result.otherPropertiesAmount shouldBe None
       }
     }
@@ -128,10 +129,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         val request = validRequest.filterKeys(key => key != keys.currentIncome)
         val result = target.bind("", request) match {
           case Some(Right(data)) => data
-          case _ => invalidCalculationRequest
+          case _ => emptyCalculationRequest
         }
 
-        result should not be invalidCalculationRequest
+        result should not be emptyCalculationRequest
         result.currentIncome shouldBe None
       }
     }
@@ -147,10 +148,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         val request = validRequest.filterKeys(key => key != keys.personalAllowanceAmount)
         val result = target.bind("", request) match {
           case Some(Right(data)) => data
-          case _ => invalidCalculationRequest
+          case _ => emptyCalculationRequest
         }
 
-        result should not be invalidCalculationRequest
+        result should not be emptyCalculationRequest
         result.personalAllowanceAmount shouldBe None
       }
     }
@@ -158,6 +159,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     "a disposal value is defined" should {
       "return a CalculationRequest with the disposal value populated" in {
         result.disposalValue shouldBe expectedRequest.disposalValue
+      }
+    }
+
+    "a disposal costs is defined" should {
+      "return a CalculationRequest with the disposal costs populated" in {
+        result.disposalCosts shouldBe expectedRequest.disposalCosts
       }
     }
   }
@@ -234,9 +241,26 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     "a disposal value with an invalid value" should {
       "return an error message" in {
         val badData = "bad data"
-        val request = badRequest(keys.annualExemptAmount, Some(badData))
+        val request = badRequest(keys.disposalValue, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.annualExemptAmount, badData)))
+        result shouldBe Some(Left(doubleParseError(keys.disposalValue, badData)))
+      }
+    }
+
+    "a disposal costs is not supplied" should {
+      "return an error message" in {
+        val request = badRequest(keys.disposalCosts, None)
+        val result = target.bind("", request)
+        result shouldBe Some(Left(s"${keys.disposalCosts} is required."))
+      }
+    }
+
+    "a disposal costs with an invalid value" should {
+      "return an error message" in {
+        val badData = "bad data"
+        val request = badRequest(keys.disposalCosts, Some(badData))
+        val result = target.bind("", request)
+        result shouldBe Some(Left(doubleParseError(keys.disposalCosts, badData)))
       }
     }
   }
@@ -245,7 +269,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
     "all properties are populated" should {
 
-      val request = CalculationRequest("ind", "yes", Some(111.11), Some(222.22), Some("yes"), Some(333.33), Some(444.44), 555.55)
+      val request = expectedRequest
       val result = target.unbind("", request)
 
       "output the customer type key and value" in {
@@ -279,11 +303,15 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       "output the disposal value key and value" in {
         result should include(s"&${keys.disposalValue}=555.55")
       }
+
+      "output the disposal costs key and value" in {
+        result should include(s"&${keys.disposalCosts}=666.66")
+      }
     }
 
     "optional properties are missing" should {
 
-      val request = CalculationRequest("ind", "yes", None, None, None, None, None, 0.00)
+      val request = emptyCalculationRequest
       val result = target.unbind("", request)
 
       "not output the annual exempt amount key and value" in {
