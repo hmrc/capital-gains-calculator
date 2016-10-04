@@ -16,43 +16,11 @@
 
 package models.resident.shares
 
-import common.Validation
-import play.api.mvc.QueryStringBindable
+import common.binders.ResidentSharesBinders
 
 case class ChargeableGainModel (totalGainModel: TotalGainModel,
                                 allowableLosses: Option[Double],
                                 broughtForwardLosses: Option[Double],
                                 annualExemptAmount: Double)
 
-object ChargeableGainModel {
-
-  implicit def chargeableGainBinder(implicit doubleBinder: QueryStringBindable[Double],
-                                    totalGainBinder: QueryStringBindable[TotalGainModel],
-                                    optionDoubleBinder: QueryStringBindable[Option[Double]]): QueryStringBindable[ChargeableGainModel] =
-    new QueryStringBindable[ChargeableGainModel] {
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, ChargeableGainModel]] = {
-        for {
-          totalGainModelEither <- totalGainBinder.bind("totalGain", params)
-          annualExemptAmountEither <- doubleBinder.bind("annualExemptAmount", params)
-          allowableLossesEither <- optionDoubleBinder.bind("allowableLosses", params)
-          broughtForwardLossesEither <- optionDoubleBinder.bind("broughtForwardLosses", params)
-        } yield {
-          val inputs = (totalGainModelEither, annualExemptAmountEither, allowableLossesEither, broughtForwardLossesEither)
-          inputs match {
-            case (Right(totalGain), Right(annualExemptAmount), Right(allowableLosses), Right(broughtForwardLosses)) =>
-              Right(ChargeableGainModel(totalGain, allowableLosses, broughtForwardLosses, annualExemptAmount))
-            case _ =>
-              val inputs = Seq(totalGainModelEither, annualExemptAmountEither, allowableLossesEither, broughtForwardLossesEither)
-              Left(Validation.getFirstErrorMessage(inputs))
-          }
-        }
-      }
-
-      override def unbind(key: String, chargeableGainModel: ChargeableGainModel): String =
-        s"${totalGainBinder.unbind("totalGain", chargeableGainModel.totalGainModel)}&" +
-          s"allowableLosses=${optionDoubleBinder.unbind("allowableLosses", chargeableGainModel.allowableLosses)}&" +
-          s"broughtForwardLosses=${optionDoubleBinder.unbind("broughtForwardLosses", chargeableGainModel.broughtForwardLosses)}&" +
-          s"annualExemptAmount=${doubleBinder.unbind("annualExemptAmount", chargeableGainModel.annualExemptAmount)}"
-
-    }
-}
+object ChargeableGainModel extends ResidentSharesBinders

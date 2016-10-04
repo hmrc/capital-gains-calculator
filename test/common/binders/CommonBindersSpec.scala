@@ -21,9 +21,9 @@ import java.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CommonBindersSpec extends CommonBinders with UnitSpec with MockitoSugar {
+class CommonBindersSpec extends UnitSpec with MockitoSugar {
 
-  val binder = localDateBinder
+  val binder = new CommonBinders{}.localDateBinder
 
   "Binding to a localDateBinder" should {
 
