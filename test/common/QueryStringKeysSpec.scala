@@ -31,12 +31,16 @@ class QueryStringKeysSpec extends UnitSpec {
       target.priorDisposal shouldBe "priorDisposal"
     }
 
-    s"have a annual exempt amount with the value ${target.annualExemptAmount}" in {
+    s"have a annual exempt amount key with the value ${target.annualExemptAmount}" in {
       target.annualExemptAmount shouldBe "annualExemptAmount"
     }
 
-    s"have a other properties amount with the value ${target.otherPropertiesAmount}" in {
+    s"have a other properties amount key with the value ${target.otherPropertiesAmount}" in {
       target.otherPropertiesAmount shouldBe "otherPropertiesAmt"
+    }
+
+    s"have a vulnerable key with the value ${target.vulnerable}" in {
+      target.vulnerable shouldBe "isVulnerable"
     }
   }
 }

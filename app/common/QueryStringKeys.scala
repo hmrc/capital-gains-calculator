@@ -23,6 +23,7 @@ object QueryStringKeys {
     val priorDisposal = "priorDisposal"
     val annualExemptAmount = "annualExemptAmount"
     val otherPropertiesAmount = "otherPropertiesAmt"
+    val vulnerable = "isVulnerable"
   }
 
   object ResidentSharesCalculationKeys {
