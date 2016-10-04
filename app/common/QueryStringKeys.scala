@@ -24,4 +24,11 @@ object QueryStringKeys {
     val annualExemptAmount = "annualExemptAmount"
     val otherPropertiesAmount = "otherPropertiesAmt"
   }
+
+  object ResidentSharesCalculationKeys {
+    val disposalValue = "disposalValue"
+    val disposalCosts = "disposalCosts"
+    val acquisitionValue = "acquisitionValue"
+    val acquisitionCosts = "acquisitionCosts"
+  }
 }

@@ -16,36 +16,8 @@
 
 package models.resident.shares
 
-import play.api.mvc.QueryStringBindable
-import common.Validation
+import common.binders.ResidentSharesBinders
 
 case class TotalGainModel (disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double)
 
-object TotalGainModel {
-
-  implicit def totalGainBinder(implicit doubleBinder: QueryStringBindable[Double]): QueryStringBindable[TotalGainModel] =
-    new QueryStringBindable[TotalGainModel] {
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TotalGainModel]] = {
-        for {
-          disposalValueEither <- doubleBinder.bind("disposalValue", params)
-          disposalCostsEither <- doubleBinder.bind("disposalCosts", params)
-          acquisitionValueEither <- doubleBinder.bind("acquisitionValue", params)
-          acquisitionCostsEither <- doubleBinder.bind("acquisitionCosts", params)
-        } yield {
-          val inputs = Seq(disposalValueEither, disposalCostsEither, acquisitionValueEither, acquisitionCostsEither)
-          inputs match {
-            case Seq(Right(disposalValue), Right(disposalCosts), Right(acquisitionValue), Right(acquisitionCosts)) =>
-              Right(TotalGainModel(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts))
-            case fail => Left(Validation.getFirstErrorMessage(fail))
-          }
-        }
-      }
-
-      override def unbind(key: String, totalGainModel: TotalGainModel): String = {
-        s"disposalValue=${doubleBinder.unbind("disposalValue", totalGainModel.disposalValue)}&" +
-          s"disposalCosts=${doubleBinder.unbind("disposalCosts", totalGainModel.disposalCosts)}&" +
-          s"acquisitionValue=${doubleBinder.unbind("acquisitionValue", totalGainModel.acquisitionValue)}&" +
-          s"acquisitionCosts=${doubleBinder.unbind("acquisitionCosts", totalGainModel.acquisitionCosts)}"
-      }
-    }
-}
+object TotalGainModel extends ResidentSharesBinders
