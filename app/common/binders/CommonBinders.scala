@@ -16,25 +16,25 @@
 
 package common.binders
 
-import java.time.LocalDate
+import org.joda.time.DateTime
 import play.api.mvc.QueryStringBindable
 
 import scala.util.{Success, Try}
 
 trait CommonBinders {
 
-  implicit def localDateBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[LocalDate] = {
-    new QueryStringBindable[LocalDate] {
+  implicit def dateTimeBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[DateTime] = {
+    new QueryStringBindable[DateTime] {
 
-      override def unbind(key: String, value: LocalDate): String = s"$key=${value.getYear}-${value.getMonthValue}-${value.getDayOfMonth}"
+      override def unbind(key: String, value: DateTime): String = s"$key=${value.getYear}-${value.getMonthOfYear}-${value.getDayOfMonth}"
 
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, LocalDate]] = {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, DateTime]] = {
         stringBinder.bind(key, params) match {
           case Some(Right(dateString)) => Try {
-            LocalDate.parse(dateString)
+            DateTime.parse(dateString)
           } match {
             case Success(date) => Some(Right(date))
-            case _ => Some(Left(s"""Cannot parse parameter $key as LocalDate: For input string: "${params.get(key).get.head}""""))
+            case _ => Some(Left(s"""Cannot parse parameter $key as DateTime: For input string: "${params.get(key).get.head}""""))
           }
           case _ => None
         }

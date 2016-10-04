@@ -16,7 +16,10 @@
 
 package controllers.resident.shares
 
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
+import java.time.LocalDate
+
+import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -55,9 +58,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
       lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000),
+          disposalCosts = 1000,
+          acquisitionValue = 160000,
+          acquisitionCosts = 1000),
         allowableLosses = Some(5000),
         broughtForwardLosses = Some(20000),
         annualExemptAmount = 11100)
@@ -118,9 +121,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
       lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000),
+          disposalCosts = 1000,
+          acquisitionValue = 160000,
+          acquisitionCosts = 1000),
         allowableLosses = Some(4999.01),
         broughtForwardLosses = Some(19999.01),
         annualExemptAmount = 11100)
@@ -182,18 +185,18 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" should {
-      lazy val result = CalculatorController.calculateTaxOwed(
-        disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000,
-        allowableLosses = None,
-        broughtForwardLosses = None,
-        annualExemptAmount = 11100,
+      lazy val result = CalculatorController.calculateTaxOwed(CalculateTaxOwedModel(
+        ChargeableGainModel(TotalGainModel(disposalValue = 195000,
+          disposalCosts = 1000,
+          acquisitionValue = 160000,
+          acquisitionCosts = 1000),
+          allowableLosses = None,
+          broughtForwardLosses = None,
+          annualExemptAmount = 11100),
         previousTaxableGain = None,
         previousIncome = 20000,
         personalAllowance = 11000,
-        disposalDate = "2015-10-10"
+        disposalDate = DateTime.parse("2015-10-10"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -256,18 +259,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "all optional values are provided" should {
-      lazy val result = CalculatorController.calculateTaxOwed(
-        disposalValue = 250000,
-        disposalCosts = 10000,
-        acquisitionValue = 100000,
-        acquisitionCosts = 10000,
-        allowableLosses = Some(20000),
-        broughtForwardLosses = Some(10000),
-        annualExemptAmount = 11100,
+      lazy val result = CalculatorController.calculateTaxOwed(CalculateTaxOwedModel(
+        TotalGainModel(disposalValue = 250000,
+          disposalCosts = 10000,
+          acquisitionValue = 100000,
+          acquisitionCosts = 10000),
+        ChargeableGainModel(TotalGainModel(disposalValue = 250000,
+          disposalCosts = 10000,
+          acquisitionValue = 100000,
+          acquisitionCosts = 10000), allowableLosses = Some(20000),
+          broughtForwardLosses = Some(10000),
+          annualExemptAmount = 11100),
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
         personalAllowance = 11000,
-        disposalDate = "2015-10-10"
+        disposalDate = "2015-10-10")
       )(fakeRequest)
 
       "return a 200" in {
@@ -330,19 +336,23 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "when using 2016/17 tax year values" should {
-      lazy val result = CalculatorController.calculateTaxOwed(
-        disposalValue = 250000,
-        disposalCosts = 10000,
-        acquisitionValue = 100000,
-        acquisitionCosts = 10000,
-        allowableLosses = Some(20000),
-        broughtForwardLosses = Some(10000),
-        annualExemptAmount = 11100,
+
+      lazy val result = CalculatorController.calculateTaxOwed(CalculateTaxOwedModel(
+        TotalGainModel(disposalValue = 250000,
+          disposalCosts = 10000,
+          acquisitionValue = 100000,
+          acquisitionCosts = 10000),
+        ChargeableGainModel(TotalGainModel(disposalValue = 250000,
+          disposalCosts = 10000,
+          acquisitionValue = 100000,
+          acquisitionCosts = 10000), allowableLosses = Some(20000),
+          broughtForwardLosses = Some(10000),
+          annualExemptAmount = 11100),
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
         personalAllowance = 11000,
         disposalDate = "2016-10-10"
-      )(fakeRequest)
+      ))(fakeRequest)
 
       "return a 200" in {
         status(result) shouldBe 200
@@ -406,9 +416,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     "Part allowableLossesUsed" should {
       lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 50000,
-        disposalCosts = 0,
-        acquisitionValue = 0,
-        acquisitionCosts = 0),
+          disposalCosts = 0,
+          acquisitionValue = 0,
+          acquisitionCosts = 0),
         allowableLosses = Some(100000),
         broughtForwardLosses = Some(0),
         annualExemptAmount = 11100)
