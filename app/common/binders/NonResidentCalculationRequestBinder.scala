@@ -41,27 +41,32 @@ trait NonResidentCalculationRequestBinder {
           aeaParam <- optionalDoubleBinder.bind(keys.annualExemptAmount, params)
           otherPropertiesParam <- optionalDoubleBinder.bind(keys.otherPropertiesAmount, params)
           vulnerableParam <- optionalStringBinder.bind(keys.vulnerable, params)
+          currentIncomeParam <- optionalDoubleBinder.bind(keys.currentIncome, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
             aeaParam,
             otherPropertiesParam,
-            vulnerableParam) match {
+            vulnerableParam,
+            currentIncomeParam) match {
             case (
               Right(customerType),
               Right(priorDisposal),
               Right(aea),
               Right(otherProperties),
-              Right(vulnerable)) => Right(CalculationRequest(customerType,
+              Right(vulnerable),
+              Right(currentIncome)) => Right(CalculationRequest(customerType,
                                                               priorDisposal,
                                                               aea,
                                                               otherProperties,
-                                                              vulnerable))
+                                                              vulnerable,
+                                                              currentIncome))
             case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
                                                                   priorDisposalParam,
                                                                   aeaParam,
                                                                   otherPropertiesParam,
-                                                                  vulnerableParam)))
+                                                                  vulnerableParam,
+                                                                  currentIncomeParam)))
           }
         }
       }
@@ -72,7 +77,8 @@ trait NonResidentCalculationRequestBinder {
           stringBinder.unbind(keys.priorDisposal, request.priorDisposal),
           optionalDoubleBinder.unbind(keys.annualExemptAmount, request.annualExemptAmount),
           optionalDoubleBinder.unbind(keys.otherPropertiesAmount, request.otherPropertiesAmount),
-          optionalStringBinder.unbind(keys.vulnerable, request.isVulnerable)
+          optionalStringBinder.unbind(keys.vulnerable, request.isVulnerable),
+          optionalDoubleBinder.unbind(keys.currentIncome, request.currentIncome)
         ).filterNot(_.isEmpty).mkString("&")
 
     }

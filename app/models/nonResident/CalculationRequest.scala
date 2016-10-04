@@ -20,8 +20,8 @@ case class CalculationRequest(customerType: String,
                               priorDisposal: String,
                               annualExemptAmount: Option[Double],
                               otherPropertiesAmount: Option[Double],
-                              isVulnerable: Option[String])
-//                              currentIncome: Option[Double],
+                              isVulnerable: Option[String],
+                              currentIncome: Option[Double])
 //                              personalAllowanceAmt: Option[Double],
 //                              disposalValue: Double,
 //                              disposalCosts: Double,

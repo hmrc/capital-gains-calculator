@@ -42,5 +42,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a vulnerable key with the value ${target.vulnerable}" in {
       target.vulnerable shouldBe "isVulnerable"
     }
+
+    s"have a current income key with the value ${target.currentIncome}" in {
+      target.currentIncome shouldBe "currentIncome"
+    }
   }
 }
