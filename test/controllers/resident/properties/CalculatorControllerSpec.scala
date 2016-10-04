@@ -16,6 +16,8 @@
 
 package controllers.resident.properties
 
+import models.resident.properties.PropertyTotalGainModel
+import models.resident.shares.TotalGainModel
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -27,7 +29,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" should {
-      lazy val result = CalculatorController.calculateTotalGain(100000, 10000, 50000, 10000, 10000)(fakeRequest)
+      lazy val result = CalculatorController.calculateTotalGain(PropertyTotalGainModel(TotalGainModel(100000, 10000, 50000, 10000), 10000))(fakeRequest)
 
       "return a 200" in {
         status(result) shouldBe 200

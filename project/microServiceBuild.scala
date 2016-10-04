@@ -28,6 +28,7 @@ object MicroServiceBuild extends Build with MicroService {
   )
 
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
+
 }
 
 private object AppDependencies {
