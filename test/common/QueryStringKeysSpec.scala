@@ -46,5 +46,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a current income key with the value ${target.currentIncome}" in {
       target.currentIncome shouldBe "currentIncome"
     }
+
+    s"have a personal allowance key with the value ${target.personalAllowanceAmount}" in {
+      target.personalAllowanceAmount shouldBe "personalAllowanceAmt"
+    }
   }
 }
