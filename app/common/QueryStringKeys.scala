@@ -26,6 +26,7 @@ object QueryStringKeys {
     val vulnerable = "isVulnerable"
     val currentIncome = "currentIncome"
     val personalAllowanceAmount = "personalAllowanceAmt"
+    val disposalValue = "disposalValue"
   }
 
   object ResidentSharesCalculationKeys {

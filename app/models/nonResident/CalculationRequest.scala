@@ -22,8 +22,8 @@ case class CalculationRequest(customerType: String,
                               otherPropertiesAmount: Option[Double],
                               isVulnerable: Option[String],
                               currentIncome: Option[Double],
-                              personalAllowanceAmt: Option[Double])
-//                              disposalValue: Double,
+                              personalAllowanceAmount: Option[Double],
+                              disposalValue: Double)
 //                              disposalCosts: Double,
 //                              acquisitionValueAmt: Double,
 //                              acquisitionCostsAmt: Double,

@@ -23,11 +23,12 @@ import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 
 trait NonResidentCalculationRequestBinder {
 
-  val requiredParams = Seq(keys.customerType, keys.priorDisposal)
+  val requiredParams = Seq(keys.customerType, keys.priorDisposal, keys.disposalValue)
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
-                             optionalDoubleBinder: QueryStringBindable[Option[Double]]): QueryStringBindable[CalculationRequest] =
+                             optionalDoubleBinder: QueryStringBindable[Option[Double]],
+                             doubleBinder: QueryStringBindable[Double]): QueryStringBindable[CalculationRequest] =
     new QueryStringBindable[CalculationRequest] {
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CalculationRequest]] = {
@@ -43,6 +44,7 @@ trait NonResidentCalculationRequestBinder {
           vulnerableParam <- optionalStringBinder.bind(keys.vulnerable, params)
           currentIncomeParam <- optionalDoubleBinder.bind(keys.currentIncome, params)
           personalAllowanceParam <- optionalDoubleBinder.bind(keys.personalAllowanceAmount, params)
+          disposalValueParam <- doubleBinder.bind(keys.disposalValue, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
@@ -50,7 +52,8 @@ trait NonResidentCalculationRequestBinder {
             otherPropertiesParam,
             vulnerableParam,
             currentIncomeParam,
-            personalAllowanceParam) match {
+            personalAllowanceParam,
+            disposalValueParam) match {
             case (
               Right(customerType),
               Right(priorDisposal),
@@ -58,20 +61,23 @@ trait NonResidentCalculationRequestBinder {
               Right(otherProperties),
               Right(vulnerable),
               Right(currentIncome),
-              Right(personalAllowance)) => Right(CalculationRequest(customerType,
+              Right(personalAllowance),
+              Right(disposalValue)) => Right(CalculationRequest(customerType,
                                                               priorDisposal,
                                                               aea,
                                                               otherProperties,
                                                               vulnerable,
                                                               currentIncome,
-                                                              personalAllowance))
+                                                              personalAllowance,
+                                                              disposalValue))
             case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
                                                                   priorDisposalParam,
                                                                   aeaParam,
                                                                   otherPropertiesParam,
                                                                   vulnerableParam,
                                                                   currentIncomeParam,
-                                                                  personalAllowanceParam)))
+                                                                  personalAllowanceParam,
+                                                                  disposalValueParam)))
           }
         }
       }
@@ -84,7 +90,8 @@ trait NonResidentCalculationRequestBinder {
           optionalDoubleBinder.unbind(keys.otherPropertiesAmount, request.otherPropertiesAmount),
           optionalStringBinder.unbind(keys.vulnerable, request.isVulnerable),
           optionalDoubleBinder.unbind(keys.currentIncome, request.currentIncome),
-          optionalDoubleBinder.unbind(keys.personalAllowanceAmount, request.personalAllowanceAmt)
+          optionalDoubleBinder.unbind(keys.personalAllowanceAmount, request.personalAllowanceAmount),
+          doubleBinder.unbind(keys.disposalValue, request.disposalValue)
         ).filterNot(_.isEmpty).mkString("&")
 
     }

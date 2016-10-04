@@ -50,5 +50,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a personal allowance key with the value ${target.personalAllowanceAmount}" in {
       target.personalAllowanceAmount shouldBe "personalAllowanceAmt"
     }
+
+    s"have a disposal value key with the value ${target.disposalValue}" in {
+      target.disposalValue shouldBe "disposalValue"
+    }
   }
 }
