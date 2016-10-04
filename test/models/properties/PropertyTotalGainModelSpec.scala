@@ -28,7 +28,7 @@ class PropertyTotalGainModelSpec extends UnitSpec with MockitoSugar {
 
   def setupMockDoubleBinder(bindValue: Option[Either[String, Double]],
                             unbindValue: String)
-                            : QueryStringBindable[Double] = {
+  : QueryStringBindable[Double] = {
 
     val mockBinder = mock[QueryStringBindable[Double]]
 
@@ -43,7 +43,7 @@ class PropertyTotalGainModelSpec extends UnitSpec with MockitoSugar {
 
   def setupMockTotalGainBinder(bindValue: Option[Either[String, TotalGainModel]],
                                unbindValue: String)
-                              : QueryStringBindable[TotalGainModel] = {
+  : QueryStringBindable[TotalGainModel] = {
 
     val mockBinder = mock[QueryStringBindable[TotalGainModel]]
 
@@ -61,7 +61,8 @@ class PropertyTotalGainModelSpec extends UnitSpec with MockitoSugar {
       val totalGain = new TotalGainModel(2000, 2000, 2000, 2000)
       val improvements = 2000
       implicit val mockDoubleBinder = setupMockDoubleBinder(Some(Right(improvements)), "2000.0")
-      implicit val mockTotalGainBinder = setupMockTotalGainBinder(Some(Right(totalGain)), "disposalValue=2000.0&disposalCosts=2000.0&acquisitionValue=2000.0&acquisitionCosts=2000.0")
+      implicit val mockTotalGainBinder = setupMockTotalGainBinder(Some(Right(totalGain)),
+        "disposalValue=2000.0&disposalCosts=2000.0&acquisitionValue=2000.0&acquisitionCosts=2000.0")
 
       val binder = PropertyTotalGainModel.propertyTotalGainBinder
 
@@ -74,15 +75,16 @@ class PropertyTotalGainModelSpec extends UnitSpec with MockitoSugar {
       "return a valid queryString on unbind" in {
         val result = binder.unbind("key", PropertyTotalGainModel(TotalGainModel(2000.0, 2000.0, 2000.0, 2000.0), 2000.0))
 
-        result shouldBe "totalGainModel=disposalValue=2000.0&disposalCosts=2000.0&acquisitionValue=2000.0&acquisitionCosts=2000.0&improvements=2000.0"
+        result shouldBe "disposalValue=2000.0&disposalCosts=2000.0&acquisitionValue=2000.0&acquisitionCosts=2000.0&improvements=2000.0"
       }
     }
 
     "given a invalid binding value where all values are the same" should {
-      val totalGain = new TotalGainModel(2000, 2500, 3000, 3500)
+      val totalGain = TotalGainModel(2000, 2500, 3000, 3500)
       val improvements = 4000
       implicit val mockDoubleBinder = setupMockDoubleBinder(Some(Right(improvements)), "4000.0")
-      implicit val mockTotalGainBinder = setupMockTotalGainBinder(Some(Right(totalGain)), "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0")
+      implicit val mockTotalGainBinder = setupMockTotalGainBinder(Some(Right(totalGain)),
+        "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0")
 
       val binder = PropertyTotalGainModel.propertyTotalGainBinder
 
@@ -95,7 +97,7 @@ class PropertyTotalGainModelSpec extends UnitSpec with MockitoSugar {
       "return a valid queryString on unbind" in {
         val result = binder.unbind("key", PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), 4000.0))
 
-        result shouldBe "totalGainModel=disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0&improvements=4000.0"
+        result shouldBe "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0&improvements=4000.0"
       }
     }
 

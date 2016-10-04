@@ -44,7 +44,7 @@ object PropertyTotalGainModel {
         }
 
         override def unbind(key: String, propertyTotalGainModel: PropertyTotalGainModel): String = {
-          s"totalGainModel=${totalGainBinder.unbind("totalGainModel", propertyTotalGainModel.totalGainModel)}&" +
+          s"${totalGainBinder.unbind("totalGainModel", propertyTotalGainModel.totalGainModel)}&" +
             s"improvements=${doubleBinder.unbind("improvements", propertyTotalGainModel.improvements)}"
         }
       }
