@@ -41,7 +41,8 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.acquisitionValue -> Seq("777.77"),
     keys.acquisitionCosts -> Seq("888.88"),
     keys.improvementsAmount -> Seq("999.99"),
-    keys.reliefsAmount -> Seq("11.11")
+    keys.reliefsAmount -> Seq("11.11"),
+    keys.allowableLosses -> Seq("22.22")
   )
 
   // the expected result of binding valid requests
@@ -58,11 +59,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     777.77,
     888.88,
     999.99,
-    11.11
+    11.11,
+    22.22
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)
 
   "Binding a valid non resident calculation request" when {
 
@@ -197,6 +199,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     "a reliefs amount is defined" should {
       "return a CalculationRequest with the reliefs amount populated" in {
         result.reliefsAmount shouldBe expectedRequest.reliefsAmount
+      }
+    }
+
+    "an allowable losses amount is defined" should {
+      "return a CalculationRequest with the allowable losses amount populated" in {
+        result.allowableLosses shouldBe expectedRequest.allowableLosses
       }
     }
   }
@@ -363,6 +371,23 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Left(doubleParseError(keys.reliefsAmount, badData)))
       }
     }
+
+    "an allowable losses amount is not supplied" should {
+      "return an error message" in {
+        val request = badRequest(keys.allowableLosses, None)
+        val result = target.bind("", request)
+        result shouldBe Some(Left(s"${keys.allowableLosses} is required."))
+      }
+    }
+
+    "an allowable losses amount with an invalid value" should {
+      "return an error message" in {
+        val badData = "bad data"
+        val request = badRequest(keys.allowableLosses, Some(badData))
+        val result = target.bind("", request)
+        result shouldBe Some(Left(doubleParseError(keys.allowableLosses, badData)))
+      }
+    }
   }
 
   "Unbinding a non resident calculation request" when {
@@ -422,6 +447,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "output the reliefs amount key and value" in {
         result should include(s"&${keys.reliefsAmount}=11.11")
+      }
+
+      "output the allowable losses amount key and value" in {
+        result should include(s"&${keys.allowableLosses}=22.22")
       }
     }
 

@@ -74,5 +74,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a reliefs amount key with the value ${target.reliefsAmount}" in {
       target.reliefsAmount shouldBe "reliefs"
     }
+
+    s"have a allowable losses amount key with the value ${target.allowableLosses}" in {
+      target.allowableLosses shouldBe "allowableLossesAmt"
+    }
   }
 }

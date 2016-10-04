@@ -28,8 +28,8 @@ case class CalculationRequest(customerType: String,
                               acquisitionValue: Double,
                               acquisitionCosts: Double,
                               improvementsAmount: Double,
-                              reliefsAmount: Double)
-//                              allowableLossesAmt: Double,
+                              reliefsAmount: Double,
+                              allowableLosses: Double)
 //                              acquisitionDate: Option[String],
 //                              disposalDate: String,
 //                              isClaimingPRR: Option[String],
