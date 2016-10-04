@@ -16,7 +16,7 @@
 
 package common.binders
 
-import models.resident.shares.TotalGainModel
+import models.resident.shares.{ChargeableGainModel, TotalGainModel}
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -28,7 +28,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
 
     "calling .bind" should {
 
-      "return a valid TotalGainModel with a valid map with the same values" in {
+      "return a valid TotalGainModel from a valid map with the same values" in {
         val result = binder.bind("Any", Map("disposalValue" -> Seq("1000.0"),
           "disposalCosts" -> Seq("1000.0"),
           "acquisitionValue" -> Seq("1000.0"),
@@ -37,7 +37,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Right(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0)))
       }
 
-      "return a valid TotalGainModel on bind with a valid map with different values" in {
+      "return a valid TotalGainModel from a valid map with different values" in {
         val result = binder.bind("Any", Map("disposalValue" -> Seq("2000.0"),
           "disposalCosts" -> Seq("2500.0"),
           "acquisitionValue" -> Seq("3000.0"),
@@ -86,6 +86,88 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
         val result = binder.unbind("", TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0))
 
         result shouldBe "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0"
+      }
+    }
+  }
+
+  "Calling chargeAbleGain Binder" when {
+    val binder = new ResidentSharesBinders{}.chargeableGainBinder
+
+    "calling .bind" should {
+
+      "return a valid ChargeableGainModel from a valid map with the same values" in {
+        val totalGainModel = TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0)
+        val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1000.0"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0")))
+
+        result shouldBe Some(Right(ChargeableGainModel(totalGainModel, Some(1000.0), Some(1000.0), 1000.0)))
+      }
+
+      "return a valid ChargeableGainModel from a valid map with different values" in {
+        val totalGainModel = TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0)
+        val result = binder.bind("", Map("disposalValue" -> Seq("2000.0"),
+          "disposalCosts" -> Seq("2500.0"),
+          "acquisitionValue" -> Seq("3000.0"),
+          "acquisitionCosts" -> Seq("3500.0"),
+          "annualExemptAmount" -> Seq("4000.0")))
+
+        result shouldBe Some(Right(ChargeableGainModel(totalGainModel, None, None, 4000.0)))
+      }
+
+      "return one error message on a failed bind on all inputs" in {
+        val result = binder.bind("", Map("disposalValue" -> Seq("a"),
+          "disposalCosts" -> Seq("b"),
+          "acquisitionValue" -> Seq("c"),
+          "acquisitionCosts" -> Seq("d"),
+          "allowableLosses" -> Seq("e"),
+          "broughtForwardLosses" -> Seq("f"),
+          "annualExemptAmount" -> Seq("g")))
+
+        result shouldBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
+      }
+
+      "return an error message when one component fails" in {
+        val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("b"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0")))
+
+        result shouldBe Some(Left("""Cannot parse parameter disposalCosts as Double: For input string: "b""""))
+      }
+
+      "return an error message when a component is missing" in {
+        val result = binder.bind("Any", Map("disposalCosts" -> Seq("b"),
+          "acquisitionValue" -> Seq("3000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0")))
+
+        result shouldBe Some(Left("disposalValue is required."))
+      }
+    }
+
+    "calling .unBind" should {
+
+      "return a valid queryString on unbind with identical values" in {
+        val totalGainString = "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0"
+        val result = binder.unbind("", ChargeableGainModel(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0), Some(1000.0), Some(1000.0), 1000.0))
+
+        result shouldBe totalGainString + "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
+      }
+
+      "return a valid queryString on unbind with different values" in {
+        val totalGainString = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0"
+        val result = binder.unbind("", ChargeableGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), None, None, 4000.0))
+
+        result shouldBe totalGainString + "&annualExemptAmount=4000.0"
       }
     }
   }
