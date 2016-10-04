@@ -27,7 +27,8 @@ trait NonResidentCalculationRequestBinder {
     keys.priorDisposal,
     keys.disposalValue,
     keys.disposalCosts,
-    keys.acquisitionValue)
+    keys.acquisitionValue,
+    keys.acquisitionCosts)
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
@@ -51,6 +52,7 @@ trait NonResidentCalculationRequestBinder {
           disposalValueParam <- doubleBinder.bind(keys.disposalValue, params)
           disposalCostsParam <- doubleBinder.bind(keys.disposalCosts, params)
           acquisitionValueParam <- doubleBinder.bind(keys.acquisitionValue, params)
+          acquisitionCostsParam <- doubleBinder.bind(keys.acquisitionCosts, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
@@ -61,7 +63,8 @@ trait NonResidentCalculationRequestBinder {
             personalAllowanceParam,
             disposalValueParam,
             disposalCostsParam,
-            acquisitionValueParam) match {
+            acquisitionValueParam,
+            acquisitionCostsParam) match {
             case (
               Right(customerType),
               Right(priorDisposal),
@@ -72,7 +75,8 @@ trait NonResidentCalculationRequestBinder {
               Right(personalAllowance),
               Right(disposalValue),
               Right(disposalCosts),
-              Right(acquisitionValue)) => Right(CalculationRequest(customerType,
+              Right(acquisitionValue),
+              Right(acquisitionCosts)) => Right(CalculationRequest(customerType,
                                                               priorDisposal,
                                                               aea,
                                                               otherProperties,
@@ -81,7 +85,8 @@ trait NonResidentCalculationRequestBinder {
                                                               personalAllowance,
                                                               disposalValue,
                                                               disposalCosts,
-                                                              acquisitionValue))
+                                                              acquisitionValue,
+                                                              acquisitionCosts))
             case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
                                                                   priorDisposalParam,
                                                                   aeaParam,
@@ -91,7 +96,8 @@ trait NonResidentCalculationRequestBinder {
                                                                   personalAllowanceParam,
                                                                   disposalValueParam,
                                                                   disposalCostsParam,
-                                                                  acquisitionValueParam)))
+                                                                  acquisitionValueParam,
+                                                                  acquisitionCostsParam)))
           }
         }
       }
@@ -107,7 +113,8 @@ trait NonResidentCalculationRequestBinder {
           optionalDoubleBinder.unbind(keys.personalAllowanceAmount, request.personalAllowanceAmount),
           doubleBinder.unbind(keys.disposalValue, request.disposalValue),
           doubleBinder.unbind(keys.disposalCosts, request.disposalCosts),
-          doubleBinder.unbind(keys.acquisitionValue, request.acquisitionValue)
+          doubleBinder.unbind(keys.acquisitionValue, request.acquisitionValue),
+          doubleBinder.unbind(keys.acquisitionCosts, request.acquisitionCosts)
         ).filterNot(_.isEmpty).mkString("&")
 
     }

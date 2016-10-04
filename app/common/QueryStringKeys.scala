@@ -29,6 +29,7 @@ object QueryStringKeys {
     val disposalValue = "disposalValue"
     val disposalCosts = "disposalCosts"
     val acquisitionValue = "acquisitionValueAmt"
+    val acquisitionCosts = "acquisitionCostsAmt"
   }
 
   object ResidentSharesCalculationKeys {
