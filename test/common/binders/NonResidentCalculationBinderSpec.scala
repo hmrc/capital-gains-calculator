@@ -21,6 +21,7 @@ import org.scalatest.mock.MockitoSugar
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.play.test.UnitSpec
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
+import org.joda.time.DateTime
 
 class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
@@ -42,7 +43,8 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.acquisitionCosts -> Seq("888.88"),
     keys.improvementsAmount -> Seq("999.99"),
     keys.reliefsAmount -> Seq("11.11"),
-    keys.allowableLosses -> Seq("22.22")
+    keys.allowableLosses -> Seq("22.22"),
+    keys.acquisitionDate -> Seq("2016-12-20")
   )
 
   // the expected result of binding valid requests
@@ -60,11 +62,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     888.88,
     999.99,
     11.11,
-    22.22
+    22.22,
+    Some(DateTime.parse("2016-12-20"))
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None)
 
   "Binding a valid non resident calculation request" when {
 
@@ -207,6 +210,25 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         result.allowableLosses shouldBe expectedRequest.allowableLosses
       }
     }
+
+    "a acquisition date is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.acquisitionDate)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
+
+      "return a CalculationRequest with the acquisition date not populated" in {
+
+        result.acquisitionDate shouldBe None
+
+      }
+      "not match the empty test model as defined above" in {
+
+        result should not be emptyCalculationRequest
+
+      }
+    }
   }
 
   "Binding a invalid non resident calculation request" when {
@@ -217,6 +239,8 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     }
 
     def doubleParseError(param: String, value: String): String = s"""Cannot parse parameter $param as Double: For input string: "$value""""
+
+    def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""
 
     "a customer type is not supplied" should {
       "return an error message" in {
@@ -388,6 +412,15 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Left(doubleParseError(keys.allowableLosses, badData)))
       }
     }
+
+    "a acquisition date with an invalid value" should {
+      "return an error message" in {
+        val badData = "bad data"
+        val request = badRequest(keys.acquisitionDate, Some(badData))
+        val result = target.bind("", request)
+        result shouldBe Some(Left(dateParseError(keys.acquisitionDate, badData)))
+      }
+    }
   }
 
   "Unbinding a non resident calculation request" when {
@@ -452,6 +485,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       "output the allowable losses amount key and value" in {
         result should include(s"&${keys.allowableLosses}=22.22")
       }
+
+      "output the acquisition date key and value" in {
+        result should include(s"&${keys.acquisitionDate}=20-12-2016")
+      }
     }
 
     "optional properties are missing" should {
@@ -477,6 +514,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "not output the personal allowance key and value" in {
         result should not include s"&${keys.personalAllowanceAmount}"
+      }
+
+      "not output the acquisition date key and value" in {
+        result should not include s"&${keys.acquisitionDate}"
       }
     }
   }

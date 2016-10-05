@@ -78,5 +78,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a allowable losses amount key with the value ${target.allowableLosses}" in {
       target.allowableLosses shouldBe "allowableLossesAmt"
     }
+
+    s"have a acquisition date key with the value ${target.acquisitionDate}" in {
+      target.acquisitionDate shouldBe "acquisitionDate"
+    }
   }
 }

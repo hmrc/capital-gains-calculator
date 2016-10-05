@@ -16,6 +16,8 @@
 
 package models.nonResident
 
+import org.joda.time.DateTime
+
 case class CalculationRequest(customerType: String,
                               priorDisposal: String,
                               annualExemptAmount: Option[Double],
@@ -29,8 +31,8 @@ case class CalculationRequest(customerType: String,
                               acquisitionCosts: Double,
                               improvementsAmount: Double,
                               reliefsAmount: Double,
-                              allowableLosses: Double)
-//                              acquisitionDate: Option[String],
+                              allowableLosses: Double,
+                              acquisitionDate: Option[DateTime])
 //                              disposalDate: String,
 //                              isClaimingPRR: Option[String],
 //                              daysClaimed: Option[Double])

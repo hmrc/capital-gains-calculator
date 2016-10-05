@@ -33,6 +33,7 @@ object QueryStringKeys {
     val improvementsAmount = "improvementsAmt"
     val reliefsAmount = "reliefs"
     val allowableLosses = "allowableLossesAmt"
+    val acquisitionDate = "acquisitionDate"
   }
 
   object ResidentSharesCalculationKeys {
