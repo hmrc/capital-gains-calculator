@@ -46,5 +46,9 @@ object QueryStringKeys {
     val allowableLosses = "allowableLosses"
     val broughtForwardLosses = "broughtForwardLosses"
     val annualExemptAmount = "annualExemptAmount"
+    val previousTaxableGain = "previousTaxableGain"
+    val previousIncome = "previousIncome"
+    val personalAllowance = "personalAllowance"
+    val disposalDate = "disposalDate"
   }
 }
