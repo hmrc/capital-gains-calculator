@@ -34,5 +34,5 @@ case class CalculationRequest(customerType: String,
                               allowableLosses: Double,
                               acquisitionDate: Option[DateTime],
 //                              disposalDate: String,
-                              isClaimingPRR: Option[String])
-//                              daysClaimed: Option[Double])
+                              isClaimingPRR: Option[String],
+                              daysClaimed: Option[Double])

@@ -44,7 +44,9 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.improvementsAmount -> Seq("999.99"),
     keys.reliefsAmount -> Seq("11.11"),
     keys.allowableLosses -> Seq("22.22"),
-    keys.acquisitionDate -> Seq("2016-12-20")
+    keys.acquisitionDate -> Seq("2016-12-20"),
+    keys.isClaimingPRR -> Seq("yes"),
+    keys.daysClaimed -> Seq("200")
   )
 
   // the expected result of binding valid requests
@@ -64,11 +66,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     11.11,
     22.22,
     Some(DateTime.parse("2016-12-20")),
-    Some("yes")
+    Some("yes"),
+    Some(200.0)
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, None)
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, None, None)
 
   "Binding a valid non resident calculation request" when {
 
@@ -216,6 +219,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
+    "an acquisition date is defined" should {
+      "return a CalculationRequest with the acquisition date populated" in {
+        result.acquisitionDate shouldBe expectedRequest.acquisitionDate
+      }
+    }
+
     "an acquisition date is not defined" should {
       val request = validRequest.filterKeys(key => key != keys.acquisitionDate)
       val result = target.bind("", request) match {
@@ -230,6 +239,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
+    "an is claiming prr is defined" should {
+      "return a CalculationRequest with the is claiming prr populated" in {
+        result.isClaimingPRR shouldBe expectedRequest.isClaimingPRR
+      }
+    }
+
     "is claiming prr is not defined" should {
       val request = validRequest.filterKeys(key => key != keys.isClaimingPRR)
       val result = target.bind("", request) match {
@@ -238,6 +253,26 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
       "return a CalculationRequest with the is claiming prr not populated" in {
         result.isClaimingPRR shouldBe None
+      }
+      "not match the empty test model as defined above" in {
+        result should not be emptyCalculationRequest
+      }
+    }
+
+    "a days claimed is defined" should {
+      "return a CalculationRequest with the days claimed populated" in {
+        result.daysClaimed shouldBe expectedRequest.daysClaimed
+      }
+    }
+
+    "a days claimed value is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.daysClaimed)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
+      "return a CalculationRequest with the annual exempt amount not populated" in {
+        result.daysClaimed shouldBe None
       }
       "not match the empty test model as defined above" in {
         result should not be emptyCalculationRequest
@@ -435,6 +470,15 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Left(dateParseError(keys.acquisitionDate, badData)))
       }
     }
+
+    "a days claimed with an invalid value" should {
+      "return an error message" in {
+        val badData = "bad data"
+        val request = badRequest(keys.daysClaimed, Some(badData))
+        val result = target.bind("", request)
+        result shouldBe Some(Left(doubleParseError(keys.daysClaimed, badData)))
+      }
+    }
   }
 
   "Unbinding a non resident calculation request" when {
@@ -507,6 +551,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       "output the is claiming prr key and value" in {
         result should include(s"&${keys.isClaimingPRR}=yes")
       }
+
+      "output the days claiming key and value" in {
+        result should include(s"&${keys.daysClaimed}=200")
+      }
     }
 
     "optional properties are missing" should {
@@ -540,6 +588,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "not output the is claiming prr key and value" in {
         result should not include s"&${keys.isClaimingPRR}"
+      }
+
+      "not output the days claiming key and value" in {
+        result should not include s"&${keys.daysClaimed}"
       }
     }
   }

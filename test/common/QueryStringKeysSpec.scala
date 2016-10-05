@@ -86,5 +86,9 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have an is claiming private residence relief key with the value ${target.isClaimingPRR}" in {
       target.isClaimingPRR shouldBe "isClaimingPRR"
     }
+
+    s"have an days claiming key with the value ${target.daysClaimed}" in {
+      target.daysClaimed shouldBe "daysClaimed"
+    }
   }
 }
