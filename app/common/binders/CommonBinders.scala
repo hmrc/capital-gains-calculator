@@ -21,6 +21,8 @@ import play.api.mvc.QueryStringBindable
 
 import scala.util.{Success, Try}
 
+object CommonBinders extends CommonBinders
+
 trait CommonBinders {
 
   implicit def dateTimeBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[DateTime] = {
