@@ -52,4 +52,12 @@ object QueryStringKeys {
     val personalAllowance = "personalAllowance"
     val disposalDate = "disposalDate"
   }
+
+  object ResidentPropertiesCalculationKeys {
+    val disposalValue = "disposalValue"
+    val disposalCosts = "disposalCosts"
+    val acquisitionValue = "acquisitionValue"
+    val acquisitionCosts = "acquisitionCosts"
+    val improvements = "improvements"
+  }
 }

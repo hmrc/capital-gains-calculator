@@ -20,6 +20,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class QueryStringKeysSpec extends UnitSpec {
   import common.QueryStringKeys.{NonResidentCalculationKeys => target}
+  import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => propertyTarget}
 
   "NonResidentCalculationKeys" should {
 
@@ -93,6 +94,29 @@ class QueryStringKeysSpec extends UnitSpec {
 
     s"have an days claiming key with the value ${target.daysClaimed}" in {
       target.daysClaimed shouldBe "daysClaimed"
+    }
+  }
+
+  "ResidentPropertiesCalculationKeys" should {
+
+    s"have a disposalValue key with the value ${propertyTarget.disposalValue}" in {
+      propertyTarget.disposalValue shouldBe "disposalValue"
+    }
+
+    s"have a disposalCosts key with the value ${propertyTarget.disposalCosts}" in {
+      propertyTarget.disposalCosts shouldBe "disposalCosts"
+    }
+
+    s"have a acquisitionValue key with the value ${propertyTarget.acquisitionValue}" in {
+      propertyTarget.acquisitionValue shouldBe "acquisitionValue"
+    }
+
+    s"have a acquisitionCosts key with the value ${propertyTarget.acquisitionCosts}" in {
+      propertyTarget.acquisitionCosts shouldBe "acquisitionCosts"
+    }
+
+    s"have a improvements key with the value ${propertyTarget.improvements}" in {
+      propertyTarget.improvements shouldBe "improvements"
     }
   }
 }
