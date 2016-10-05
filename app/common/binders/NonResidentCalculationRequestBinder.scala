@@ -16,14 +16,15 @@
 
 package common.binders
 
-import models.nonResident.CalculationRequest
+import models.nonResident.CalculationRequestModel
 import play.api.mvc.QueryStringBindable
 import common.Validation
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
-  val requiredParams = Seq(keys.customerType,
+  val requiredParams = Seq(
+    keys.customerType,
     keys.priorDisposal,
     keys.disposalValue,
     keys.disposalCosts,
@@ -37,10 +38,10 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
                              optionalDoubleBinder: QueryStringBindable[Option[Double]],
-                             doubleBinder: QueryStringBindable[Double]): QueryStringBindable[CalculationRequest] =
-    new QueryStringBindable[CalculationRequest] {
+                             doubleBinder: QueryStringBindable[Double]): QueryStringBindable[CalculationRequestModel] =
+    new QueryStringBindable[CalculationRequestModel] {
 
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CalculationRequest]] = {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CalculationRequestModel]] = {
 
         val missingParam = requiredParams.find(p => params.get(p).isEmpty)
 
@@ -101,7 +102,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(acquisitionDate),
               Right(disposalDate),
               Right(isClaimingPRR),
-              Right(daysClaimed)) => Right(CalculationRequest(customerType,
+              Right(daysClaimed)) => Right(CalculationRequestModel(customerType,
                                                                   priorDisposal,
                                                                   aea,
                                                                   otherProperties,
@@ -141,7 +142,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
         }
       }
 
-      override def unbind(key: String, request: CalculationRequest): String =
+      override def unbind(key: String, request: CalculationRequestModel): String =
         Seq(
           stringBinder.unbind(keys.customerType, request.customerType),
           stringBinder.unbind(keys.priorDisposal, request.priorDisposal),

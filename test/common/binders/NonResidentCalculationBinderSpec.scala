@@ -16,7 +16,7 @@
 
 package common.binders
 
-import models.nonResident.CalculationRequest
+import models.nonResident.CalculationRequestModel
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.play.test.UnitSpec
@@ -51,7 +51,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
   )
 
   // the expected result of binding valid requests
-  val expectedRequest = CalculationRequest(
+  val expectedRequest = CalculationRequestModel(
     "individual",
     "yes",
     Some(111.11),
@@ -73,7 +73,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
+  val emptyCalculationRequest = CalculationRequestModel("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
 
   "Binding a valid non resident calculation request" when {
 

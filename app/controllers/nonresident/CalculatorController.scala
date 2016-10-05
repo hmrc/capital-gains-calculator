@@ -17,6 +17,8 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
+import models.nonResident.CalculationRequestModel
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -29,50 +31,31 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculateFlat
-  (
-    customerType: String,
-    priorDisposal: String,
-    annualExemptAmount: Option[Double],
-    otherPropertiesAmt: Option[Double],
-    isVulnerable: Option[String],
-    currentIncome: Option[Double],
-    personalAllowanceAmt: Option[Double],
-    disposalValue: Double,
-    disposalCosts: Double,
-    acquisitionValueAmt: Double,
-    acquisitionCostsAmt: Double,
-    improvementsAmt: Double,
-    reliefs: Double,
-    allowableLossesAmt: Double,
-    acquisitionDate: Option[String] = None,
-    disposalDate: String,
-    isClaimingPRR: Option[String],
-    daysClaimed: Option[Double]
+  def calculateFlat (calculationRequestModel: CalculationRequestModel
   ): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "flat",
-      customerType,
-      priorDisposal,
-      annualExemptAmount,
-      otherPropertiesAmt,
-      isVulnerable,
-      currentIncome,
-      personalAllowanceAmt,
-      disposalValue,
-      disposalCosts,
-      acquisitionValueAmt,
-      acquisitionCostsAmt,
+      calculationRequestModel.customerType,
+      calculationRequestModel.priorDisposal,
+      calculationRequestModel.annualExemptAmount,
+      calculationRequestModel.otherPropertiesAmount,
+      calculationRequestModel.isVulnerable,
+      calculationRequestModel.currentIncome,
+      calculationRequestModel.personalAllowanceAmount,
+      calculationRequestModel.disposalValue,
+      calculationRequestModel.disposalCosts,
+      calculationRequestModel.acquisitionValue,
+      calculationRequestModel.acquisitionCosts,
       0,
       0,
-      improvementsAmt,
-      reliefs,
-      allowableLossesAmt,
-      acquisitionDate,
-      disposalDate,
-      isClaimingPRR,
-      daysClaimed,
+      calculationRequestModel.improvementsAmount,
+      calculationRequestModel.reliefsAmount,
+      calculationRequestModel.allowableLosses,
+      calculationRequestModel.acquisitionDate,
+      calculationRequestModel.disposalDate,
+      calculationRequestModel.isClaimingPRR,
+      calculationRequestModel.daysClaimed,
       isProperty = true
     )
 
@@ -95,8 +78,8 @@ trait CalculatorController extends BaseController {
     improvementsAmt: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    acquisitionDate: Option[String] = None,
-    disposalDate: String,
+    acquisitionDate: Option[DateTime] = None,
+    disposalDate: DateTime,
     isClaimingPRR: Option[String],
     daysClaimedAfter: Option[Double]
 
@@ -148,8 +131,8 @@ trait CalculatorController extends BaseController {
     improvementsAmt: Double,
     reliefs: Double,
     allowableLossesAmt: Double,
-    acquisitionDate: Option[String],
-    disposalDate: String,
+    acquisitionDate: Option[DateTime],
+    disposalDate: DateTime,
     isClaimingPRR: Option[String],
     daysClaimedAfter: Option[Double]
   ): Action[AnyContent] = Action.async { implicit request =>
