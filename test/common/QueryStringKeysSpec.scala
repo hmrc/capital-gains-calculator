@@ -118,5 +118,29 @@ class QueryStringKeysSpec extends UnitSpec {
     s"have a improvements key with the value ${propertyTarget.improvements}" in {
       propertyTarget.improvements shouldBe "improvements"
     }
+
+    s"have a prrValue key with the value ${propertyTarget.prrValue}" in {
+      propertyTarget.prrValue shouldBe "prrValue"
+    }
+
+    s"have a lettingReliefs key with the value ${propertyTarget.lettingReliefs}" in {
+      propertyTarget.lettingReliefs shouldBe "lettingReliefs"
+    }
+
+    s"have a allowableLosses key with the value ${propertyTarget.allowableLosses}" in {
+      propertyTarget.allowableLosses shouldBe "allowableLosses"
+    }
+
+    s"have a broughtForwardLosses key with the value ${propertyTarget.broughtForwardLosses}" in {
+      propertyTarget.broughtForwardLosses shouldBe "broughtForwardLosses"
+    }
+
+    s"have a annualExemptAmount key with the value ${propertyTarget.annualExemptAmount}" in {
+      propertyTarget.annualExemptAmount shouldBe "annualExemptAmount"
+    }
+
+    s"have a disposalDate key with the value ${propertyTarget.disposalDate}" in {
+      propertyTarget.disposalDate shouldBe "disposalDate"
+    }
   }
 }
