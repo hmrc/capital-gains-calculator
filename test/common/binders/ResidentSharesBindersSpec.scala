@@ -73,6 +73,15 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Left("disposalValue is required."))
       }
 
+      "return an error message when a value fails validation" in {
+        val result = binder.bind("Any", Map("disposalValue" -> Seq("2000.0"),
+          "disposalCosts" -> Seq("2500.0"),
+          "acquisitionValue" -> Seq("-3000.0"),
+          "acquisitionCosts" -> Seq("3500.0")))
+
+        result shouldBe Some(Left("acquisitionValue cannot be negative."))
+      }
+
     }
 
     "calling .unBind" should {
