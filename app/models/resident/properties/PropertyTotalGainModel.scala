@@ -16,36 +16,9 @@
 
 package models.resident.properties
 
-import common.Validation
 import models.resident.shares.TotalGainModel
-import play.api.mvc.QueryStringBindable
+import common.binders._
 
 case class PropertyTotalGainModel (totalGainModel: TotalGainModel, improvements: Double)
 
-object PropertyTotalGainModel {
-
-  implicit def propertyTotalGainBinder(implicit totalGainBinder: QueryStringBindable[TotalGainModel],
-     doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyTotalGainModel] =
-      new QueryStringBindable[PropertyTotalGainModel] {
-        override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PropertyTotalGainModel]] = {
-          for {
-            totalGainModelEither <- totalGainBinder.bind("totalGainModel", params)
-            improvementsEither <- doubleBinder.bind("improvements", params)
-          } yield {
-            val inputs = (totalGainModelEither, improvementsEither)
-            inputs match {
-              case (Right(totalGainModel), Right(improvements)) =>
-                Right(PropertyTotalGainModel(totalGainModel, improvements))
-              case _ =>
-                val inputs = Seq(totalGainModelEither, improvementsEither)
-                Left(Validation.getFirstErrorMessage(inputs))
-            }
-          }
-        }
-
-        override def unbind(key: String, propertyTotalGainModel: PropertyTotalGainModel): String = {
-          s"${totalGainBinder.unbind("totalGainModel", propertyTotalGainModel.totalGainModel)}&" +
-            s"improvements=${doubleBinder.unbind("improvements", propertyTotalGainModel.improvements)}"
-        }
-      }
-}
+object PropertyTotalGainModel extends ResidentPropertyBinders

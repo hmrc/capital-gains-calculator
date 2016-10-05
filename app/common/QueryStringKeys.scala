@@ -34,4 +34,12 @@ object QueryStringKeys {
     val broughtForwardLosses = "broughtForwardLosses"
     val annualExemptAmount = "annualExemptAmount"
   }
+
+  object ResidentPropertiesCalculationKeys {
+    val disposalValue = "disposalValue"
+    val disposalCosts = "disposalCosts"
+    val acquisitionValue = "acquisitionValue"
+    val acquisitionCosts = "acquisitionCosts"
+    val improvements = "improvements"
+  }
 }
