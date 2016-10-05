@@ -16,14 +16,13 @@
 
 package common.binders
 
-import java.time.LocalDate
-
+import org.joda.time.DateTime
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CommonBindersSpec extends UnitSpec with MockitoSugar {
 
-  val binder = new CommonBinders{}.localDateBinder
+  val binder = new CommonBinders{}.dateTimeBinder
 
   "Binding to a localDateBinder" should {
 
@@ -31,14 +30,14 @@ class CommonBindersSpec extends UnitSpec with MockitoSugar {
       val map = Map("disposalDate" -> Seq("2016-05-04"))
       val result = binder.bind("disposalDate", map)
 
-      result shouldBe Some(Right(LocalDate.parse("2016-05-04")))
+      result shouldBe Some(Right(DateTime.parse("2016-05-04")))
     }
 
     "return an error message with a valid map but invalid date" in {
       val map = Map("disposalDate" -> Seq("not-a-date"))
       val result = binder.bind("disposalDate", map)
 
-      result shouldBe Some(Left("""Cannot parse parameter disposalDate as LocalDate: For input string: "not-a-date""""))
+      result shouldBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "not-a-date""""))
     }
 
     "return an error message with an invalid map with empty value" in {
@@ -59,7 +58,7 @@ class CommonBindersSpec extends UnitSpec with MockitoSugar {
   "Unbinding using the localDateBinder" should {
 
     "return a valid String from a LocalDate" in {
-      val date = LocalDate.parse("2015-06-04")
+      val date = DateTime.parse("2015-06-04")
       val result = binder.unbind("disposalDate", date)
 
       result shouldBe "disposalDate=2015-6-4"

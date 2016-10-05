@@ -18,16 +18,15 @@ package controllers.resident.shares
 
 import common.Date
 import common.Date._
+import common.Math._
+import config.TaxRatesAndBands
+import models.CalculationResultModel
+import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import common.Math._
-import config.TaxRatesAndBands
-import models.CalculationResultModel
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
-import org.joda.time.DateTime
 
 import scala.concurrent.Future
 
@@ -82,28 +81,35 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
-    allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
-    previousIncome: Double, personalAllowance: Double, disposalDate: String
+  def calculateTaxOwed
+  (
+    calculateTaxOwedModel: CalculateTaxOwedModel
   ): Action[AnyContent] = Action.async { implicit request =>
 
-    val taxYear = getTaxYear(DateTime.parse(disposalDate))
+    val chargeableGainModel = calculateTaxOwedModel.chargeableGainModel
+
+    val taxYear = getTaxYear(calculateTaxOwedModel.disposalDate)
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, 0)
+    val gain = calculationService.calculateGainFlat(chargeableGainModel.totalGainModel.disposalValue,
+      chargeableGainModel.totalGainModel.disposalCosts, chargeableGainModel.totalGainModel.acquisitionValue,
+      chargeableGainModel.totalGainModel.acquisitionCosts, 0)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, allowableLosses.getOrElse(0.0), annualExemptAmount, broughtForwardLosses.getOrElse(0.0)
+      gain, 0, chargeableGainModel.allowableLosses.getOrElse(0.0), chargeableGainModel.annualExemptAmount,
+      chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
     )
     val aeaUsed: Double = calculationService.annualExemptAmountUsed(
-      annualExemptAmount,
+      chargeableGainModel.annualExemptAmount,
       gain,
-      calculationService.calculateChargeableGain(gain, 0, allowableLosses.getOrElse(0.0), annualExemptAmount, 0.0),
+      calculationService.calculateChargeableGain(gain, 0, chargeableGainModel.allowableLosses.getOrElse(0.0), chargeableGainModel.annualExemptAmount, 0.0),
       0,
-      allowableLosses.getOrElse(0.0)
+      chargeableGainModel.allowableLosses.getOrElse(0.0)
     )
-    val deductions = 0 + allowableLosses.getOrElse(0.0) + aeaUsed + broughtForwardLosses.getOrElse(0.0)
+    val deductions = 0 + chargeableGainModel.allowableLosses.getOrElse(0.0) + aeaUsed + chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
     val calculationResult: CalculationResultModel  = calculationService.calculationResult (
       "individual", gain, chargeableGain, negativeToZero(chargeableGain),
-      calculationService.brRemaining(previousIncome, personalAllowance, previousTaxableGain.getOrElse(0.0), Date.getTaxYear(DateTime.parse(disposalDate))),
+      calculationService.brRemaining(calculateTaxOwedModel.previousIncome,
+        calculateTaxOwedModel.personalAllowance, calculateTaxOwedModel.previousTaxableGain.getOrElse(0.0),
+        Date.getTaxYear(calculateTaxOwedModel.disposalDate)),
       0.0, "No", aeaUsed, 0.0, calcTaxYear, false
     )
     val result: TaxOwedResultModel = TaxOwedResultModel(
@@ -120,8 +126,8 @@ trait CalculatorController extends BaseController {
       None,
       //Logic here is that there has been a total gain made.  Therefore any brought forward losses claimed have been used entirely.
       //As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
-      Some(broughtForwardLosses.getOrElse(0)),
-      allowableLosses.getOrElse(0)
+      Some(chargeableGainModel.broughtForwardLosses.getOrElse(0)),
+      chargeableGainModel.allowableLosses.getOrElse(0)
     )
     Future.successful(Ok(Json.toJson(result)))
   }
