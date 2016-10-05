@@ -34,6 +34,7 @@ object QueryStringKeys {
     val reliefsAmount = "reliefs"
     val allowableLosses = "allowableLossesAmt"
     val acquisitionDate = "acquisitionDate"
+    val disposalDate = "disposalDate"
     val isClaimingPRR = "isClaimingPRR"
     val daysClaimed = "daysClaimed"
   }

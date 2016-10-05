@@ -44,13 +44,13 @@ trait CommonBinders {
     }
   }
 
-  implicit def optionalLocalDateBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[Option[DateTime]] = {
+  implicit def optionalDateTimeBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[Option[DateTime]] = {
     new QueryStringBindable[Option[DateTime]] {
 
       override def unbind(key: String, value: Option[DateTime]): String = {
 
         if (value.isDefined) {
-          s"$key=${value.get.getDayOfMonth}-${value.get.getMonthOfYear}-${value.get.getYear}"
+          s"$key=${value.get.getYear}-${value.get.getMonthOfYear}-${value.get.getDayOfMonth}"
         } else {
           ""
         }

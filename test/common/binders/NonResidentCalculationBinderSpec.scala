@@ -45,6 +45,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.reliefsAmount -> Seq("11.11"),
     keys.allowableLosses -> Seq("22.22"),
     keys.acquisitionDate -> Seq("2016-12-20"),
+    keys.disposalDate -> Seq("2018-09-13"),
     keys.isClaimingPRR -> Seq("yes"),
     keys.daysClaimed -> Seq("200")
   )
@@ -66,12 +67,13 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     11.11,
     22.22,
     Some(DateTime.parse("2016-12-20")),
+    DateTime.parse("2018-09-13"),
     Some("yes"),
     Some(200.0)
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, None, None)
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
 
   "Binding a valid non resident calculation request" when {
 
@@ -236,6 +238,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
       "not match the empty test model as defined above" in {
         result should not be emptyCalculationRequest
+      }
+    }
+
+    "a disposal date is defined" should {
+      "return a CalculationRequest with the disposal date populated" in {
+        result.disposalDate shouldBe expectedRequest.disposalDate
       }
     }
 
@@ -471,6 +479,23 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
+    "a disposal date is not supplied" should {
+      "return an error message" in {
+        val request = badRequest(keys.disposalDate, None)
+        val result = target.bind("", request)
+        result shouldBe Some(Left(s"${keys.disposalDate} is required."))
+      }
+    }
+
+    "a disposal date amount with an invalid value" should {
+      "return an error message" in {
+        val badData = "bad data"
+        val request = badRequest(keys.disposalDate, Some(badData))
+        val result = target.bind("", request)
+        result shouldBe Some(Left(dateParseError(keys.disposalDate, badData)))
+      }
+    }
+
     "a days claimed with an invalid value" should {
       "return an error message" in {
         val badData = "bad data"
@@ -545,7 +570,11 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
 
       "output the acquisition date key and value" in {
-        result should include(s"&${keys.acquisitionDate}=20-12-2016")
+        result should include(s"&${keys.acquisitionDate}=2016-12-20")
+      }
+
+      "output the disposal date key and value" in {
+        result should include(s"&${keys.disposalDate}=2018-9-13")
       }
 
       "output the is claiming prr key and value" in {

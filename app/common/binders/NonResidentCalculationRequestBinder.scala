@@ -31,7 +31,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
     keys.acquisitionCosts,
     keys.improvementsAmount,
     keys.reliefsAmount,
-    keys.allowableLosses)
+    keys.allowableLosses,
+    keys.disposalDate)
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
@@ -59,8 +60,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           improvementsParam <- doubleBinder.bind(keys.improvementsAmount, params)
           reliefsParam <- doubleBinder.bind(keys.reliefsAmount, params)
           allowableLossesParam <- doubleBinder.bind(keys.allowableLosses, params)
-          acquisitionDateParam <- optionalLocalDateBinder.bind(keys.acquisitionDate, params)
-
+          acquisitionDateParam <- optionalDateTimeBinder.bind(keys.acquisitionDate, params)
+          disposalDateParam <- dateTimeBinder.bind(keys.disposalDate, params)
           isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
           daysClaimedParam <- optionalDoubleBinder.bind(keys.daysClaimed, params)
         } yield {
@@ -79,6 +80,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
             reliefsParam,
             allowableLossesParam,
             acquisitionDateParam,
+            disposalDateParam,
             isClaimingPRRParam,
             daysClaimedParam) match {
             case (
@@ -97,6 +99,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(reliefs),
               Right(allowableLosses),
               Right(acquisitionDate),
+              Right(disposalDate),
               Right(isClaimingPRR),
               Right(daysClaimed)) => Right(CalculationRequest(customerType,
                                                                   priorDisposal,
@@ -113,6 +116,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
                                                                   reliefs,
                                                                   allowableLosses,
                                                                   acquisitionDate,
+                                                                  disposalDate,
                                                                   isClaimingPRR,
                                                                   daysClaimed))
             case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
@@ -130,6 +134,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
                                                                   reliefsParam,
                                                                   allowableLossesParam,
                                                                   acquisitionDateParam,
+                                                                  disposalDateParam,
                                                                   isClaimingPRRParam,
                                                                   daysClaimedParam)))
           }
@@ -152,8 +157,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           doubleBinder.unbind(keys.improvementsAmount, request.improvementsAmount),
           doubleBinder.unbind(keys.reliefsAmount, request.reliefsAmount),
           doubleBinder.unbind(keys.allowableLosses, request.allowableLosses),
-          optionalLocalDateBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
-
+          optionalDateTimeBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
+          dateTimeBinder.unbind(keys.disposalDate, request.disposalDate),
           optionalStringBinder.unbind(keys.isClaimingPRR, request.isClaimingPRR),
           optionalDoubleBinder.unbind(keys.daysClaimed, request.daysClaimed)
         ).filterNot(_.isEmpty).mkString("&")

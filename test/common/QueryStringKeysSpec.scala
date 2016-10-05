@@ -83,6 +83,10 @@ class QueryStringKeysSpec extends UnitSpec {
       target.acquisitionDate shouldBe "acquisitionDate"
     }
 
+    s"have an disposal date key with the value ${target.disposalDate}" in {
+      target.disposalDate shouldBe "disposalDate"
+    }
+
     s"have an is claiming private residence relief key with the value ${target.isClaimingPRR}" in {
       target.isClaimingPRR shouldBe "isClaimingPRR"
     }
