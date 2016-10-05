@@ -31,11 +31,11 @@ class QueryStringKeysSpec extends UnitSpec {
       target.priorDisposal shouldBe "priorDisposal"
     }
 
-    s"have a annual exempt amount key with the value ${target.annualExemptAmount}" in {
+    s"have an annual exempt amount key with the value ${target.annualExemptAmount}" in {
       target.annualExemptAmount shouldBe "annualExemptAmount"
     }
 
-    s"have a other properties amount key with the value ${target.otherPropertiesAmount}" in {
+    s"have an other properties amount key with the value ${target.otherPropertiesAmount}" in {
       target.otherPropertiesAmount shouldBe "otherPropertiesAmt"
     }
 
@@ -59,11 +59,11 @@ class QueryStringKeysSpec extends UnitSpec {
       target.disposalCosts shouldBe "disposalCosts"
     }
 
-    s"have a acquisition value key with the value ${target.acquisitionValue}" in {
+    s"have an acquisition value key with the value ${target.acquisitionValue}" in {
       target.acquisitionValue shouldBe "acquisitionValueAmt"
     }
 
-    s"have a acquisition costs key with the value ${target.acquisitionCosts}" in {
+    s"have an acquisition costs key with the value ${target.acquisitionCosts}" in {
       target.acquisitionCosts shouldBe "acquisitionCostsAmt"
     }
 
@@ -75,12 +75,16 @@ class QueryStringKeysSpec extends UnitSpec {
       target.reliefsAmount shouldBe "reliefs"
     }
 
-    s"have a allowable losses amount key with the value ${target.allowableLosses}" in {
+    s"have an allowable losses amount key with the value ${target.allowableLosses}" in {
       target.allowableLosses shouldBe "allowableLossesAmt"
     }
 
-    s"have a acquisition date key with the value ${target.acquisitionDate}" in {
+    s"have an acquisition date key with the value ${target.acquisitionDate}" in {
       target.acquisitionDate shouldBe "acquisitionDate"
+    }
+
+    s"have an is claiming private residence relief key with the value ${target.isClaimingPRR}" in {
+      target.isClaimingPRR shouldBe "isClaimingPRR"
     }
   }
 }

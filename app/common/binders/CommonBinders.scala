@@ -59,8 +59,6 @@ trait CommonBinders {
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Option[DateTime]]] = {
 
         if (params.get(key).isDefined) {
-
-
           stringBinder.bind(key, params) match {
             case Some(Right(dateString)) => Try {
               DateTime.parse(dateString)

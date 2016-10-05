@@ -63,11 +63,12 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     999.99,
     11.11,
     22.22,
-    Some(DateTime.parse("2016-12-20"))
+    Some(DateTime.parse("2016-12-20")),
+    Some("yes")
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None)
+  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, None)
 
   "Binding a valid non resident calculation request" when {
 
@@ -215,7 +216,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
-    "a acquisition date is not defined" should {
+    "an acquisition date is not defined" should {
       val request = validRequest.filterKeys(key => key != keys.acquisitionDate)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
@@ -223,6 +224,20 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
       "return a CalculationRequest with the acquisition date not populated" in {
         result.acquisitionDate shouldBe None
+      }
+      "not match the empty test model as defined above" in {
+        result should not be emptyCalculationRequest
+      }
+    }
+
+    "is claiming prr is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.isClaimingPRR)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
+      "return a CalculationRequest with the is claiming prr not populated" in {
+        result.isClaimingPRR shouldBe None
       }
       "not match the empty test model as defined above" in {
         result should not be emptyCalculationRequest
@@ -488,6 +503,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       "output the acquisition date key and value" in {
         result should include(s"&${keys.acquisitionDate}=20-12-2016")
       }
+
+      "output the is claiming prr key and value" in {
+        result should include(s"&${keys.isClaimingPRR}=yes")
+      }
     }
 
     "optional properties are missing" should {
@@ -517,6 +536,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "not output the acquisition date key and value" in {
         result should not include s"&${keys.acquisitionDate}"
+      }
+
+      "not output the is claiming prr key and value" in {
+        result should not include s"&${keys.isClaimingPRR}"
       }
     }
   }

@@ -20,7 +20,6 @@ import models.nonResident.CalculationRequest
 import play.api.mvc.QueryStringBindable
 import common.Validation
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
-import org.joda.time.DateTime
 
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
@@ -61,6 +60,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           reliefsParam <- doubleBinder.bind(keys.reliefsAmount, params)
           allowableLossesParam <- doubleBinder.bind(keys.allowableLosses, params)
           acquisitionDateParam <- optionalLocalDateBinder.bind(keys.acquisitionDate, params)
+
+          isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
@@ -76,7 +77,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
             improvementsParam,
             reliefsParam,
             allowableLossesParam,
-            acquisitionDateParam) match {
+            acquisitionDateParam,
+            isClaimingPRRParam) match {
             case (
               Right(customerType),
               Right(priorDisposal),
@@ -92,7 +94,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(improvements),
               Right(reliefs),
               Right(allowableLosses),
-              Right(acquisitionDate)) => Right(CalculationRequest(customerType,
+              Right(acquisitionDate),
+              Right(isClaimingPRR)) => Right(CalculationRequest(customerType,
                                                                   priorDisposal,
                                                                   aea,
                                                                   otherProperties,
@@ -106,7 +109,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
                                                                   improvements,
                                                                   reliefs,
                                                                   allowableLosses,
-                                                                  acquisitionDate))
+                                                                  acquisitionDate,
+                                                                  isClaimingPRR))
             case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
                                                                   priorDisposalParam,
                                                                   aeaParam,
@@ -121,7 +125,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
                                                                   improvementsParam,
                                                                   reliefsParam,
                                                                   allowableLossesParam,
-                                                                  acquisitionDateParam)))
+                                                                  acquisitionDateParam,
+                                                                  isClaimingPRRParam)))
           }
         }
       }
@@ -142,7 +147,9 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           doubleBinder.unbind(keys.improvementsAmount, request.improvementsAmount),
           doubleBinder.unbind(keys.reliefsAmount, request.reliefsAmount),
           doubleBinder.unbind(keys.allowableLosses, request.allowableLosses),
-          optionalLocalDateBinder.unbind(keys.acquisitionDate, request.acquisitionDate)
+          optionalLocalDateBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
+
+          optionalStringBinder.unbind(keys.isClaimingPRR, request.isClaimingPRR)
         ).filterNot(_.isEmpty).mkString("&")
 
     }

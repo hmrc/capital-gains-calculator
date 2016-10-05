@@ -32,7 +32,7 @@ case class CalculationRequest(customerType: String,
                               improvementsAmount: Double,
                               reliefsAmount: Double,
                               allowableLosses: Double,
-                              acquisitionDate: Option[DateTime])
+                              acquisitionDate: Option[DateTime],
 //                              disposalDate: String,
-//                              isClaimingPRR: Option[String],
+                              isClaimingPRR: Option[String])
 //                              daysClaimed: Option[Double])
