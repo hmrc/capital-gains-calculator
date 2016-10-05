@@ -43,4 +43,35 @@ trait CommonBinders {
       }
     }
   }
+
+  implicit def optionalDateTimeBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[Option[DateTime]] = {
+    new QueryStringBindable[Option[DateTime]] {
+
+      override def unbind(key: String, value: Option[DateTime]): String = {
+
+        if (value.isDefined) {
+          s"$key=${value.get.getYear}-${value.get.getMonthOfYear}-${value.get.getDayOfMonth}"
+        } else {
+          ""
+        }
+      }
+
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Option[DateTime]]] = {
+
+        if (params.get(key).isDefined) {
+          stringBinder.bind(key, params) match {
+            case Some(Right(dateString)) => Try {
+              DateTime.parse(dateString)
+            } match {
+              case Success(date) => Some(Right(Some(date)))
+              case _ => Some(Left(s"""Cannot parse parameter $key as DateTime: For input string: "${params.get(key).get.head}""""))
+            }
+            case _ => None
+          }
+        } else {
+          Some(Right(None))
+        }
+      }
+    }
+  }
 }

@@ -31,12 +31,68 @@ class QueryStringKeysSpec extends UnitSpec {
       target.priorDisposal shouldBe "priorDisposal"
     }
 
-    s"have a annual exempt amount with the value ${target.annualExemptAmount}" in {
+    s"have an annual exempt amount key with the value ${target.annualExemptAmount}" in {
       target.annualExemptAmount shouldBe "annualExemptAmount"
     }
 
-    s"have a other properties amount with the value ${target.otherPropertiesAmount}" in {
+    s"have an other properties amount key with the value ${target.otherPropertiesAmount}" in {
       target.otherPropertiesAmount shouldBe "otherPropertiesAmt"
+    }
+
+    s"have a vulnerable key with the value ${target.vulnerable}" in {
+      target.vulnerable shouldBe "isVulnerable"
+    }
+
+    s"have a current income key with the value ${target.currentIncome}" in {
+      target.currentIncome shouldBe "currentIncome"
+    }
+
+    s"have a personal allowance key with the value ${target.personalAllowanceAmount}" in {
+      target.personalAllowanceAmount shouldBe "personalAllowanceAmt"
+    }
+
+    s"have a disposal value key with the value ${target.disposalValue}" in {
+      target.disposalValue shouldBe "disposalValue"
+    }
+
+    s"have a disposal costs key with the value ${target.disposalCosts}" in {
+      target.disposalCosts shouldBe "disposalCosts"
+    }
+
+    s"have an acquisition value key with the value ${target.acquisitionValue}" in {
+      target.acquisitionValue shouldBe "acquisitionValueAmt"
+    }
+
+    s"have an acquisition costs key with the value ${target.acquisitionCosts}" in {
+      target.acquisitionCosts shouldBe "acquisitionCostsAmt"
+    }
+
+    s"have an improvements amount key with the value ${target.improvementsAmount}" in {
+      target.improvementsAmount shouldBe "improvementsAmt"
+    }
+
+    s"have a reliefs amount key with the value ${target.reliefsAmount}" in {
+      target.reliefsAmount shouldBe "reliefs"
+    }
+
+    s"have an allowable losses amount key with the value ${target.allowableLosses}" in {
+      target.allowableLosses shouldBe "allowableLossesAmt"
+    }
+
+    s"have an acquisition date key with the value ${target.acquisitionDate}" in {
+      target.acquisitionDate shouldBe "acquisitionDate"
+    }
+
+    s"have an disposal date key with the value ${target.disposalDate}" in {
+      target.disposalDate shouldBe "disposalDate"
+    }
+
+    s"have an is claiming private residence relief key with the value ${target.isClaimingPRR}" in {
+      target.isClaimingPRR shouldBe "isClaimingPRR"
+    }
+
+    s"have an days claiming key with the value ${target.daysClaimed}" in {
+      target.daysClaimed shouldBe "daysClaimed"
     }
   }
 }
