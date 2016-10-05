@@ -94,15 +94,16 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     }
 
     "an annual exempt amount is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.annualExemptAmount)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
       "return a CalculationRequest with the annual exempt amount not populated" in {
-        val request = validRequest.filterKeys(key => key != keys.annualExemptAmount)
-        val result = target.bind("", request) match {
-          case Some(Right(data)) => data
-          case _ => emptyCalculationRequest
-        }
-
-        result should not be emptyCalculationRequest
         result.annualExemptAmount shouldBe None
+      }
+      "not match the empty test model as defined above" in {
+        result should not be emptyCalculationRequest
       }
     }
 
@@ -113,15 +114,16 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     }
 
     "an other properties amount is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.otherPropertiesAmount)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
       "return a CalculationRequest with the other properties amount not populated" in {
-        val request = validRequest.filterKeys(key => key != keys.otherPropertiesAmount)
-        val result = target.bind("", request) match {
-          case Some(Right(data)) => data
-          case _ => emptyCalculationRequest
-        }
-
-        result should not be emptyCalculationRequest
         result.otherPropertiesAmount shouldBe None
+      }
+      "not match the empty test model as defined above" in {
+        result should not be emptyCalculationRequest
       }
     }
 
@@ -138,15 +140,16 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     }
 
     "a current income is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.currentIncome)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
       "return a CalculationRequest with the current income not populated" in {
-        val request = validRequest.filterKeys(key => key != keys.currentIncome)
-        val result = target.bind("", request) match {
-          case Some(Right(data)) => data
-          case _ => emptyCalculationRequest
-        }
-
-        result should not be emptyCalculationRequest
         result.currentIncome shouldBe None
+      }
+      "not match the empty test model as defined above" in {
+        result should not be emptyCalculationRequest
       }
     }
 
@@ -157,15 +160,16 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     }
 
     "a personal allowance is not defined" should {
+      val request = validRequest.filterKeys(key => key != keys.personalAllowanceAmount)
+      val result = target.bind("", request) match {
+        case Some(Right(data)) => data
+        case _ => emptyCalculationRequest
+      }
       "return a CalculationRequest with the personal allowance not populated" in {
-        val request = validRequest.filterKeys(key => key != keys.personalAllowanceAmount)
-        val result = target.bind("", request) match {
-          case Some(Right(data)) => data
-          case _ => emptyCalculationRequest
-        }
-
-        result should not be emptyCalculationRequest
         result.personalAllowanceAmount shouldBe None
+      }
+      "not match the empty test model as defined above" in {
+        result should not be emptyCalculationRequest
       }
     }
 
@@ -217,16 +221,11 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
-
       "return a CalculationRequest with the acquisition date not populated" in {
-
         result.acquisitionDate shouldBe None
-
       }
       "not match the empty test model as defined above" in {
-
         result should not be emptyCalculationRequest
-
       }
     }
   }
