@@ -45,7 +45,7 @@ trait ResidentSharesBinders extends CommonBinders {
             val inputs = Seq(disposalValueEither, disposalCostsEither, acquisitionValueEither, acquisitionCostsEither)
             inputs match {
               case Seq(Right(disposalValue), Right(disposalCosts), Right(acquisitionValue), Right(acquisitionCosts)) =>
-                Right(TotalGainModel(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts))
+                Validation.validateSharesTotalGain(TotalGainModel(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts))
               case fail => Left(Validation.getFirstErrorMessage(fail))
             }
           }
