@@ -16,8 +16,10 @@
 
 package common.validation
 
-import common.QueryStringKeys.{ResidentSharesCalculationKeys => residentShareKeys}
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
+import common.Date
+import config.TaxRatesAndBands
+import org.joda.time.DateTime
+import common.QueryStringKeys.{ResidentSharesCalculationKeys => sharesKeys}
 
 object CommonValidation {
 
@@ -61,5 +63,18 @@ object CommonValidation {
       if (value.apply(1).length <= 2) Right(input)
       else Left(s"$key has too many decimal places.")
     } else Right(input)
+  }
+
+  def validateResidentPersonalAllowance(input: Double, disposalDate: DateTime): Either[String, Double] = {
+    val closestTaxYear = TaxRatesAndBands.getClosestTaxYear(Date.getTaxYear(disposalDate))
+    val taxBands = TaxRatesAndBands.getRates(closestTaxYear)
+    val maxPersonalAllowance = taxBands.maxPersonalAllowance + taxBands.blindPersonsAllowance
+
+    validateDouble(input, sharesKeys.personalAllowance) match {
+      case Right(data) if data <= maxPersonalAllowance => Right(input)
+      case Right(test) =>
+        Left(s"${sharesKeys.personalAllowance} cannot exceed $maxPersonalAllowance")
+      case Left(message) => Left(message)
+    }
   }
 }

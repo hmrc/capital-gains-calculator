@@ -17,8 +17,10 @@
 package common.validation
 
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => residentShareKeys}
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
+import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import common.validation.CommonValidation._
+import config.TaxRatesAndBands20152016
+import org.joda.time.DateTime
 
 object SharesValidation {
 
@@ -44,5 +46,28 @@ object SharesValidation {
       case (Right(_), Right(_), Right(_), Right(_)) => Right(chargeableGainModel)
       case _ => Left(getFirstErrorMessage(Seq(totalGainModel, allowableLosses, broughtForwardLosses, annualExemptAmount)))
     }
+  }
+
+  def validateSharesTaxOwed(taxOwedModel: CalculateTaxOwedModel): Either[String, CalculateTaxOwedModel] = {
+    val chargeableGainModel = validateSharesChargeableGain(taxOwedModel.chargeableGainModel)
+    val previousTaxableGain = validateOptionDouble(taxOwedModel.previousTaxableGain, residentShareKeys.previousTaxableGain)
+    val previousIncome = validateDouble(taxOwedModel.previousIncome, residentShareKeys.previousIncome)
+    val disposalDate = validateSharesDisposalDate(taxOwedModel.disposalDate)
+    val personalAllowance = disposalDate match {
+      case Right(date) => validateResidentPersonalAllowance (taxOwedModel.personalAllowance, date)
+      case Left(_) => Right(taxOwedModel.personalAllowance)
+    }
+
+
+
+    (chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate) match {
+      case (Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(taxOwedModel)
+      case _ => Left(getFirstErrorMessage(Seq(chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate)))
+    }
+  }
+
+  def validateSharesDisposalDate(disposalDate: DateTime): Either[String, DateTime] = {
+    if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(disposalDate)
+    else Left("disposalDate cannot be before 2015-04-06")
   }
 }
