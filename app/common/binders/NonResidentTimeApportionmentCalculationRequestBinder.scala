@@ -18,7 +18,7 @@ package common.binders
 
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 
-trait NonResidentTACalculationRequestBinder extends NonResidentCalculationRequestBinder {
+trait NonResidentTimeApportionmentCalculationRequestBinder extends NonResidentCalculationRequestBinder {
 
   override val requiredParams = Seq(
     keys.customerType,

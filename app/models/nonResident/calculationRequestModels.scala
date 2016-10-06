@@ -16,10 +16,8 @@
 
 package models.nonResident
 
-import common.binders.NonResidentCalculationRequestBinder
+import common.binders.{NonResidentCalculationRequestBinder, NonResidentTimeApportionmentCalculationRequestBinder}
 import org.joda.time.DateTime
-
-object CalculationRequestModel extends NonResidentCalculationRequestBinder
 
 case class CalculationRequestModel(customerType: String,
                                    priorDisposal: String,
@@ -40,3 +38,27 @@ case class CalculationRequestModel(customerType: String,
                                    isClaimingPRR: Option[String],
                                    daysClaimed: Option[Double],
                                    isProperty: Boolean = true)
+
+object CalculationRequestModel extends NonResidentCalculationRequestBinder
+
+case class TimeApportionmentCalculationRequestModel(customerType: String,
+                                                    priorDisposal: String,
+                                                    annualExemptAmount: Option[Double],
+                                                    otherPropertiesAmount: Option[Double],
+                                                    isVulnerable: Option[String],
+                                                    currentIncome: Option[Double],
+                                                    personalAllowanceAmount: Option[Double],
+                                                    disposalValue: Double,
+                                                    disposalCosts: Double,
+                                                    initialValue: Double,
+                                                    initialCosts: Double,
+                                                    improvementsAmount: Double,
+                                                    reliefsAmount: Double,
+                                                    allowableLosses: Double,
+                                                    acquisitionDate: Option[DateTime],
+                                                    disposalDate: DateTime,
+                                                    isClaimingPRR: Option[String],
+                                                    daysClaimed: Option[Double],
+                                                    isProperty: Boolean = true)
+
+object TimeApportionmentCalculationRequestModel extends NonResidentTimeApportionmentCalculationRequestBinder
