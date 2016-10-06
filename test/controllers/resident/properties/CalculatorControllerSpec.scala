@@ -16,6 +16,9 @@
 
 package controllers.resident.properties
 
+import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
+import models.resident.shares.TotalGainModel
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -27,7 +30,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" should {
-      lazy val result = CalculatorController.calculateTotalGain(100000, 10000, 50000, 10000, 10000)(fakeRequest)
+      lazy val result = CalculatorController.calculateTotalGain(PropertyTotalGainModel(TotalGainModel(100000, 10000, 50000, 10000), 10000))(fakeRequest)
 
       "return a 200" in {
         status(result) shouldBe 200
@@ -51,18 +54,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000,
-        improvements = 5000,
-        prrValue = None,
-        lettingReliefs = Some(1000),
-        allowableLosses = Some(5000),
-        broughtForwardLosses = Some(20000),
-        annualExemptAmount = 11100,
-        disposalDate = "2015-05-06"
+      lazy val result = CalculatorController.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
+        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, Some(1000), Some(5000), Some(20000), 11100, DateTime.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -125,19 +118,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "numeric values are passed with correct rounding" should {
-
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000,
-        improvements = 5000,
-        prrValue = None,
-        lettingReliefs = None,
-        allowableLosses = Some(4999.01),
-        broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100,
-        disposalDate = "2015-05-06"
+      lazy val result = CalculatorController.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
+        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, None, Some(4999.01), Some(19999.01), 11100, DateTime.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -201,18 +183,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed with reliefs greater than gain" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000,
-        improvements = 5000,
-        prrValue = Some(20000),
-        lettingReliefs = Some(30000),
-        allowableLosses = Some(4999.01),
-        broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100,
-        disposalDate = "2015-05-06"
+
+      lazy val result = CalculatorController.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
+        TotalGainModel(195000, 1000, 160000, 1000), 5000), Some(20000), Some(30000), Some(4999.01), Some(19999.01),
+        11100, DateTime.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -276,18 +250,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed with reliefs greater than gain and lettings exceeding 40000" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 200000,
-        disposalCosts = 0,
-        acquisitionValue = 100000,
-        acquisitionCosts = 0,
-        improvements = 0,
-        prrValue = Some(55000),
-        lettingReliefs = Some(45000),
-        allowableLosses = Some(4999.01),
-        broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100,
-        disposalDate = "2015-05-06"
+//      lazy val result = CalculatorController.calculateChargeableGain(
+      lazy val result = CalculatorController.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
+        TotalGainModel(200000, 0, 100000, 0), 0), Some(55000), Some(45000), Some(4999.01), Some(19999.01), 11100, DateTime.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -522,18 +487,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "Part allowableLossesUsed" should {
-      lazy val result = CalculatorController.calculateChargeableGain(
-        disposalValue = 50000,
-        disposalCosts = 0,
-        acquisitionValue = 0,
-        acquisitionCosts = 0,
-        improvements = 0,
-        prrValue = None,
-        lettingReliefs = None,
-        allowableLosses = Some(100000),
-        broughtForwardLosses = Some(0),
-        annualExemptAmount = 11100,
-        disposalDate = "2015-05-06"
+      lazy val result = CalculatorController.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
+        TotalGainModel(50000, 0, 0, 0), 0), None, None, Some(100000), Some(0), 11100, DateTime.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {

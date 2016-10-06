@@ -72,6 +72,8 @@ trait MicroService {
       parallelExecution in IntegrationTest := false)
     .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"))
     .settings(routesImport += "models.nonResident._")
+    .settings(routesImport += "common.binders._")
+//    .settings(routesImport += "models.resident.shares.TotalGainModel._")
 //    .settings(routesImport += "common.binders.CommonBinders.dateTimeBinder")
 }
 
