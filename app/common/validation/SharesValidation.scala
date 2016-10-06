@@ -52,8 +52,13 @@ object SharesValidation {
     val chargeableGainModel = validateSharesChargeableGain(taxOwedModel.chargeableGainModel)
     val previousTaxableGain = validateOptionDouble(taxOwedModel.previousTaxableGain, residentShareKeys.previousTaxableGain)
     val previousIncome = validateDouble(taxOwedModel.previousIncome, residentShareKeys.previousIncome)
-    val personalAllowance = validateDouble(taxOwedModel.personalAllowance, residentShareKeys.personalAllowance)
     val disposalDate = validateSharesDisposalDate(taxOwedModel.disposalDate)
+    val personalAllowance = disposalDate match {
+      case Right(date) => validateResidentPersonalAllowance (taxOwedModel.personalAllowance, date)
+      case Left(_) => Right(taxOwedModel.personalAllowance)
+    }
+
+
 
     (chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate) match {
       case (Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(taxOwedModel)
