@@ -17,7 +17,7 @@
 package common.binders
 
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => queryKeys}
-import common.validation.CommonValidation
+import common.validation.{CommonValidation, PropertyValidation}
 import models.resident.properties.PropertyTotalGainModel
 import models.resident.shares.TotalGainModel
 import play.api.mvc.QueryStringBindable
@@ -42,10 +42,8 @@ trait ResidentPropertyBinders {
             val inputs = (totalGainModelEither, improvementsEither)
             inputs match {
               case (Right(totalGainModel), Right(improvements)) =>
-                Right(PropertyTotalGainModel(totalGainModel, improvements))
-              case _ =>
-                val inputs = Seq(totalGainModelEither, improvementsEither)
-                Left(CommonValidation.getFirstErrorMessage(inputs))
+                PropertyValidation.validatePropertyTotalGain(PropertyTotalGainModel(totalGainModel, improvements))
+              case fail => Left(CommonValidation.getFirstErrorMessage(Seq(totalGainModelEither, improvementsEither)))
             }
           }
         }
