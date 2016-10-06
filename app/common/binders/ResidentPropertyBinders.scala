@@ -28,8 +28,7 @@ trait ResidentPropertyBinders extends CommonBinders {
 
   val totalGainParameters = Seq(queryKeys.disposalValue, queryKeys.disposalCosts, queryKeys.acquisitionValue, queryKeys.acquisitionCosts)
   val propertyTotalGainParameters = totalGainParameters ++ Seq(queryKeys.improvements)
-  val chargeableGainParameters = propertyTotalGainParameters ++ Seq(queryKeys.prrValue, queryKeys.lettingReliefs, queryKeys.allowableLosses,
-                                  queryKeys.broughtForwardLosses, queryKeys.annualExemptAmount, queryKeys.disposalDate)
+  val chargeableGainParameters = propertyTotalGainParameters ++ Seq(queryKeys.annualExemptAmount, queryKeys.disposalDate)
 
   implicit def propertyTotalGainBinder(implicit totalGainBinder: QueryStringBindable[TotalGainModel],
                                        doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyTotalGainModel] =
