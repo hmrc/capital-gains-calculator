@@ -17,6 +17,8 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
+import models.nonResident.CalculationRequestModel
+import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -51,8 +53,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Matchers.anyDouble,
-      Option(Matchers.anyString),
-      Matchers.anyString,
+      Option(Matchers.any[DateTime]()),
+      Matchers.any[DateTime](),
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
       Option(Matchers.anyDouble),
@@ -65,24 +67,27 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-flat")
     val result = target.calculateFlat(
-      customerType = "individual",
-      priorDisposal = "No",
-      annualExemptAmount = Some(0),
-      otherPropertiesAmt = Some(0),
-      isVulnerable = None,
-      currentIncome = Some(7000),
-      personalAllowanceAmt = Some(11000),
-      disposalValue = 21100,
-      disposalCosts = 0,
-      acquisitionValueAmt = 0,
-      acquisitionCostsAmt = 0,
-      improvementsAmt = 0,
-      reliefs = 0,
-      allowableLossesAmt = 0,
-      acquisitionDate = None,
-      disposalDate = "2016-10-10",
-      isClaimingPRR = None,
-      daysClaimed = None)(fakeRequest)
+      CalculationRequestModel(
+        customerType = "individual",
+        priorDisposal = "No",
+        annualExemptAmount = Some(0),
+        otherPropertiesAmount = Some(0),
+        isVulnerable = None,
+        currentIncome = Some(7000),
+        personalAllowanceAmount = Some(11000),
+        disposalValue = 21100,
+        disposalCosts = 0,
+        initialValue = 0,
+        initialCosts = 0,
+        improvementsAmount = 0,
+        reliefsAmount = 0,
+        allowableLosses = 0,
+        acquisitionDate = None,
+        disposalDate = DateTime.parse("2016-10-10"),
+        isClaimingPRR = None,
+        daysClaimed = None
+      )
+    ) (fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK
@@ -123,8 +128,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Matchers.anyDouble,
-      Option(Matchers.anyString),
-      Matchers.anyString,
+      Option(Matchers.any[DateTime]()),
+      Matchers.any[DateTime](),
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
       Option(Matchers.anyDouble),
@@ -137,24 +142,27 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-rebased")
     val result = target.calculateRebased(
-      customerType = "individual",
-      priorDisposal = "No",
-      annualExemptAmount = Some(0),
-      otherPropertiesAmt = Some(0),
-      isVulnerable = None,
-      currentIncome = Some(7000),
-      personalAllowanceAmt = Some(11000),
-      disposalValue = 21100,
-      disposalCosts = 0,
-      rebasedValue = 0,
-      revaluationCost = 0,
-      improvementsAmt = 0,
-      reliefs = 0,
-      allowableLossesAmt = 0,
-      acquisitionDate = None,
-      disposalDate = "2016-10-10",
-      isClaimingPRR = None,
-      daysClaimedAfter = None)(fakeRequest)
+      CalculationRequestModel(
+        customerType = "individual",
+        priorDisposal = "No",
+        annualExemptAmount = Some(0),
+        otherPropertiesAmount = Some(0),
+        isVulnerable = None,
+        currentIncome = Some(7000),
+        personalAllowanceAmount = Some(11000),
+        disposalValue = 21100,
+        disposalCosts = 0,
+        initialValue = 0,
+        initialCosts = 0,
+        improvementsAmount = 0,
+        reliefsAmount = 0,
+        allowableLosses = 0,
+        acquisitionDate = None,
+        disposalDate = DateTime.parse("2016-1-1"),
+        isClaimingPRR = None,
+        daysClaimed = None
+      )
+    ) (fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK
@@ -195,8 +203,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       Matchers.anyDouble,
       Matchers.anyDouble,
       Matchers.anyDouble,
-      Option(Matchers.anyString),
-      Matchers.anyString,
+      Option(Matchers.any[DateTime]()),
+      Matchers.any[DateTime](),
       Option(Matchers.anyString),
       Option(Matchers.anyDouble),
       Option(Matchers.anyDouble),
@@ -209,24 +217,26 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-time-apportioned")
     val result = target.calculateTA(
+      CalculationRequestModel(
       customerType = "individual",
       priorDisposal = "No",
       annualExemptAmount = Some(0),
-      otherPropertiesAmt = Some(0),
+      otherPropertiesAmount = Some(0),
       isVulnerable = None,
       currentIncome = Some(7000),
-      personalAllowanceAmt = Some(11000),
+      personalAllowanceAmount = Some(11000),
       disposalValue = 31100,
       disposalCosts = 0,
-      acquisitionValueAmt = 0,
-      acquisitionCostsAmt = 0,
-      improvementsAmt = 0,
-      reliefs = 0,
-      allowableLossesAmt = 0,
-      acquisitionDate = Some("2014-4-1"),
-      disposalDate = "2016-1-1",
+      initialValue = 0,
+      initialCosts = 0,
+      improvementsAmount = 0,
+      reliefsAmount = 0,
+      allowableLosses = 0,
+      acquisitionDate = Some(DateTime.parse("2014-4-1")),
+      disposalDate = DateTime.parse("2016-1-1"),
       isClaimingPRR = None,
-      daysClaimedAfter = None
+      daysClaimed = None
+      )
     ) (fakeRequest)
 
     "return 200" in {

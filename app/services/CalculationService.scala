@@ -57,7 +57,8 @@ trait CalculationService {
     isProperty: Boolean
   ): CalculationResultModel = {
 
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(disposalDate.getYear)
+    val taxYear = getTaxYear(disposalDate)
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
 
     val gain: Double = calculationType match {
       case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
@@ -161,7 +162,8 @@ trait CalculationService {
     disposalDate: DateTime
   ): Double = {
 
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(disposalDate.getYear)
+    val taxYear = getTaxYear(disposalDate)
+    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
     val flatGain = calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     val fractionOfOwnership = daysBetween(taxRatesAndBands.startOfTax, disposalDate.toString) / daysBetween(acquisitionDate.get, disposalDate)

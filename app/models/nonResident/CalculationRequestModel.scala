@@ -16,10 +16,10 @@
 
 package models.nonResident
 
-import common.binders.NonResidentFlatCalculationRequestBinder
+import common.binders.NonResidentCalculationRequestBinder
 import org.joda.time.DateTime
 
-object CalculationRequestModel extends NonResidentFlatCalculationRequestBinder
+object CalculationRequestModel extends NonResidentCalculationRequestBinder
 
 case class CalculationRequestModel(customerType: String,
                                    priorDisposal: String,
@@ -30,12 +30,13 @@ case class CalculationRequestModel(customerType: String,
                                    personalAllowanceAmount: Option[Double],
                                    disposalValue: Double,
                                    disposalCosts: Double,
-                                   acquisitionValue: Double,
-                                   acquisitionCosts: Double,
+                                   initialValue: Double,
+                                   initialCosts: Double,
                                    improvementsAmount: Double,
                                    reliefsAmount: Double,
                                    allowableLosses: Double,
                                    acquisitionDate: Option[DateTime],
                                    disposalDate: DateTime,
                                    isClaimingPRR: Option[String],
-                                   daysClaimed: Option[Double])
+                                   daysClaimed: Option[Double],
+                                   isProperty: Boolean = true)

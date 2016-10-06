@@ -21,23 +21,19 @@ import play.api.mvc.QueryStringBindable
 import common.Validation
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 
-trait NonResidentFlatCalculationRequestBinder extends CommonBinders {
+trait NonResidentCalculationRequestBinder extends CommonBinders {
 
   val requiredParams = Seq(
     keys.customerType,
     keys.priorDisposal,
     keys.disposalValue,
     keys.disposalCosts,
-    keys.acquisitionValue,
-    keys.acquisitionCosts,
+    keys.initialValue,
+    keys.initialCosts,
     keys.improvementsAmount,
     keys.reliefsAmount,
     keys.allowableLosses,
     keys.disposalDate)
-
-  val initialValueKey = keys.acquisitionValue
-  val initialCostsKey = keys.acquisitionCosts
-  val daysClaimingKey = keys.daysClaimed
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
@@ -60,15 +56,15 @@ trait NonResidentFlatCalculationRequestBinder extends CommonBinders {
           personalAllowanceParam <- optionalDoubleBinder.bind(keys.personalAllowanceAmount, params)
           disposalValueParam <- doubleBinder.bind(keys.disposalValue, params)
           disposalCostsParam <- doubleBinder.bind(keys.disposalCosts, params)
-          initialValueParam <- doubleBinder.bind(initialValueKey, params)
-          initialCostsParam <- doubleBinder.bind(initialCostsKey, params)
+          initialValueParam <- doubleBinder.bind(keys.initialValue, params)
+          initialCostsParam <- doubleBinder.bind(keys.initialCosts, params)
           improvementsParam <- doubleBinder.bind(keys.improvementsAmount, params)
           reliefsParam <- doubleBinder.bind(keys.reliefsAmount, params)
           allowableLossesParam <- doubleBinder.bind(keys.allowableLosses, params)
           acquisitionDateParam <- optionalDateTimeBinder.bind(keys.acquisitionDate, params)
           disposalDateParam <- dateTimeBinder.bind(keys.disposalDate, params)
           isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
-          daysClaimedParam <- optionalDoubleBinder.bind(daysClaimingKey, params)
+          daysClaimedParam <- optionalDoubleBinder.bind(keys.daysClaimed, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
@@ -159,8 +155,8 @@ trait NonResidentFlatCalculationRequestBinder extends CommonBinders {
           optionalDoubleBinder.unbind(keys.personalAllowanceAmount, request.personalAllowanceAmount),
           doubleBinder.unbind(keys.disposalValue, request.disposalValue),
           doubleBinder.unbind(keys.disposalCosts, request.disposalCosts),
-          doubleBinder.unbind(keys.acquisitionValue, request.acquisitionValue),
-          doubleBinder.unbind(keys.acquisitionCosts, request.acquisitionCosts),
+          doubleBinder.unbind(keys.initialValue, request.initialValue),
+          doubleBinder.unbind(keys.initialCosts, request.initialCosts),
           doubleBinder.unbind(keys.improvementsAmount, request.improvementsAmount),
           doubleBinder.unbind(keys.reliefsAmount, request.reliefsAmount),
           doubleBinder.unbind(keys.allowableLosses, request.allowableLosses),
