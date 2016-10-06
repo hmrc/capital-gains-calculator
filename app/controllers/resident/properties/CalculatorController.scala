@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 import common.Math._
 import config.TaxRatesAndBands
 import models.CalculationResultModel
-import models.resident.properties.PropertyTotalGainModel
+import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
 import org.joda.time.DateTime
 
 import scala.concurrent.Future
@@ -46,43 +46,42 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateChargeableGain
-  (
-    disposalValue: Double,
-    disposalCosts: Double,
-    acquisitionValue: Double,
-    acquisitionCosts: Double,
-    improvements: Double,
-    prrValue: Option[Double],
-    lettingReliefs: Option[Double],
-    allowableLosses: Option[Double],
-    broughtForwardLosses: Option[Double],
-    annualExemptAmount: Double,
-    disposalDate: String
-  ): Action[AnyContent] = Action.async { implicit request =>
+  def calculateChargeableGain (propertyChargeableGainModel: PropertyChargeableGainModel): Action[AnyContent] = Action.async { implicit request =>
 
-    val taxYear = getTaxYear(DateTime.parse(disposalDate))
+    val taxYear = getTaxYear(propertyChargeableGainModel.disposalDate)
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
 
-    val gain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements)
-    val prrUsed = CalculationService.determinePRRUsed(gain, prrValue)
-    val lettingReliefsUsed = CalculationService.determineLettingsReliefsUsed(gain, prrUsed, lettingReliefs, calcTaxYear)
+    val gain = calculationService.calculateGainFlat(propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.disposalValue,
+      propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.disposalCosts,
+      propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.acquisitionValue,
+      propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.acquisitionCosts,
+      propertyChargeableGainModel.propertyTotalGainModel.improvements)
+
+    val prrUsed = CalculationService.determinePRRUsed(gain, propertyChargeableGainModel.prrValue)
+    val lettingReliefsUsed = CalculationService.determineLettingsReliefsUsed(gain, prrUsed,
+      propertyChargeableGainModel.lettingReliefs,calcTaxYear)
     val chargeableGain = calculationService.calculateChargeableGain(
-      gain, lettingReliefsUsed + prrUsed, allowableLosses.getOrElse(0), annualExemptAmount, broughtForwardLosses.getOrElse(0)
+      gain, lettingReliefsUsed + prrUsed, propertyChargeableGainModel.allowableLosses.getOrElse(0),
+      propertyChargeableGainModel.annualExemptAmount, propertyChargeableGainModel.broughtForwardLosses.getOrElse(0)
     )
     val aeaUsed = calculationService.annualExemptAmountUsed(
-      annualExemptAmount,
+      propertyChargeableGainModel.annualExemptAmount,
       gain,
-      calculationService.calculateChargeableGain(gain, lettingReliefsUsed + prrUsed, allowableLosses.getOrElse(0), annualExemptAmount, 0),
+      calculationService.calculateChargeableGain(gain, lettingReliefsUsed + prrUsed,
+        propertyChargeableGainModel.allowableLosses.getOrElse(0), propertyChargeableGainModel.annualExemptAmount, 0),
       lettingReliefsUsed + prrUsed,
-      allowableLosses.getOrElse(0)
+      propertyChargeableGainModel.allowableLosses.getOrElse(0)
     )
-    val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-    val allowableLossesRemaining = CalculationService.determineLossLeft(gain - (lettingReliefsUsed + prrUsed), round("up", allowableLosses.getOrElse(0)))
+    val aeaRemaining = calculationService.annualExemptAmountLeft(propertyChargeableGainModel.annualExemptAmount, aeaUsed)
+    val allowableLossesRemaining = CalculationService.determineLossLeft(gain - (lettingReliefsUsed + prrUsed), round("up",
+      propertyChargeableGainModel.allowableLosses.getOrElse(0)))
     val broughtForwardLossesRemaining = CalculationService.determineLossLeft(gain - (lettingReliefsUsed + prrUsed +
-      round("up", allowableLosses.getOrElse(0.0)) + aeaUsed), broughtForwardLosses.getOrElse(0))
-    val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up", broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
-    val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up", allowableLosses.getOrElse(0)), allowableLossesRemaining)
+      round("up", propertyChargeableGainModel.allowableLosses.getOrElse(0.0)) + aeaUsed),
+      propertyChargeableGainModel.broughtForwardLosses.getOrElse(0))
+    val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up",
+      propertyChargeableGainModel.broughtForwardLosses.getOrElse(0)), broughtForwardLossesRemaining)
+    val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up",
+      propertyChargeableGainModel.allowableLosses.getOrElse(0)), allowableLossesRemaining)
 
     val deductions = round("up", prrUsed + lettingReliefsUsed + round("up", allowableLossesUsed) + aeaUsed + round("up", broughtForwardLossesUsed))
 

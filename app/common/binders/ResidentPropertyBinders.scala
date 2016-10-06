@@ -18,14 +18,17 @@ package common.binders
 
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => queryKeys}
 import common.Validation
-import models.resident.properties.PropertyTotalGainModel
+import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import play.api.mvc.QueryStringBindable
 
-trait ResidentPropertyBinders {
+object ResidentPropertyBinders extends ResidentPropertyBinders
+
+trait ResidentPropertyBinders extends CommonBinders {
 
   val totalGainParameters = Seq(queryKeys.disposalValue, queryKeys.disposalCosts, queryKeys.acquisitionValue, queryKeys.acquisitionCosts)
   val propertyTotalGainParameters = totalGainParameters ++ Seq(queryKeys.improvements)
+  val chargeableGainParameters = propertyTotalGainParameters ++ Seq(queryKeys.annualExemptAmount, queryKeys.disposalDate)
 
   implicit def propertyTotalGainBinder(implicit totalGainBinder: QueryStringBindable[TotalGainModel],
                                        doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyTotalGainModel] =
@@ -59,4 +62,54 @@ trait ResidentPropertyBinders {
         ).filter(!_.isEmpty).mkString("&")
       }
     }
+
+  implicit def propertyChargeableGainBinder(implicit propertyTotalGainBinder: QueryStringBindable[PropertyTotalGainModel],
+                                            optionDoubleBinder: QueryStringBindable[Option[Double]],
+                                            doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyChargeableGainModel] = {
+    new QueryStringBindable[PropertyChargeableGainModel] {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PropertyChargeableGainModel]] = {
+
+        val missingParameter = chargeableGainParameters.find(element => params.get(element).isEmpty)
+
+        if(missingParameter.isEmpty) {
+          for {
+            propertyTotalGainModelEither <- propertyTotalGainBinder.bind("", params)
+            prrValueEither <- optionDoubleBinder.bind(queryKeys.prrValue, params)
+            lettingReliefsEither <- optionDoubleBinder.bind(queryKeys.lettingReliefs, params)
+            allowableLossesEither <- optionDoubleBinder.bind(queryKeys.allowableLosses, params)
+            broughtForwardLossesEither <- optionDoubleBinder.bind(queryKeys.broughtForwardLosses, params)
+            annualExemptAmountEither <- doubleBinder.bind(queryKeys.annualExemptAmount, params)
+            disposalDateEither <- dateTimeBinder.bind(queryKeys.disposalDate, params)
+          } yield {
+
+            val inputs = (propertyTotalGainModelEither, prrValueEither, lettingReliefsEither, allowableLossesEither,
+              broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)
+            inputs match {
+              case (Right(propertyTotalGain), Right(prrValue), Right(lettingReliefs), Right(allowableLosses), Right(broughtForwardLosses),
+                Right(annualExemptAmount), Right(disposalDate)) =>
+                Right(PropertyChargeableGainModel(propertyTotalGain, prrValue, lettingReliefs, allowableLosses, broughtForwardLosses,
+                  annualExemptAmount, disposalDate))
+              case _ =>
+                val inputs = Seq(propertyTotalGainModelEither, prrValueEither, lettingReliefsEither, allowableLossesEither,
+                  broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)
+                Left(Validation.getFirstErrorMessage(inputs))
+            }
+          }
+        }
+
+        else Some(Left(s"${missingParameter.get} is required."))
+      }
+
+      override def unbind(key: String, propertyChargeableGainModel: PropertyChargeableGainModel): String =
+        Seq(
+          propertyTotalGainBinder.unbind("", propertyChargeableGainModel.propertyTotalGainModel),
+          optionDoubleBinder.unbind(queryKeys.prrValue, propertyChargeableGainModel.prrValue),
+          optionDoubleBinder.unbind(queryKeys.lettingReliefs, propertyChargeableGainModel.lettingReliefs),
+          optionDoubleBinder.unbind(queryKeys.allowableLosses, propertyChargeableGainModel.allowableLosses),
+          optionDoubleBinder.unbind(queryKeys.broughtForwardLosses, propertyChargeableGainModel.broughtForwardLosses),
+          doubleBinder.unbind(queryKeys.annualExemptAmount, propertyChargeableGainModel.annualExemptAmount),
+          dateTimeBinder.unbind(queryKeys.disposalDate, propertyChargeableGainModel.disposalDate)
+        ).filter(!_.isEmpty).mkString("&")
+    }
+  }
 }

@@ -59,5 +59,11 @@ object QueryStringKeys {
     val acquisitionValue = "acquisitionValue"
     val acquisitionCosts = "acquisitionCosts"
     val improvements = "improvements"
+    val prrValue = "prrValue"
+    val lettingReliefs = "lettingReliefs"
+    val allowableLosses = "allowableLosses"
+    val broughtForwardLosses = "broughtForwardLosses"
+    val annualExemptAmount = "annualExemptAmount"
+    val disposalDate = "disposalDate"
   }
 }
