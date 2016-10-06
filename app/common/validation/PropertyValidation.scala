@@ -19,7 +19,9 @@ package common.validation
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => residentPropertyKeys}
 import common.validation.CommonValidation._
 import common.validation.SharesValidation.validateSharesTotalGain
-import models.resident.properties.PropertyTotalGainModel
+import config.TaxRatesAndBands20152016
+import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
+import org.joda.time.DateTime
 
 object PropertyValidation {
 
@@ -31,5 +33,26 @@ object PropertyValidation {
       case (Right(_), Right(_)) => Right(propertyTotalGainModel)
       case _ => Left(getFirstErrorMessage(Seq(totalGainModel, improvements)))
     }
+  }
+
+  def validatePropertyChargeableGain(propertyChargeableGainModel: PropertyChargeableGainModel): Either[String, PropertyChargeableGainModel] = {
+    val propertyGainModel = validatePropertyTotalGain(propertyChargeableGainModel.propertyTotalGainModel)
+    val prrValue = validateOptionDouble(propertyChargeableGainModel.prrValue, residentPropertyKeys.prrValue)
+    val lettingReliefs = validateOptionDouble(propertyChargeableGainModel.lettingReliefs, residentPropertyKeys.lettingReliefs)
+    val allowableLosses = validateOptionDouble(propertyChargeableGainModel.allowableLosses, residentPropertyKeys.allowableLosses)
+    val broughtForwardLosses = validateOptionDouble(propertyChargeableGainModel.broughtForwardLosses, residentPropertyKeys.broughtForwardLosses)
+    val annualExemptAmount = validateDouble(propertyChargeableGainModel.annualExemptAmount, residentPropertyKeys.annualExemptAmount)
+    val disposalDate = validatePropertyDate(propertyChargeableGainModel.disposalDate, residentPropertyKeys.disposalDate)
+
+    (propertyGainModel, prrValue, lettingReliefs, allowableLosses, broughtForwardLosses, annualExemptAmount, disposalDate) match {
+      case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(propertyChargeableGainModel)
+      case _ => Left(getFirstErrorMessage(Seq(propertyGainModel, prrValue, lettingReliefs, allowableLosses,
+        broughtForwardLosses, annualExemptAmount, disposalDate)))
+    }
+  }
+
+  def validatePropertyDate(input: DateTime, key: String): Either[String, DateTime] = {
+    if(!input.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(input)
+    else Left("disposal date cannot be before 2015-04-06")
   }
 }

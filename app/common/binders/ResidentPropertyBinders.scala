@@ -86,12 +86,11 @@ trait ResidentPropertyBinders extends CommonBinders {
             inputs match {
               case (Right(propertyTotalGain), Right(prrValue), Right(lettingReliefs), Right(allowableLosses), Right(broughtForwardLosses),
                 Right(annualExemptAmount), Right(disposalDate)) =>
-                Right(PropertyChargeableGainModel(propertyTotalGain, prrValue, lettingReliefs, allowableLosses, broughtForwardLosses,
-                  annualExemptAmount, disposalDate))
-              case _ =>
-                val inputs = Seq(propertyTotalGainModelEither, prrValueEither, lettingReliefsEither, allowableLossesEither,
-                  broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)
-                Left(CommonValidation.getFirstErrorMessage(inputs))
+                  PropertyValidation.validatePropertyChargeableGain(PropertyChargeableGainModel(propertyTotalGain, prrValue, lettingReliefs,
+                    allowableLosses, broughtForwardLosses, annualExemptAmount, disposalDate))
+
+              case _ => Left(CommonValidation.getFirstErrorMessage(Seq(propertyTotalGainModelEither, prrValueEither, lettingReliefsEither,
+                allowableLossesEither, broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)))
             }
           }
         }
