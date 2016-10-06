@@ -35,6 +35,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
     keys.allowableLosses,
     keys.disposalDate)
 
+
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
                              optionalDoubleBinder: QueryStringBindable[Option[Double]],

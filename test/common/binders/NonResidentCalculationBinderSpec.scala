@@ -393,7 +393,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
-    "an intiial value with an invalid value" should {
+    "an initial value with an invalid value" should {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.initialValue, Some(badData))

@@ -17,7 +17,7 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
-import models.nonResident.CalculationRequestModel
+import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
 import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -217,7 +217,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-time-apportioned")
     val result = target.calculateTA(
-      CalculationRequestModel(
+      TimeApportionmentCalculationRequestModel(
       customerType = "individual",
       priorDisposal = "No",
       annualExemptAmount = Some(0),
@@ -232,7 +232,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       improvementsAmount = 0,
       reliefsAmount = 0,
       allowableLosses = 0,
-      acquisitionDate = Some(DateTime.parse("2014-4-1")),
+      acquisitionDate = DateTime.parse("2014-4-1"),
       disposalDate = DateTime.parse("2016-1-1"),
       isClaimingPRR = None,
       daysClaimed = None

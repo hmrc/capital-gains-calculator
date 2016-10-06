@@ -112,7 +112,7 @@ trait CalculatorController extends BaseController {
       model.improvementsAmount,
       model.reliefsAmount,
       model.allowableLosses,
-      model.acquisitionDate,
+      Some(model.acquisitionDate),
       model.disposalDate,
       model.isClaimingPRR,
       None,

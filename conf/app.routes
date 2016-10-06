@@ -3,7 +3,7 @@
 ## Non-Resident Calculation Routes
 GET        /calculate-flat              controllers.nonresident.CalculatorController.calculateFlat(model: CalculationRequestModel)
 GET        /calculate-rebased           controllers.nonresident.CalculatorController.calculateRebased(model: CalculationRequestModel)
-GET        /calculate-time-apportioned  controllers.nonresident.CalculatorController.calculateTA(model: CalculationRequestModel)
+GET        /calculate-time-apportioned  controllers.nonresident.CalculatorController.calculateTA(model: TimeApportionmentCalculationRequestModel)
 
 ## Resident Property Calculation Routes
 GET        /calculate-total-gain        controllers.resident.properties.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double)
