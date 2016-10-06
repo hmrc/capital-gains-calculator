@@ -16,6 +16,11 @@
 
 package common.validation
 
+import common.Date
+import config.TaxRatesAndBands
+import org.joda.time.DateTime
+import common.QueryStringKeys.{ResidentSharesCalculationKeys => sharesKeys}
+
 object CommonValidation {
 
   val maxNumeric = 1000000000.0
@@ -58,5 +63,19 @@ object CommonValidation {
       if (value.apply(1).length <= 2) Right(input)
       else Left(s"$key has too many decimal places.")
     } else Right(input)
+  }
+
+  def validateResidentPersonalAllowance(input: Double, disposalDate: DateTime): Either[String, Double] = {
+    val closestTaxYear = TaxRatesAndBands.getClosestTaxYear(Date.getTaxYear(disposalDate))
+    val taxBands = TaxRatesAndBands.getRates(closestTaxYear)
+    val maxPersonalAllowance = taxBands.maxPersonalAllowance + taxBands.blindPersonsAllowance
+
+    validateDouble(input, sharesKeys.personalAllowance) match {
+      case Right(data) if data <= maxPersonalAllowance => Right(input)
+      case Right(test) =>
+        println(test)
+        Left(s"${sharesKeys.personalAllowance} cannot exceed $maxPersonalAllowance")
+      case Left(message) => Left(message)
+    }
   }
 }

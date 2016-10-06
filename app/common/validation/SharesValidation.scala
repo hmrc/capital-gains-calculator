@@ -49,7 +49,16 @@ object SharesValidation {
   }
 
   def validateSharesTaxOwed(taxOwedModel: CalculateTaxOwedModel): Either[String, CalculateTaxOwedModel] = {
-    ???
+    val chargeableGainModel = validateSharesChargeableGain(taxOwedModel.chargeableGainModel)
+    val previousTaxableGain = validateOptionDouble(taxOwedModel.previousTaxableGain, residentShareKeys.previousTaxableGain)
+    val previousIncome = validateDouble(taxOwedModel.previousIncome, residentShareKeys.previousIncome)
+    val personalAllowance = validateDouble(taxOwedModel.personalAllowance, residentShareKeys.personalAllowance)
+    val disposalDate = validateSharesDisposalDate(taxOwedModel.disposalDate)
+
+    (chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate) match {
+      case (Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(taxOwedModel)
+      case _ => Left(getFirstErrorMessage(Seq(chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate)))
+    }
   }
 
   def validateSharesDisposalDate(disposalDate: DateTime): Either[String, DateTime] = {

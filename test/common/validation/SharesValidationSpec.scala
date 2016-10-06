@@ -16,7 +16,7 @@
 
 package common.validation
 
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
+import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -122,6 +122,81 @@ class SharesValidationSpec extends UnitSpec {
       val result = SharesValidation.validateSharesChargeableGain(chargeableGainModel)
 
       result shouldBe Left("disposalCosts cannot be negative.")
+    }
+  }
+
+  "Calling validateSharesTaxOwed" should {
+
+    "return a Right when all validation passes with no optional values" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, None, None, 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, None, 5000.0, 5500.0, DateTime.parse("2016-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Right(calculateTaxOwedModel)
+    }
+
+    "return a Right when all validation passes with optional values" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.0, DateTime.parse("2016-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Right(calculateTaxOwedModel)
+    }
+
+    "return a Left when validation fails on chargeableGain" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(-3000.0), Some(3500.0), 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.0, DateTime.parse("2016-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Left("allowableLosses cannot be negative.")
+    }
+
+    "return a Left when validation fails on previousTaxableGain" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(-4500.0), 5000.0, 5500.0, DateTime.parse("2016-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Left("previousTaxableGain cannot be negative.")
+    }
+
+    "return a Left when validation fails on previousIncome" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.045, 5500.0, DateTime.parse("2016-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Left("previousIncome has too many decimal places.")
+    }
+
+    "return a Left when validation fails on personalAllowance" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.076, DateTime.parse("2016-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Left("personalAllowance has too many decimal places.")
+    }
+
+    "return a Left when validation fails on disposalDate" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), 4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.0, DateTime.parse("2013-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Left("disposalDate cannot be before 2015-04-06")
+    }
+
+    "return a Left with a single message when multiple validation failurs occur" in {
+      val totalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
+      val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(3000.056), Some(3500.0), -4000.0)
+      val calculateTaxOwedModel = CalculateTaxOwedModel(chargeableGainModel, Some(4500.777), -5000.0, 5500.0, DateTime.parse("2013-05-04"))
+      val result = SharesValidation.validateSharesTaxOwed(calculateTaxOwedModel)
+
+      result shouldBe Left("allowableLosses has too many decimal places.")
     }
   }
 
