@@ -25,7 +25,7 @@ import org.joda.time.DateTime
 
 class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
-  val target = new NonResidentCalculationRequestBinder {}.requestBinder
+  val target = new NonResidentFlatCalculationRequestBinder {}.requestBinder
   implicit val mockStringBinder = mock[QueryStringBindable[String]]
 
   // the values to bind to a valid request

@@ -21,7 +21,7 @@ import play.api.mvc.QueryStringBindable
 import common.Validation
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 
-trait NonResidentCalculationRequestBinder extends CommonBinders {
+trait NonResidentFlatCalculationRequestBinder extends CommonBinders {
 
   val requiredParams = Seq(
     keys.customerType,
@@ -34,6 +34,10 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
     keys.reliefsAmount,
     keys.allowableLosses,
     keys.disposalDate)
+
+  val initialValueKey = keys.acquisitionValue
+  val initialCostsKey = keys.acquisitionCosts
+  val daysClaimingKey = keys.daysClaimed
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
@@ -56,15 +60,15 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           personalAllowanceParam <- optionalDoubleBinder.bind(keys.personalAllowanceAmount, params)
           disposalValueParam <- doubleBinder.bind(keys.disposalValue, params)
           disposalCostsParam <- doubleBinder.bind(keys.disposalCosts, params)
-          acquisitionValueParam <- doubleBinder.bind(keys.acquisitionValue, params)
-          acquisitionCostsParam <- doubleBinder.bind(keys.acquisitionCosts, params)
+          initialValueParam <- doubleBinder.bind(initialValueKey, params)
+          initialCostsParam <- doubleBinder.bind(initialCostsKey, params)
           improvementsParam <- doubleBinder.bind(keys.improvementsAmount, params)
           reliefsParam <- doubleBinder.bind(keys.reliefsAmount, params)
           allowableLossesParam <- doubleBinder.bind(keys.allowableLosses, params)
           acquisitionDateParam <- optionalDateTimeBinder.bind(keys.acquisitionDate, params)
           disposalDateParam <- dateTimeBinder.bind(keys.disposalDate, params)
           isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
-          daysClaimedParam <- optionalDoubleBinder.bind(keys.daysClaimed, params)
+          daysClaimedParam <- optionalDoubleBinder.bind(daysClaimingKey, params)
         } yield {
           (customerTypeParam,
             priorDisposalParam,
@@ -75,8 +79,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
             personalAllowanceParam,
             disposalValueParam,
             disposalCostsParam,
-            acquisitionValueParam,
-            acquisitionCostsParam,
+            initialValueParam,
+            initialCostsParam,
             improvementsParam,
             reliefsParam,
             allowableLossesParam,
@@ -94,50 +98,52 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(personalAllowance),
               Right(disposalValue),
               Right(disposalCosts),
-              Right(acquisitionValue),
-              Right(acquisitionCosts),
+              Right(initialValue),
+              Right(initialCosts),
               Right(improvements),
               Right(reliefs),
               Right(allowableLosses),
               Right(acquisitionDate),
               Right(disposalDate),
               Right(isClaimingPRR),
-              Right(daysClaimed)) => Right(CalculationRequestModel(customerType,
-                                                                  priorDisposal,
-                                                                  aea,
-                                                                  otherProperties,
-                                                                  vulnerable,
-                                                                  currentIncome,
-                                                                  personalAllowance,
-                                                                  disposalValue,
-                                                                  disposalCosts,
-                                                                  acquisitionValue,
-                                                                  acquisitionCosts,
-                                                                  improvements,
-                                                                  reliefs,
-                                                                  allowableLosses,
-                                                                  acquisitionDate,
-                                                                  disposalDate,
-                                                                  isClaimingPRR,
-                                                                  daysClaimed))
-            case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
-                                                                  priorDisposalParam,
-                                                                  aeaParam,
-                                                                  otherPropertiesParam,
-                                                                  vulnerableParam,
-                                                                  currentIncomeParam,
-                                                                  personalAllowanceParam,
-                                                                  disposalValueParam,
-                                                                  disposalCostsParam,
-                                                                  acquisitionValueParam,
-                                                                  acquisitionCostsParam,
-                                                                  improvementsParam,
-                                                                  reliefsParam,
-                                                                  allowableLossesParam,
-                                                                  acquisitionDateParam,
-                                                                  disposalDateParam,
-                                                                  isClaimingPRRParam,
-                                                                  daysClaimedParam)))
+              Right(daysClaimed)) =>
+              Right(CalculationRequestModel(customerType,
+                priorDisposal,
+                aea,
+                otherProperties,
+                vulnerable,
+                currentIncome,
+                personalAllowance,
+                disposalValue,
+                disposalCosts,
+                initialValue,
+                initialCosts,
+                improvements,
+                reliefs,
+                allowableLosses,
+                acquisitionDate,
+                disposalDate,
+                isClaimingPRR,
+                daysClaimed))
+            case fail =>
+              Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
+                priorDisposalParam,
+                aeaParam,
+                otherPropertiesParam,
+                vulnerableParam,
+                currentIncomeParam,
+                personalAllowanceParam,
+                disposalValueParam,
+                disposalCostsParam,
+                initialValueParam,
+                initialCostsParam,
+                improvementsParam,
+                reliefsParam,
+                allowableLossesParam,
+                acquisitionDateParam,
+                disposalDateParam,
+                isClaimingPRRParam,
+                daysClaimedParam)))
           }
         }
       }

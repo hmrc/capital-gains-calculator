@@ -16,10 +16,10 @@
 
 package models.nonResident
 
-import common.binders.NonResidentCalculationRequestBinder
+import common.binders.NonResidentFlatCalculationRequestBinder
 import org.joda.time.DateTime
 
-object CalculationRequestModel extends NonResidentCalculationRequestBinder
+object CalculationRequestModel extends NonResidentFlatCalculationRequestBinder
 
 case class CalculationRequestModel(customerType: String,
                                    priorDisposal: String,
