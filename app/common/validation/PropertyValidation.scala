@@ -19,9 +19,7 @@ package common.validation
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => residentPropertyKeys}
 import common.validation.CommonValidation._
 import common.validation.SharesValidation.validateSharesTotalGain
-import config.TaxRatesAndBands20152016
 import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
-import org.joda.time.DateTime
 
 object PropertyValidation {
 
@@ -42,17 +40,12 @@ object PropertyValidation {
     val allowableLosses = validateOptionDouble(propertyChargeableGainModel.allowableLosses, residentPropertyKeys.allowableLosses)
     val broughtForwardLosses = validateOptionDouble(propertyChargeableGainModel.broughtForwardLosses, residentPropertyKeys.broughtForwardLosses)
     val annualExemptAmount = validateDouble(propertyChargeableGainModel.annualExemptAmount, residentPropertyKeys.annualExemptAmount)
-    val disposalDate = validatePropertyDate(propertyChargeableGainModel.disposalDate, residentPropertyKeys.disposalDate)
+    val disposalDate = validateDisposalDate(propertyChargeableGainModel.disposalDate)
 
     (propertyGainModel, prrValue, lettingReliefs, allowableLosses, broughtForwardLosses, annualExemptAmount, disposalDate) match {
       case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(propertyChargeableGainModel)
       case _ => Left(getFirstErrorMessage(Seq(propertyGainModel, prrValue, lettingReliefs, allowableLosses,
         broughtForwardLosses, annualExemptAmount, disposalDate)))
     }
-  }
-
-  def validatePropertyDate(input: DateTime, key: String): Either[String, DateTime] = {
-    if(!input.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(input)
-    else Left("disposal date cannot be before 2015-04-06")
   }
 }

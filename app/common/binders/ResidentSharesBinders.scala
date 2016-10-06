@@ -120,7 +120,9 @@ trait ResidentSharesBinders extends CommonBinders {
             disposalDateEither)
           inputs match {
             case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance), Right(disposalDate)) =>
-              Right(CalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance, disposalDate))
+              SharesValidation.validateSharesTaxOwed(
+                CalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance, disposalDate)
+              )
             case _ =>
               val inputs = Seq(chargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither,
                 disposalDateEither)

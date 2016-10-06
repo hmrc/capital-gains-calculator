@@ -16,6 +16,7 @@
 
 package common.validation
 
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CommonValidationSpec extends UnitSpec {
@@ -168,6 +169,63 @@ class CommonValidationSpec extends UnitSpec {
       val result = CommonValidation.validateOptionDouble(Some(-1000.0), "allowableLosses")
 
       result shouldBe Left("allowableLosses cannot be negative.")
+    }
+  }
+
+  "Calling validatePersonalAllowance" should {
+
+    "return a Right with a value of 13290.0 in 2016/17" in {
+      val result = CommonValidation.validateResidentPersonalAllowance(13290.0, DateTime.parse("2016-08-08"))
+
+      result shouldBe Right(13290.0)
+    }
+
+    "return a Left with a value of 13890.0 in 2015/16" in {
+      val result = CommonValidation.validateResidentPersonalAllowance(13290.0, DateTime.parse("2015-08-08"))
+
+      result shouldBe Left("personalAllowance cannot exceed 12890")
+    }
+
+    "return a Right with a value of 12890 in 2015/16" in {
+      val result = CommonValidation.validateResidentPersonalAllowance(12890.0, DateTime.parse("2015-08-08"))
+
+      result shouldBe Right(12890.0)
+    }
+
+    "return a Left with a value of 13291 in 2016/17" in {
+      val result = CommonValidation.validateResidentPersonalAllowance(13290.1, DateTime.parse("2016-08-08"))
+
+      result shouldBe Left("personalAllowance cannot exceed 13290")
+    }
+
+    "return a Left with an error message when the double fails validation" in {
+      val result = CommonValidation.validateResidentPersonalAllowance(-1000.0, DateTime.parse("2016-08-08"))
+
+      result shouldBe Left("personalAllowance cannot be negative.")
+    }
+  }
+
+  "Calling validateSharesDisposalDate" should {
+
+    "return a Right when providing a date after the start of the 2015/16 tax year" in {
+      val date = DateTime.parse("2015-08-10")
+      val result = CommonValidation.validateDisposalDate(date)
+
+      result shouldBe Right(date)
+    }
+
+    "return a Right when providing a date on the start of the 2015/16 tax year" in {
+      val date = DateTime.parse("2015-04-06")
+      val result = CommonValidation.validateDisposalDate(date)
+
+      result shouldBe Right(date)
+    }
+
+    "return a Left when providing a date before the start of the 2015/16 tax year" in {
+      val date = DateTime.parse("2015-04-05")
+      val result = CommonValidation.validateDisposalDate(date)
+
+      result shouldBe Left("disposalDate cannot be before 2015-04-06")
     }
   }
 }

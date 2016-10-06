@@ -39,17 +39,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class PropertyValidationSpec extends UnitSpec {
 
-
-  "calling validatePropertyDate" should {
-
-    "return a Right when a valid date is passed" in {
-      val validDate = DateTime.parse("2016-04-09")
-      val result = PropertyValidation.validatePropertyDate(validDate, "disposalDate")
-
-      result shouldBe Right(validDate)
-    }
-  }
-
   "Calling validatePropertyTotalGain" should {
 
     val validTotalGainModel = TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0)
@@ -150,7 +139,7 @@ class PropertyValidationSpec extends UnitSpec {
         Some(5000.0), 5500.0, DateTime.parse("2014-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
-      result shouldBe Left("disposal date cannot be before 2015-04-06")
+      result shouldBe Left("disposalDate cannot be before 2015-04-06")
     }
 
     "return a Left with multiple arguments failing validation" in {
