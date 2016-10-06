@@ -18,8 +18,8 @@ package common.binders
 
 import models.nonResident.CalculationRequest
 import play.api.mvc.QueryStringBindable
-import common.Validation
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
+import common.validation.CommonValidation
 
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
@@ -119,7 +119,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
                                                                   disposalDate,
                                                                   isClaimingPRR,
                                                                   daysClaimed))
-            case fail => Left(Validation.getFirstErrorMessage(Seq(customerTypeParam,
+            case fail => Left(CommonValidation.getFirstErrorMessage(Seq(customerTypeParam,
                                                                   priorDisposalParam,
                                                                   aeaParam,
                                                                   otherPropertiesParam,
