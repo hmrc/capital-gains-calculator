@@ -16,9 +16,6 @@
 
 package common.validation
 
-import common.QueryStringKeys.{ResidentSharesCalculationKeys => residentShareKeys}
-import models.resident.shares.{ChargeableGainModel, TotalGainModel}
-
 object CommonValidation {
 
   val maxNumeric = 1000000000.0
