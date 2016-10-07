@@ -16,7 +16,7 @@
 
 package common.binders
 
-import models.nonResident.CalculationRequest
+import models.nonResident.CalculationRequestModel
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.play.test.UnitSpec
@@ -39,8 +39,8 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     keys.personalAllowanceAmount -> Seq("444.44"),
     keys.disposalValue -> Seq("555.55"),
     keys.disposalCosts  -> Seq("666.66"),
-    keys.acquisitionValue -> Seq("777.77"),
-    keys.acquisitionCosts -> Seq("888.88"),
+    keys.initialValue -> Seq("777.77"),
+    keys.initialCosts -> Seq("888.88"),
     keys.improvementsAmount -> Seq("999.99"),
     keys.reliefsAmount -> Seq("11.11"),
     keys.allowableLosses -> Seq("22.22"),
@@ -51,7 +51,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
   )
 
   // the expected result of binding valid requests
-  val expectedRequest = CalculationRequest(
+  val expectedRequest = CalculationRequestModel(
     "individual",
     "yes",
     Some(111.11),
@@ -73,7 +73,7 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequest("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
+  val emptyCalculationRequest = CalculationRequestModel("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
 
   "Binding a valid non resident calculation request" when {
 
@@ -193,13 +193,13 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
     "an acquisition value is defined" should {
       "return a CalculationRequest with the acquisition value populated" in {
-        result.acquisitionValue shouldBe expectedRequest.acquisitionValue
+        result.initialValue shouldBe expectedRequest.initialValue
       }
     }
 
     "an acquisition cost is defined" should {
       "return a CalculationRequest with the acquisition costs populated" in {
-        result.acquisitionCosts shouldBe expectedRequest.acquisitionCosts
+        result.initialCosts shouldBe expectedRequest.initialCosts
       }
     }
 
@@ -385,37 +385,37 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
-    "an acquisition value is not supplied" should {
+    "an initial value is not supplied" should {
       "return an error message" in {
-        val request = badRequest(keys.acquisitionValue, None)
+        val request = badRequest(keys.initialValue, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.acquisitionValue} is required."))
+        result shouldBe Some(Left(s"${keys.initialValue} is required."))
       }
     }
 
-    "an acquisition value with an invalid value" should {
+    "an initial value with an invalid value" should {
       "return an error message" in {
         val badData = "bad data"
-        val request = badRequest(keys.acquisitionValue, Some(badData))
+        val request = badRequest(keys.initialValue, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.acquisitionValue, badData)))
+        result shouldBe Some(Left(doubleParseError(keys.initialValue, badData)))
       }
     }
 
-    "an acquisition cost is not supplied" should {
+    "an initial costs is not supplied" should {
       "return an error message" in {
-        val request = badRequest(keys.acquisitionCosts, None)
+        val request = badRequest(keys.initialCosts, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.acquisitionCosts} is required."))
+        result shouldBe Some(Left(s"${keys.initialCosts} is required."))
       }
     }
 
-    "an acquisition cost with an invalid value" should {
+    "an initial costs with an invalid value" should {
       "return an error message" in {
         val badData = "bad data"
-        val request = badRequest(keys.acquisitionCosts, Some(badData))
+        val request = badRequest(keys.initialCosts, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.acquisitionCosts, badData)))
+        result shouldBe Some(Left(doubleParseError(keys.initialCosts, badData)))
       }
     }
 
@@ -550,11 +550,11 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
 
       "output the acquisition value key and value" in {
-        result should include(s"&${keys.acquisitionValue}=777.77")
+        result should include(s"&${keys.initialValue}=777.77")
       }
 
       "output the acquisition costs key and value" in {
-        result should include(s"&${keys.acquisitionCosts}=888.88")
+        result should include(s"&${keys.initialCosts}=888.88")
       }
 
       "output the improvements amount key and value" in {

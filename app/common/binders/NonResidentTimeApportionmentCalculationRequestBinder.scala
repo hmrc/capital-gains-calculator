@@ -16,12 +16,12 @@
 
 package common.binders
 
-import models.nonResident.CalculationRequestModel
-import play.api.mvc.QueryStringBindable
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import common.validation.CommonValidation
+import models.nonResident.TimeApportionmentCalculationRequestModel
+import play.api.mvc.QueryStringBindable
 
-trait NonResidentCalculationRequestBinder extends CommonBinders {
+trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders {
 
   val requiredParams = Seq(
     keys.customerType,
@@ -33,16 +33,16 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
     keys.improvementsAmount,
     keys.reliefsAmount,
     keys.allowableLosses,
-    keys.disposalDate)
-
+    keys.disposalDate,
+    keys.acquisitionDate)
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
                              optionalDoubleBinder: QueryStringBindable[Option[Double]],
-                             doubleBinder: QueryStringBindable[Double]): QueryStringBindable[CalculationRequestModel] =
-    new QueryStringBindable[CalculationRequestModel] {
+                             doubleBinder: QueryStringBindable[Double]): QueryStringBindable[TimeApportionmentCalculationRequestModel] =
+    new QueryStringBindable[TimeApportionmentCalculationRequestModel] {
 
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CalculationRequestModel]] = {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TimeApportionmentCalculationRequestModel]] = {
 
         val missingParam = requiredParams.find(p => params.get(p).isEmpty)
 
@@ -62,7 +62,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           improvementsParam <- doubleBinder.bind(keys.improvementsAmount, params)
           reliefsParam <- doubleBinder.bind(keys.reliefsAmount, params)
           allowableLossesParam <- doubleBinder.bind(keys.allowableLosses, params)
-          acquisitionDateParam <- optionalDateTimeBinder.bind(keys.acquisitionDate, params)
+          acquisitionDateParam <- dateTimeBinder.bind(keys.acquisitionDate, params)
           disposalDateParam <- dateTimeBinder.bind(keys.disposalDate, params)
           isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
           daysClaimedParam <- optionalDoubleBinder.bind(keys.daysClaimed, params)
@@ -104,7 +104,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(disposalDate),
               Right(isClaimingPRR),
               Right(daysClaimed)) =>
-              Right(CalculationRequestModel(customerType,
+              Right(TimeApportionmentCalculationRequestModel(customerType,
                 priorDisposal,
                 aea,
                 otherProperties,
@@ -145,7 +145,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
         }
       }
 
-      override def unbind(key: String, request: CalculationRequestModel): String =
+      override def unbind(key: String, request: TimeApportionmentCalculationRequestModel): String =
         Seq(
           stringBinder.unbind(keys.customerType, request.customerType),
           stringBinder.unbind(keys.priorDisposal, request.priorDisposal),
@@ -161,7 +161,7 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           doubleBinder.unbind(keys.improvementsAmount, request.improvementsAmount),
           doubleBinder.unbind(keys.reliefsAmount, request.reliefsAmount),
           doubleBinder.unbind(keys.allowableLosses, request.allowableLosses),
-          optionalDateTimeBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
+          dateTimeBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
           dateTimeBinder.unbind(keys.disposalDate, request.disposalDate),
           optionalStringBinder.unbind(keys.isClaimingPRR, request.isClaimingPRR),
           optionalDoubleBinder.unbind(keys.daysClaimed, request.daysClaimed)
@@ -169,3 +169,4 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
 
     }
 }
+

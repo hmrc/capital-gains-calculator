@@ -17,6 +17,8 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
+import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -29,154 +31,92 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculateFlat
-  (
-    customerType: String,
-    priorDisposal: String,
-    annualExemptAmount: Option[Double],
-    otherPropertiesAmt: Option[Double],
-    isVulnerable: Option[String],
-    currentIncome: Option[Double],
-    personalAllowanceAmt: Option[Double],
-    disposalValue: Double,
-    disposalCosts: Double,
-    acquisitionValueAmt: Double,
-    acquisitionCostsAmt: Double,
-    improvementsAmt: Double,
-    reliefs: Double,
-    allowableLossesAmt: Double,
-    acquisitionDate: Option[String] = None,
-    disposalDate: String,
-    isClaimingPRR: Option[String],
-    daysClaimed: Option[Double]
-  ): Action[AnyContent] = Action.async { implicit request =>
+  def calculateFlat(model: CalculationRequestModel): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "flat",
-      customerType,
-      priorDisposal,
-      annualExemptAmount,
-      otherPropertiesAmt,
-      isVulnerable,
-      currentIncome,
-      personalAllowanceAmt,
-      disposalValue,
-      disposalCosts,
-      acquisitionValueAmt,
-      acquisitionCostsAmt,
+      model.customerType,
+      model.priorDisposal,
+      model.annualExemptAmount,
+      model.otherPropertiesAmount,
+      model.isVulnerable,
+      model.currentIncome,
+      model.personalAllowanceAmount,
+      model.disposalValue,
+      model.disposalCosts,
+      model.initialValue,
+      model.initialCosts,
       0,
       0,
-      improvementsAmt,
-      reliefs,
-      allowableLossesAmt,
-      acquisitionDate,
-      disposalDate,
-      isClaimingPRR,
-      daysClaimed,
+      model.improvementsAmount,
+      model.reliefsAmount,
+      model.allowableLosses,
+      model.acquisitionDate,
+      model.disposalDate,
+      model.isClaimingPRR,
+      model.daysClaimed,
       isProperty = true
     )
 
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateRebased
-  (
-    customerType: String,
-    priorDisposal: String,
-    annualExemptAmount: Option[Double],
-    otherPropertiesAmt: Option[Double],
-    isVulnerable: Option[String],
-    currentIncome: Option[Double],
-    personalAllowanceAmt: Option[Double],
-    disposalValue: Double,
-    disposalCosts: Double,
-    rebasedValue: Double,
-    revaluationCost: Double,
-    improvementsAmt: Double,
-    reliefs: Double,
-    allowableLossesAmt: Double,
-    acquisitionDate: Option[String] = None,
-    disposalDate: String,
-    isClaimingPRR: Option[String],
-    daysClaimedAfter: Option[Double]
-
-  ): Action[AnyContent] = Action.async { implicit request =>
+  def calculateRebased(model: CalculationRequestModel): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "rebased",
-      customerType,
-      priorDisposal,
-      annualExemptAmount,
-      otherPropertiesAmt,
-      isVulnerable,
-      currentIncome,
-      personalAllowanceAmt,
-      disposalValue,
-      disposalCosts,
+      model.customerType,
+      model.priorDisposal,
+      model.annualExemptAmount,
+      model.otherPropertiesAmount,
+      model.isVulnerable,
+      model.currentIncome,
+      model.personalAllowanceAmount,
+      model.disposalValue,
+      model.disposalCosts,
       0,
       0,
-      rebasedValue,
-      revaluationCost,
-      improvementsAmt,
-      reliefs,
-      allowableLossesAmt,
-      acquisitionDate,
-      disposalDate,
-      isClaimingPRR,
+      model.initialValue,
+      model.initialCosts,
+      model.improvementsAmount,
+      model.reliefsAmount,
+      model.allowableLosses,
+      model.acquisitionDate,
+      model.disposalDate,
+      model.isClaimingPRR,
       None,
-      daysClaimedAfter,
+      model.daysClaimed,
       isProperty = true
     )
 
     Future.successful(Ok(Json.toJson(result)))
   }
 
-//scalastyle: off
-  def calculateTA
-  (
-    customerType: String,
-    priorDisposal: String,
-    annualExemptAmount: Option[Double],
-    otherPropertiesAmt: Option[Double],
-    isVulnerable: Option[String],
-    currentIncome: Option[Double],
-    personalAllowanceAmt: Option[Double],
-    disposalValue: Double,
-    disposalCosts: Double,
-    acquisitionValueAmt: Double,
-    acquisitionCostsAmt: Double,
-    improvementsAmt: Double,
-    reliefs: Double,
-    allowableLossesAmt: Double,
-    acquisitionDate: Option[String],
-    disposalDate: String,
-    isClaimingPRR: Option[String],
-    daysClaimedAfter: Option[Double]
-  ): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTA(model: TimeApportionmentCalculationRequestModel): Action[AnyContent] = Action.async { implicit request =>
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "time",
-      customerType,
-      priorDisposal,
-      annualExemptAmount,
-      otherPropertiesAmt,
-      isVulnerable,
-      currentIncome,
-      personalAllowanceAmt,
-      disposalValue,
-      disposalCosts,
-      acquisitionValueAmt,
-      acquisitionCostsAmt,
+      model.customerType,
+      model.priorDisposal,
+      model.annualExemptAmount,
+      model.otherPropertiesAmount,
+      model.isVulnerable,
+      model.currentIncome,
+      model.personalAllowanceAmount,
+      model.disposalValue,
+      model.disposalCosts,
+      model.initialValue,
+      model.initialCosts,
       0,
       0,
-      improvementsAmt,
-      reliefs,
-      allowableLossesAmt,
-      acquisitionDate,
-      disposalDate,
-      isClaimingPRR,
+      model.improvementsAmount,
+      model.reliefsAmount,
+      model.allowableLosses,
+      Some(model.acquisitionDate),
+      model.disposalDate,
+      model.isClaimingPRR,
       None,
-      daysClaimedAfter,
+      model.daysClaimed,
       isProperty = true
     )
 
