@@ -17,7 +17,7 @@
 package common.binders
 
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => queryKeys}
-import common.Validation
+import common.validation.{CommonValidation, SharesValidation}
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import play.api.mvc.QueryStringBindable
 
@@ -45,8 +45,8 @@ trait ResidentSharesBinders extends CommonBinders {
             val inputs = Seq(disposalValueEither, disposalCostsEither, acquisitionValueEither, acquisitionCostsEither)
             inputs match {
               case Seq(Right(disposalValue), Right(disposalCosts), Right(acquisitionValue), Right(acquisitionCosts)) =>
-                Right(TotalGainModel(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts))
-              case fail => Left(Validation.getFirstErrorMessage(fail))
+                SharesValidation.validateSharesTotalGain(TotalGainModel(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts))
+              case fail => Left(CommonValidation.getFirstErrorMessage(fail))
             }
           }
         }
@@ -80,10 +80,10 @@ trait ResidentSharesBinders extends CommonBinders {
             val inputs = (totalGainModelEither, annualExemptAmountEither, allowableLossesEither, broughtForwardLossesEither)
             inputs match {
               case (Right(totalGain), Right(annualExemptAmount), Right(allowableLosses), Right(broughtForwardLosses)) =>
-                Right(ChargeableGainModel(totalGain, allowableLosses, broughtForwardLosses, annualExemptAmount))
+                SharesValidation.validateSharesChargeableGain(ChargeableGainModel(totalGain, allowableLosses, broughtForwardLosses, annualExemptAmount))
               case _ =>
                 val inputs = Seq(totalGainModelEither, annualExemptAmountEither, allowableLossesEither, broughtForwardLossesEither)
-                Left(Validation.getFirstErrorMessage(inputs))
+                Left(CommonValidation.getFirstErrorMessage(inputs))
             }
           }
         }
@@ -120,11 +120,13 @@ trait ResidentSharesBinders extends CommonBinders {
             disposalDateEither)
           inputs match {
             case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance), Right(disposalDate)) =>
-              Right(CalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance, disposalDate))
+              SharesValidation.validateSharesTaxOwed(
+                CalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance, disposalDate)
+              )
             case _ =>
               val inputs = Seq(chargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither,
                 disposalDateEither)
-              Left(Validation.getFirstErrorMessage(inputs))
+              Left(CommonValidation.getFirstErrorMessage(inputs))
           }
         }
       }
