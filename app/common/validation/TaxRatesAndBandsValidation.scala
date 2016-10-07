@@ -37,7 +37,7 @@ import org.joda.time.DateTime
 object TaxRatesAndBandsValidation {
 
   def checkValidTaxYear(year: Int): Boolean = {
-    if(year >= 2015 && year <= DateTime.now().getYear) true
+    if(year >= 2015 && year <= DateTime.now().getYear + 1) true
     else false
   }
 
