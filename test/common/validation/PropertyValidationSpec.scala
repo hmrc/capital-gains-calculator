@@ -32,8 +32,9 @@
 
 package common.validation
 
-import models.resident.properties.PropertyTotalGainModel
+import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
 class PropertyValidationSpec extends UnitSpec {
@@ -69,6 +70,84 @@ class PropertyValidationSpec extends UnitSpec {
       val result = PropertyValidation.validatePropertyTotalGain(model)
 
       result shouldBe Left("disposalValue cannot be negative.")
+    }
+  }
+
+  "Calling validatePropertyChargeableGain" should {
+
+    val validPropertyTotalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
+    val invalidPropertyTotalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), -3000.0)
+
+    "return a Right with all validation passing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Right(model)
+    }
+
+    "return a Left with an invalid PropertyTotalGainModel" in {
+      val model = PropertyChargeableGainModel(invalidPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("improvements cannot be negative.")
+    }
+
+    "return a Left with prrValue validation failing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(-3500.0), Some(4000.0), Some(4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("prrValue cannot be negative.")
+    }
+
+    "return a Left with lettingReliefs validation failing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(-4000.0), Some(4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("lettingReliefs cannot be negative.")
+    }
+
+    "return a Left with allowableLosses validation failing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(-4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("allowableLosses cannot be negative.")
+    }
+
+    "return a Left with broughtForwardLosses validation failing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
+        Some(-5000.0), 5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("broughtForwardLosses cannot be negative.")
+    }
+
+    "return a Left with annualExemptAmount validation failing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
+        Some(5000.0), -5500.0, DateTime.parse("2016-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("annualExemptAmount cannot be negative.")
+    }
+
+    "return a Left with disposalDate validation failing" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2014-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("disposalDate cannot be before 2015-04-06")
+    }
+
+    "return a Left with multiple arguments failing validation" in {
+      val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(-3500.0), Some(4000.0), Some(-4500.0),
+        Some(5000.0), 5500.0, DateTime.parse("2014-09-09"))
+      val result = PropertyValidation.validatePropertyChargeableGain(model)
+
+      result shouldBe Left("prrValue cannot be negative.")
     }
   }
 }

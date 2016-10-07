@@ -52,13 +52,11 @@ object SharesValidation {
     val chargeableGainModel = validateSharesChargeableGain(taxOwedModel.chargeableGainModel)
     val previousTaxableGain = validateOptionDouble(taxOwedModel.previousTaxableGain, residentShareKeys.previousTaxableGain)
     val previousIncome = validateDouble(taxOwedModel.previousIncome, residentShareKeys.previousIncome)
-    val disposalDate = validateSharesDisposalDate(taxOwedModel.disposalDate)
+    val disposalDate = validateDisposalDate(taxOwedModel.disposalDate)
     val personalAllowance = disposalDate match {
       case Right(date) => validateResidentPersonalAllowance (taxOwedModel.personalAllowance, date)
       case Left(_) => Right(taxOwedModel.personalAllowance)
     }
-
-
 
     (chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate) match {
       case (Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(taxOwedModel)
@@ -66,8 +64,4 @@ object SharesValidation {
     }
   }
 
-  def validateSharesDisposalDate(disposalDate: DateTime): Either[String, DateTime] = {
-    if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(disposalDate)
-    else Left("disposalDate cannot be before 2015-04-06")
-  }
 }

@@ -204,4 +204,28 @@ class CommonValidationSpec extends UnitSpec {
       result shouldBe Left("personalAllowance cannot be negative.")
     }
   }
+
+  "Calling validateSharesDisposalDate" should {
+
+    "return a Right when providing a date after the start of the 2015/16 tax year" in {
+      val date = DateTime.parse("2015-08-10")
+      val result = CommonValidation.validateDisposalDate(date)
+
+      result shouldBe Right(date)
+    }
+
+    "return a Right when providing a date on the start of the 2015/16 tax year" in {
+      val date = DateTime.parse("2015-04-06")
+      val result = CommonValidation.validateDisposalDate(date)
+
+      result shouldBe Right(date)
+    }
+
+    "return a Left when providing a date before the start of the 2015/16 tax year" in {
+      val date = DateTime.parse("2015-04-05")
+      val result = CommonValidation.validateDisposalDate(date)
+
+      result shouldBe Left("disposalDate cannot be before 2015-04-06")
+    }
+  }
 }
