@@ -175,5 +175,24 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
         (json \ "calculationTaxYear").as[String] shouldBe "2015/16"
       }
     }
+
+    "calling with an invalid date 10/100/2014" should {
+      val result = getTaxYear("2014-100-10")(fakeRequest)
+      val data = contentAsString(result)
+      val json = Json.parse(data)
+
+      "return a status 400" in {
+        status(result) shouldBe 400
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+        charset(result) shouldBe Some("utf-8")
+      }
+
+      s"return a message with the text ${assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")}" in {
+        json.as[String] shouldBe assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")
+      }
+    }
   }
 }
