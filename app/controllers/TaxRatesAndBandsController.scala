@@ -16,7 +16,7 @@
 
 package controllers
 
-import common.Date
+import common._
 import config.TaxRatesAndBands
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -26,6 +26,8 @@ import play.api.mvc.{Action, AnyContent}
 import config.TaxRatesAndBands._
 import models._
 import org.joda.time.DateTime
+
+import scala.util.{Success, Try}
 
 object TaxRatesAndBandsController extends TaxRatesAndBandsController {
 }
@@ -43,17 +45,31 @@ trait TaxRatesAndBandsController extends BaseController {
   def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>
     isEligibleBlindPersonsAllowance match {
       case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
-      case _ =>     Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
+      case _ => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
     }
   }
 
   def getTaxYear(dateString: String): Action[AnyContent] = Action.async { implicit request =>
-    val date = DateTime.parse(dateString)
-    val taxYear = Date.getTaxYear(date)
-    val result = TaxYearModel(Date.taxYearToString(taxYear),
-      TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
-      Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
-    Future.successful(Ok(Json.toJson(result)))
-  }
 
+    def tryParsing(): Either[String, DateTime] = {
+      Try {
+        DateTime.parse(dateString)
+      } match {
+        case Success(date) => Right(date)
+        case _ => Left(ValidationErrorMessages.invalidDateFormat(dateString))
+      }
+    }
+
+    tryParsing() match {
+      case Right(parsedDate) =>
+        val taxYear = Date.getTaxYear(parsedDate)
+        val result = TaxYearModel(Date.taxYearToString(taxYear), TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
+          Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
+        Future.successful(Ok(Json.toJson(result)))
+
+      case Left(errorMessage) =>
+        Future.successful(BadRequest(Json.toJson(errorMessage)))
+
+    }
+  }
 }
