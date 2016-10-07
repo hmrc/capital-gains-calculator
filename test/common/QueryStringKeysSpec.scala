@@ -60,12 +60,12 @@ class QueryStringKeysSpec extends UnitSpec {
       target.disposalCosts shouldBe "disposalCosts"
     }
 
-    s"have an acquisition value key with the value ${target.acquisitionValue}" in {
-      target.acquisitionValue shouldBe "acquisitionValueAmt"
+    s"have an acquisition value key with the value ${target.initialValue}" in {
+      target.initialValue shouldBe "initialValueAmt"
     }
 
-    s"have an acquisition costs key with the value ${target.acquisitionCosts}" in {
-      target.acquisitionCosts shouldBe "acquisitionCostsAmt"
+    s"have an acquisition costs key with the value ${target.initialCosts}" in {
+      target.initialCosts shouldBe "initialCostsAmt"
     }
 
     s"have an improvements amount key with the value ${target.improvementsAmount}" in {
