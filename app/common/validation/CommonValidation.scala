@@ -17,7 +17,7 @@
 package common.validation
 
 import common.Date
-import config.TaxRatesAndBands
+import config.{TaxRatesAndBands, TaxRatesAndBands20152016}
 import org.joda.time.DateTime
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => sharesKeys}
 
@@ -76,5 +76,10 @@ object CommonValidation {
         Left(s"${sharesKeys.personalAllowance} cannot exceed $maxPersonalAllowance")
       case Left(message) => Left(message)
     }
+  }
+
+  def validateDisposalDate(disposalDate: DateTime): Either[String, DateTime] = {
+    if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(disposalDate)
+    else Left("disposalDate cannot be before 2015-04-06")
   }
 }
