@@ -8,7 +8,7 @@ GET        /calculate-time-apportioned  controllers.nonresident.CalculatorContro
 ## Resident Property Calculation Routes
 GET        /calculate-total-gain        controllers.resident.properties.CalculatorController.calculateTotalGain(totalGainModel: models.resident.properties.PropertyTotalGainModel)
 GET        /calculate-chargeable-gain   controllers.resident.properties.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.properties.PropertyChargeableGainModel)
-GET        /calculate-resident-capital-gains-tax    controllers.resident.properties.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
+GET        /calculate-resident-capital-gains-tax    controllers.resident.properties.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.properties.PropertyCalculateTaxOwedModel)
 
 ## Resident Share Calculation Routes
 GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
