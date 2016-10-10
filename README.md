@@ -41,7 +41,7 @@ These are the available end points for the service. The table below gives detail
             of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
             otherPropertiesAmount: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
             disposalValue: Double, disposalCosts: Double, initialValueAmt: Double, initialCostsAmt: Double, improvementsAmt: Double, reliefs: Double,
-            allowableLossesAmt: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRRP: Option[String],
+            allowableLossesAmt: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRR: Option[String],
             daysClaimed: Option[Double]</td>
     </tr>
     <tr>
@@ -51,7 +51,7 @@ These are the available end points for the service. The table below gives detail
             of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
             otherProperties: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
             disposalValue: Double, disposalCost: Double, initialValue: Double, initialCost: Double, improvements: Double, reliefs: Double,
-            allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRRP: Option[String],
+            allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRR: Option[String],
             daysClaimed: Option[Double]</td>
     </tr>
     <tr>
@@ -62,7 +62,7 @@ These are the available end points for the service. The table below gives detail
             otherProperties: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
             disposalValue: Double, disposalCost: Double, initialValue: Double, initialCost: Double, revaluedAmount: Double, revaluationCost: Double,
             improvements: Double, reliefs: Double, allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime,
-            isClaimingPRRP: Option[String], daysClaimed: Option[Double], daysClaimedAfter: Option[Double], isProperty: Boolean</td>
+            isClaimingPRR: Option[String], daysClaimed: Option[Double], daysClaimedAfter: Option[Double], isProperty: Boolean</td>
     </tr>
     <tr>
         <td><code>/capital-gains-calculator/calculate-total-gain</code></td>
@@ -160,7 +160,7 @@ GET /capital-gains-calculator/calculate-flat
     "allowableLossesAmt": 30000.0, 
     "acquisitionDate": "2005-12-12",
     "disposalDate": "2016-12-12", 
-    "isClaimingPRRP": "No",
+    "isClaimingPRR": "No"
 }
 ```
 
@@ -203,7 +203,7 @@ Calculates the amount of capital gains tax owed using the value of the property 
     "allowableLossesAmt": 30000.0, 
     "acquisitionDate": "2005-12-12",
     "disposalDate": "2016-12-12", 
-    "isClaimingPRRP": "No",
+    "isClaimingPRR": "No"
 }
 ```
 
@@ -247,7 +247,7 @@ Calculates the amount of capital gains tax owed based on the percentage of time 
     "allowableLossesAmt": 30000.0, 
     "acquisitionDate": "2005-12-12",
     "disposalDate": "2016-12-12", 
-    "isClaimingPRRP": "No"
+    "isClaimingPRR": "No"
 }
 ```
 
@@ -446,7 +446,7 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "allowableLosses": 2000.0,
     "broughtForwardLosses": 2000.0,
     "annualExemptAmount": 0,
-    "previousTaxableGain" = 0
+    "previousTaxableGain" : 0,
     "previousIncome": 28000.0,
     "personalAllowance":11000.0,
     "disposalDate":2016-12-12
