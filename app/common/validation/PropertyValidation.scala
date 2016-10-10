@@ -19,7 +19,7 @@ package common.validation
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => residentPropertyKeys}
 import common.validation.CommonValidation._
 import common.validation.SharesValidation.validateSharesTotalGain
-import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
+import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 
 object PropertyValidation {
 
@@ -46,6 +46,22 @@ object PropertyValidation {
       case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(propertyChargeableGainModel)
       case _ => Left(getFirstErrorMessage(Seq(propertyGainModel, prrValue, lettingReliefs, allowableLosses,
         broughtForwardLosses, annualExemptAmount, disposalDate)))
+    }
+  }
+
+  def validatePropertyTaxOwed(propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): Either[String, PropertyCalculateTaxOwedModel] = {
+    val propertyChargeableGainModel = validatePropertyChargeableGain(propertyCalculateTaxOwedModel.propertyChargeableGainModel)
+    val previousTaxableGain = validateOptionDouble(propertyCalculateTaxOwedModel.previousTaxableGain, residentPropertyKeys.previousTaxableGain)
+    val previousIncome = validateDouble(propertyCalculateTaxOwedModel.previousIncome, residentPropertyKeys.previousIncome)
+    val disposalDate = validateDisposalDate(propertyCalculateTaxOwedModel.propertyChargeableGainModel.disposalDate)
+    val personalAllowance = disposalDate match {
+      case Right(date) => validateResidentPersonalAllowance (propertyCalculateTaxOwedModel.personalAllowance, date)
+      case Left(_) => Right(propertyCalculateTaxOwedModel.personalAllowance)
+    }
+
+    (propertyChargeableGainModel, previousTaxableGain, previousIncome, personalAllowance) match {
+      case (Right(_), Right(_), Right(_), Right(_)) => Right(propertyCalculateTaxOwedModel)
+      case _ => Left(getFirstErrorMessage(Seq(propertyChargeableGainModel, previousTaxableGain, previousIncome, personalAllowance)))
     }
   }
 }
