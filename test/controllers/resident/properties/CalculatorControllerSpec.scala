@@ -16,7 +16,7 @@
 
 package controllers.resident.properties
 
-import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
+import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 import play.api.libs.json.Json
@@ -319,20 +319,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" should {
-      lazy val result = CalculatorController.calculateTaxOwed(
-        disposalValue = 195000,
+      lazy val result = CalculatorController.calculateTaxOwed(PropertyCalculateTaxOwedModel(
+        PropertyChargeableGainModel(PropertyTotalGainModel(TotalGainModel(disposalValue = 195000,
         disposalCosts = 1000,
         acquisitionValue = 160000,
-        acquisitionCosts = 1000,
-        improvements = 5000,
+        acquisitionCosts = 1000),
+        improvements = 5000),
         prrValue = None,
         lettingReliefs = None,
         allowableLosses = None,
         broughtForwardLosses = None,
         annualExemptAmount = 11100,
+          disposalDate = DateTime.parse("2015-10-10")),
         previousTaxableGain = None,
         previousIncome = 20000,
-        personalAllowance = 11000
+        personalAllowance = 11000)
       )(fakeRequest)
 
       "return a 200" in {
@@ -403,20 +404,22 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "all optional values are provided" should {
-      lazy val result = CalculatorController.calculateTaxOwed(
+      lazy val result = CalculatorController.calculateTaxOwed(PropertyCalculateTaxOwedModel(
+        PropertyChargeableGainModel(PropertyTotalGainModel(TotalGainModel(
         disposalValue = 250000,
         disposalCosts = 10000,
         acquisitionValue = 100000,
-        acquisitionCosts = 10000,
-        improvements = 30000,
+        acquisitionCosts = 10000),
+        improvements = 30000),
         prrValue = Some(1000),
         lettingReliefs = Some(8900),
         allowableLosses = Some(20000),
         broughtForwardLosses = Some(10000),
         annualExemptAmount = 11100,
+          disposalDate = DateTime.parse("2015-10-10")),
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
-        personalAllowance = 11000
+        personalAllowance = 11000)
       )(fakeRequest)
 
       "return a 200" in {

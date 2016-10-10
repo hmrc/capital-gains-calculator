@@ -15,11 +15,11 @@
  */
 
 package common.binders
-import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
+import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
-import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.play.test.UnitSpec
 
 class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
 
@@ -194,6 +194,166 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
         result shouldBe propertyTotalGainString + "&prrValue=2050.0&lettingReliefs=2100.0&allowableLosses=2200.0&broughtForwardLosses=2300.0" +
           "&annualExemptAmount=2400.0&disposalDate=2016-10-10"
       }
+    }
+  }
+
+  "Calling Property Calculate Tax Owed binder" when {
+
+    val binder = new ResidentPropertyBinders {}.propertyCalculateTaxOwedBinder
+
+    "given a valid binding value where all values are the same" should {
+      val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0), 1000.0)
+      val date = DateTime.parse("2016-10-10")
+      val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0), Some(1000.0),
+        1000.0, date)
+      val propertyChargeableGainRequest = "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0&improvements=1000.0" +
+        "&prrValue=1000.0&lettingReliefs=1000.0&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0&disposalDate=2016-10-10"
+
+
+
+      "return a valid PropertyCalculateTaxOwedModel on bind" in {
+        val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1000.0"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "improvements" -> Seq("1000.0"),
+          "prrValue" -> Seq("1000.0"),
+          "lettingReliefs" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0"),
+          "disposalDate" -> Seq("2016-10-10"),
+          "previousTaxableGain" -> Seq("1000.0"),
+          "previousIncome" -> Seq("1000.0"),
+          "personalAllowance" -> Seq("1000.0")
+        ))
+        val date = DateTime.parse("2016-10-10")
+
+        result shouldBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0)))
+      }
+
+      "return a valid queryString on unbind" in {
+        val date = DateTime.parse("2016-10-10")
+        val result = binder.unbind("key", PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0))
+
+        result shouldBe propertyChargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0"
+      }
+    }
+
+    "given a valid binding value where all values are different" should {
+      val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0),6000.0)
+      val date = DateTime.parse("2016-10-10")
+      val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(4000.0), Some(4500.0), Some(5000.0),
+        Some(5500.0), 6000.0, date)
+      val propertyChargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0&improvements=6000.0" +
+        "&prrValue=4000.0&lettingReliefs=4500.0&allowableLosses=5000.0&broughtForwardLosses=5500.0&annualExemptAmount=6000.0&disposalDate=2016-10-10"
+
+
+      "return a valid CalculateTaxOwedModel on bind" in {
+        val result = binder.bind("Any", Map("disposalValue" -> Seq("2000.0"),
+          "disposalCosts" -> Seq("2500.0"),
+          "acquisitionValue" -> Seq("3000.0"),
+          "acquisitionCosts" -> Seq("3500.0"),
+          "improvements" -> Seq("6000.0"),
+          "prrValue" -> Seq("4000.0"),
+          "lettingReliefs" -> Seq("4500.0"),
+          "allowableLosses" -> Seq("5000.0"),
+          "broughtForwardLosses" -> Seq("5500.0"),
+          "annualExemptAmount" -> Seq("6000.0"),
+          "disposalDate" -> Seq("2016-10-10"),
+          "previousIncome" -> Seq("4000.0"),
+          "personalAllowance" -> Seq("4000.0")
+        ))
+
+        val date = DateTime.parse("2016-10-10")
+        result shouldBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, None, 4000.0, 4000.0)))
+      }
+
+      "return a valid queryString on unbind" in {
+        val date = DateTime.parse("2016-10-10")
+        val result = binder.unbind("key", PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(4500.0), 5000.0, 5500.0))
+
+        result shouldBe propertyChargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0"
+      }
+    }
+
+    "given an invalid binding value" should {
+
+      "return one error message on a failed bind on all inputs" in {
+        val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), 6000.0)
+        val date = DateTime.parse("2016-10-10")
+        val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0),
+          Some(1000.0), 1000.0, date)
+        val propertyChargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
+          "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
+
+        val result = binder.bind("", Map("disposalValue" -> Seq("a"),
+          "disposalCosts" -> Seq("b"),
+          "acquisitionValue" -> Seq("c"),
+          "acquisitionCosts" -> Seq("d"),
+          "improvements" -> Seq("e"),
+          "prrValue" -> Seq("f"),
+          "lettingReliefs" -> Seq("g"),
+          "allowableLosses" -> Seq("h"),
+          "broughtForwardLosses" -> Seq("i"),
+          "annualExemptAmount" -> Seq("j"),
+          "disposalDate" -> Seq("k"),
+          "previousTaxableGain" -> Seq("l"),
+          "previousIncome" -> Seq("m"),
+          "personalAllowance" -> Seq("n")
+        ))
+
+        result shouldBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
+      }
+
+
+      "return an error message when one component fails" in {
+        val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), 6000.0)
+        val date = DateTime.parse("2016-10-10")
+        val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0),
+          Some(1000.0), 1000.0, date)
+        val propertyChargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
+          "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
+
+        val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1000.0"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "improvements" -> Seq("1000.0"),
+          "prrValue" -> Seq("1000.0"),
+          "lettingReliefs" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0"),
+          "disposalDate" -> Seq("2016-10-10"),
+          "previousTaxableGain" -> Seq("1000.0"),
+          "previousIncome" -> Seq("1000.0"),
+          "personalAllowance" -> Seq("n")
+        ))
+
+        result shouldBe Some(Left("""Cannot parse parameter personalAllowance as Double: For input string: "n""""))
+      }
+
+      "return an error message when a component is missing" in {
+
+        val result = binder.bind("Any", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1000.0"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "improvements" -> Seq("1000.0"),
+          "prrValue" -> Seq("1000.0"),
+          "lettingReliefs" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0"),
+          "disposalDate" -> Seq("2016-10-10"),
+          "previousTaxableGain" -> Seq("1000.0"),
+          "personalAllowance" -> Seq("n")
+        ))
+
+        result shouldBe Some(Left("previousIncome is required."))
+      }
+
     }
   }
 }
