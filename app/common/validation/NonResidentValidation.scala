@@ -53,6 +53,5 @@ object NonResidentValidation {
         personalAllowanceAmount, disposalValue, disposalCosts, initialValue, initialCosts, improvementsAmount,
         reliefsAmount, allowableLosses, acquisitionDate, disposalDate, isClaimingPRR, daysClaimed)))
     }
-
   }
 }
