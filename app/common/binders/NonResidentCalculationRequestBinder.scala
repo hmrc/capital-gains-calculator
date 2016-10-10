@@ -19,7 +19,7 @@ package common.binders
 import models.nonResident.CalculationRequestModel
 import play.api.mvc.QueryStringBindable
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
-import common.validation.CommonValidation
+import common.validation.{CommonValidation, NonResidentValidation}
 
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
@@ -33,8 +33,8 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
     keys.improvementsAmount,
     keys.reliefsAmount,
     keys.allowableLosses,
-    keys.disposalDate)
-
+    keys.disposalDate
+  )
 
   implicit def requestBinder(implicit stringBinder: QueryStringBindable[String],
                              optionalStringBinder: QueryStringBindable[Option[String]],
@@ -104,24 +104,27 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(disposalDate),
               Right(isClaimingPRR),
               Right(daysClaimed)) =>
-              Right(CalculationRequestModel(customerType,
-                priorDisposal,
-                aea,
-                otherProperties,
-                vulnerable,
-                currentIncome,
-                personalAllowance,
-                disposalValue,
-                disposalCosts,
-                initialValue,
-                initialCosts,
-                improvements,
-                reliefs,
-                allowableLosses,
-                acquisitionDate,
-                disposalDate,
-                isClaimingPRR,
-                daysClaimed))
+              NonResidentValidation.validateNonResidentProperty(
+                CalculationRequestModel(customerType,
+                  priorDisposal,
+                  aea,
+                  otherProperties,
+                  vulnerable,
+                  currentIncome,
+                  personalAllowance,
+                  disposalValue,
+                  disposalCosts,
+                  initialValue,
+                  initialCosts,
+                  improvements,
+                  reliefs,
+                  allowableLosses,
+                  acquisitionDate,
+                  disposalDate,
+                  isClaimingPRR,
+                  daysClaimed
+                )
+              )
             case fail =>
               Left(CommonValidation.getFirstErrorMessage(Seq(customerTypeParam,
                 priorDisposalParam,

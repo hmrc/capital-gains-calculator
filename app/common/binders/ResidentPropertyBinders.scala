@@ -17,9 +17,8 @@
 package common.binders
 
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => queryKeys}
-
-import models.resident.properties.{PropertyChargeableGainModel, PropertyTotalGainModel}
 import common.validation.{CommonValidation, PropertyValidation}
+import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import play.api.mvc.QueryStringBindable
 
@@ -30,6 +29,7 @@ trait ResidentPropertyBinders extends CommonBinders {
   val totalGainParameters = Seq(queryKeys.disposalValue, queryKeys.disposalCosts, queryKeys.acquisitionValue, queryKeys.acquisitionCosts)
   val propertyTotalGainParameters = totalGainParameters ++ Seq(queryKeys.improvements)
   val chargeableGainParameters = propertyTotalGainParameters ++ Seq(queryKeys.annualExemptAmount, queryKeys.disposalDate)
+  val calculateTaxOwedParameters = chargeableGainParameters ++ Seq(queryKeys.previousIncome, queryKeys.personalAllowance, queryKeys.disposalDate)
 
   implicit def propertyTotalGainBinder(implicit totalGainBinder: QueryStringBindable[TotalGainModel],
                                        doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyTotalGainModel] =
@@ -110,4 +110,43 @@ trait ResidentPropertyBinders extends CommonBinders {
         ).filter(!_.isEmpty).mkString("&")
     }
   }
+
+  implicit def propertyCalculateTaxOwedBinder(implicit doubleBinder: QueryStringBindable[Double], optionDoubleBinder: QueryStringBindable[Option[Double]],
+                                              propertyChargeableGainBinder: QueryStringBindable[PropertyChargeableGainModel]):
+  QueryStringBindable[PropertyCalculateTaxOwedModel] =
+    new QueryStringBindable[PropertyCalculateTaxOwedModel] {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PropertyCalculateTaxOwedModel]] = {
+
+        val missingParameter = calculateTaxOwedParameters.find(element => params.get(element).isEmpty)
+
+        if(missingParameter.isEmpty) {
+          for {
+            propertyChargeableGainModelEither <- propertyChargeableGainBinder.bind("", params)
+            previousTaxableGainEither <- optionDoubleBinder.bind(queryKeys.previousTaxableGain, params)
+            previousIncomeEither <- doubleBinder.bind(queryKeys.previousIncome, params)
+            personalAllowanceEither <- doubleBinder.bind(queryKeys.personalAllowance, params)
+          } yield {
+            val inputs = (propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
+            inputs match {
+              case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance)) =>
+                Right(PropertyCalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance))
+              case _ =>
+                val inputs = Seq(propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
+                Left(CommonValidation.getFirstErrorMessage(inputs))
+            }
+          }
+        }
+
+        else Some(Left(s"${missingParameter.get} is required."))
+      }
+
+      override def unbind(key: String, propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): String =
+        Seq(
+          propertyChargeableGainBinder.unbind("", propertyCalculateTaxOwedModel.propertyChargeableGainModel),
+          optionDoubleBinder.unbind(queryKeys.previousTaxableGain, propertyCalculateTaxOwedModel.previousTaxableGain),
+          doubleBinder.unbind(queryKeys.previousIncome, propertyCalculateTaxOwedModel.previousIncome),
+          doubleBinder.unbind(queryKeys.personalAllowance, propertyCalculateTaxOwedModel.personalAllowance)
+        ).filter(!_.isEmpty).mkString("&")
+
+    }
 }
