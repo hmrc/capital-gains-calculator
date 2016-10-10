@@ -275,22 +275,42 @@ class CommonValidationSpec extends UnitSpec {
     }
   }
 
+  "Calling validateOptionalAcquisitionDate" should {
+
+    val disposalDate = DateTime.parse("2016-12-12")
+
+    "return a Left when given an AcquisitionDate after the disposal date" in {
+      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(DateTime.parse("2016-12-20"))) shouldBe
+        Left("The acquisitionDate must be before the disposalDate")
+    }
+
+    "return a Left when given an acquisition date that is equal to the disposal date" in {
+      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(disposalDate)) shouldBe
+        Left("The acquisitionDate must be before the disposalDate")
+    }
+
+    "return a Right when given an acuisition date that is before the disposal date" in {
+      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(DateTime.parse("2016-11-11"))) shouldBe
+        Right(Some(DateTime.parse("2016-11-11")))
+    }
+  }
+
   "Calling validateAcquisitionDate" should {
 
     val disposalDate = DateTime.parse("2016-12-12")
 
     "return a Left when given an AcquisitionDate after the disposal date" in {
-      CommonValidation.validateAcquisitionDate(disposalDate, Some(DateTime.parse("2016-12-20"))) shouldBe
+      CommonValidation.validateAcquisitionDate(disposalDate, DateTime.parse("2016-12-20")) shouldBe
         Left("The acquisitionDate must be before the disposalDate")
     }
 
     "return a Left when given an acquisition date that is equal to the disposal date" in {
-      CommonValidation.validateAcquisitionDate(disposalDate, Some(disposalDate)) shouldBe
+      CommonValidation.validateAcquisitionDate(disposalDate, disposalDate) shouldBe
         Left("The acquisitionDate must be before the disposalDate")
     }
 
     "return a Right when given an acuisition date that is before the disposal date" in {
-      CommonValidation.validateAcquisitionDate(disposalDate, Some(DateTime.parse("2016-11-11"))) shouldBe
+      CommonValidation.validateAcquisitionDate(disposalDate, DateTime.parse("2016-11-11")) shouldBe
         Right(Some(DateTime.parse("2016-11-11")))
     }
   }

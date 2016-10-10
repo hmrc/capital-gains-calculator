@@ -105,10 +105,17 @@ object CommonValidation {
     else Left(s"$key must be either individual, trustee or personalRep")
   }
 
-  def validateAcquisitionDate(disposalDate: DateTime, acquisitionDate: Option[DateTime]): Either[String, Option[DateTime]] = {
+  def validateOptionalAcquisitionDate(disposalDate: DateTime, acquisitionDate: Option[DateTime]): Either[String, Option[DateTime]] = {
     acquisitionDate match {
       case Some(data) if data.isBefore(disposalDate) => Right(Some(acquisitionDate.get))
       case None => Right(None)
+      case _ => Left(s"The acquisitionDate must be before the disposalDate")
+    }
+  }
+
+  def validateAcquisitionDate(disposalDate: DateTime, acquisitionDate: DateTime): Either[String, Option[DateTime]] = {
+    acquisitionDate match {
+      case data if data.isBefore(disposalDate) => Right(Some(acquisitionDate))
       case _ => Left(s"The acquisitionDate must be before the disposalDate")
     }
   }

@@ -17,7 +17,7 @@
 package common.binders
 
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
-import common.validation.CommonValidation
+import common.validation.{CommonValidation, NonResidentValidation}
 import models.nonResident.TimeApportionmentCalculationRequestModel
 import play.api.mvc.QueryStringBindable
 
@@ -104,24 +104,27 @@ trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders
               Right(disposalDate),
               Right(isClaimingPRR),
               Right(daysClaimed)) =>
-              Right(TimeApportionmentCalculationRequestModel(customerType,
-                priorDisposal,
-                aea,
-                otherProperties,
-                vulnerable,
-                currentIncome,
-                personalAllowance,
-                disposalValue,
-                disposalCosts,
-                initialValue,
-                initialCosts,
-                improvements,
-                reliefs,
-                allowableLosses,
-                acquisitionDate,
-                disposalDate,
-                isClaimingPRR,
-                daysClaimed))
+              NonResidentValidation.validateNonResidentTimeApportioned(
+                TimeApportionmentCalculationRequestModel(customerType,
+                  priorDisposal,
+                  aea,
+                  otherProperties,
+                  vulnerable,
+                  currentIncome,
+                  personalAllowance,
+                  disposalValue,
+                  disposalCosts,
+                  initialValue,
+                  initialCosts,
+                  improvements,
+                  reliefs,
+                  allowableLosses,
+                  acquisitionDate,
+                  disposalDate,
+                  isClaimingPRR,
+                  daysClaimed
+                )
+              )
             case fail =>
               Left(CommonValidation.getFirstErrorMessage(Seq(customerTypeParam,
                 priorDisposalParam,

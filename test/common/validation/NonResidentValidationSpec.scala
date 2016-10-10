@@ -16,7 +16,7 @@
 
 package common.validation
 
-import models.nonResident.CalculationRequestModel
+import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -25,6 +25,11 @@ class NonResidentValidationSpec extends UnitSpec {
   val validModel = CalculationRequestModel(
     "individual", "No", None, None, None, None, None, 200000.0, 800.0, 100000.0,
     200.0, 12000.0, 0, 0, None, DateTime.parse("2016-12-12"), None, None, isProperty = true
+  )
+
+  val validTimeModel = TimeApportionmentCalculationRequestModel(
+    "individual", "No", None, None, None, None, None, 200000.0, 800.0, 100000.0,
+    200.0, 12000.0, 0, 0, DateTime.parse("2010-12-12"), DateTime.parse("2016-12-12"), None, None, isProperty = true
   )
 
   "Calling validateNonResidentProperty with a valid model" should {
@@ -177,6 +182,31 @@ class NonResidentValidationSpec extends UnitSpec {
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, Some(DateTime.parse("2010-12-24")),
         DateTime.parse("2016-12-12"), Some("Yes"), Some(10231289.129), isProperty = true
       )) shouldBe Left("daysClaimed has too many decimal places.")
+    }
+  }
+
+  "Calling validateNonResidentTimeApportioned with a valid model" should {
+    "return a Right with all validation passing" in {
+      val result = NonResidentValidation.validateNonResidentTimeApportioned(validTimeModel)
+      result shouldBe Right(validTimeModel)
+    }
+  }
+
+  "Calling validateNonResidentTimeApportioned with an invalid model" should {
+    "When the first error is the acquisitionDate" in {
+      NonResidentValidation.validateNonResidentTimeApportioned(TimeApportionmentCalculationRequestModel(
+        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, DateTime.parse("2016-12-24"),
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
+      )) shouldBe Left("The acquisitionDate must be before the disposalDate")
+    }
+
+    "When the first error is the disposalDate" in {
+      NonResidentValidation.validateNonResidentTimeApportioned(TimeApportionmentCalculationRequestModel(
+        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, DateTime.parse("2010-12-24"),
+        DateTime.parse("2014-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
+      )) shouldBe Left("disposalDate cannot be before 2015-04-06")
     }
   }
 

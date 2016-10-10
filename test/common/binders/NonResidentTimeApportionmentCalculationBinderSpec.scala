@@ -31,10 +31,10 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
   // the values to bind to a valid request
   val validRequest: Map[String, Seq[String]] = Map(
     keys.customerType -> Seq("individual"),
-    keys.priorDisposal -> Seq("yes"),
+    keys.priorDisposal -> Seq("Yes"),
     keys.annualExemptAmount -> Seq("111.11"),
     keys.otherPropertiesAmount -> Seq("222.22"),
-    keys.vulnerable -> Seq("yes"),
+    keys.vulnerable -> Seq("Yes"),
     keys.currentIncome -> Seq("333.33"),
     keys.personalAllowanceAmount -> Seq("444.44"),
     keys.disposalValue -> Seq("555.55"),
@@ -46,17 +46,17 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
     keys.allowableLosses -> Seq("22.22"),
     keys.acquisitionDate -> Seq("2016-12-20"),
     keys.disposalDate -> Seq("2018-09-13"),
-    keys.isClaimingPRR -> Seq("yes"),
+    keys.isClaimingPRR -> Seq("Yes"),
     keys.daysClaimed -> Seq("200")
   )
 
   // the expected result of binding valid requests
   val expectedRequest = TimeApportionmentCalculationRequestModel(
     "individual",
-    "yes",
+    "Yes",
     Some(111.11),
     Some(222.22),
-    Some("yes"),
+    Some("Yes"),
     Some(333.33),
     Some(444.44),
     555.55,
@@ -68,7 +68,7 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
     22.22,
     DateTime.parse("2016-12-20"),
     DateTime.parse("2018-09-13"),
-    Some("yes"),
+    Some("Yes"),
     Some(200.0)
   )
 
