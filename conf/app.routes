@@ -1,19 +1,19 @@
 # microservice specific routes
 
 ## Non-Resident Calculation Routes
-GET        /calculate-flat              controllers.nonresident.CalculatorController.calculateFlat(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], otherPropertiesAmt: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,acquisitionValueAmt: Double,acquisitionCostsAmt: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,acquisitionDate: Option[String],disposalDate: String,isClaimingPRR: Option[String],daysClaimed: Option[Double])
-GET        /calculate-rebased           controllers.nonresident.CalculatorController.calculateRebased(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], otherPropertiesAmt: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,rebasedValue: Double,revaluationCost: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,acquisitionDate: Option[String],disposalDate: String,isClaimingPRR: Option[String],daysClaimedAfter: Option[Double])
-GET        /calculate-time-apportioned  controllers.nonresident.CalculatorController.calculateTA(customerType: String, priorDisposal: String, annualExemptAmount: Option[Double], otherPropertiesAmt: Option[Double], isVulnerable: Option[String],currentIncome: Option[Double],personalAllowanceAmt: Option[Double],disposalValue: Double,disposalCosts: Double,acquisitionValueAmt: Double,acquisitionCostsAmt: Double,improvementsAmt: Double,reliefs: Double,allowableLossesAmt: Double,acquisitionDate: Option[String], disposalDate: String,isClaimingPRR: Option[String],daysClaimedAfter: Option[Double])
+GET        /calculate-flat              controllers.nonresident.CalculatorController.calculateFlat(model: CalculationRequestModel)
+GET        /calculate-rebased           controllers.nonresident.CalculatorController.calculateRebased(model: CalculationRequestModel)
+GET        /calculate-time-apportioned  controllers.nonresident.CalculatorController.calculateTA(model: TimeApportionmentCalculationRequestModel)
 
 ## Resident Property Calculation Routes
-GET        /calculate-total-gain        controllers.resident.properties.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double)
-GET        /calculate-chargeable-gain   controllers.resident.properties.CalculatorController.calculateChargeableGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, disposalDate: String)
-GET        /calculate-resident-capital-gains-tax    controllers.resident.properties.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
+GET        /calculate-total-gain        controllers.resident.properties.CalculatorController.calculateTotalGain(totalGainModel: models.resident.properties.PropertyTotalGainModel)
+GET        /calculate-chargeable-gain   controllers.resident.properties.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.properties.PropertyChargeableGainModel)
+GET        /calculate-resident-capital-gains-tax    controllers.resident.properties.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.properties.PropertyCalculateTaxOwedModel)
 
 ## Resident Share Calculation Routes
-GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double)
-GET        /shares/calculate-chargeable-gain   controllers.resident.shares.CalculatorController.calculateChargeableGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double)
-GET        /shares/calculate-resident-capital-gains-tax    controllers.resident.shares.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double], previousIncome: Double, personalAllowance: Double, disposalDate: String)
+GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
+GET        /shares/calculate-chargeable-gain   controllers.resident.shares.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.shares.ChargeableGainModel)
+GET        /shares/calculate-resident-capital-gains-tax    controllers.resident.shares.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.shares.CalculateTaxOwedModel)
 
 ## Tax Rates and Bands Routes
 GET        /tax-rates-and-bands/max-full-aea        controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)

@@ -26,42 +26,42 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.annualExemptAmount" should {
 
     "return a value of 11100 when Person is Individual and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("individual", "No", disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("individual", "No", disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 11100
     }
 
     "return a value of 2000 (remaining AEA input) when Person is Individual and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("individual", "Yes", Some(2000), disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("individual", "Yes", Some(2000), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 2000
     }
 
     "return a value of 11100 when Person is PR and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("personalRep", "No", disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("personalRep", "No", disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 11100
     }
 
     "return a value of 1500 (remaining AEA input) when Person is PR and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("personalRep", "Yes", Some(1500), disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("personalRep", "Yes", Some(1500), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 1500
     }
 
     "return a value of 11100 when Person is Trustee for Vulnerable Person and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "No", None, Some("Yes"), disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("trustee", "No", None, Some("Yes"), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 11100
     }
 
     "return a value of 5550 when Person is other Trustee and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "No", disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("trustee", "No", disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 5550
     }
 
     "return a value of 1000 (remaining AEA input) when Person is Trustee for Vulnerable Person and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "Yes", Some(1000), Some("Yes"), disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("trustee", "Yes", Some(1000), Some("Yes"), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 1000
     }
 
     "return a value of 500 (remaining AEA input) when Person is other Trustee and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "Yes", Some(500), Some("No"), disposalDate = "2015-10-10")
+      val result = CalculationService.calculateAEA("trustee", "Yes", Some(500), Some("No"), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 500
     }
   }
@@ -79,13 +79,14 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return 2500 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000," +
       "Incidental Acquisition Costs = 0, Enhancement Costs = 2000, Acquisition Date 05/04/2015, Disposal Date 06/04/2015" in {
-      val result = CalculationService.calculateGainTA(10000, 2000, 1000, 0, 2000, "2015-04-05", "2015-04-06")
+      val result = CalculationService.calculateGainTA(10000.0, 2000.0, 1000.0, 0.0, 2000.0, Some(DateTime.parse("2015-04-05")), DateTime.parse("2015-04-06"))
       result shouldEqual 2500
     }
 
     "return 206 where Disposal Proceeds = 12,645.77, Incidental Disposal Costs = 1954.66, Acquisition Cost = 1000.04," +
       "Incidental Acquisition Costs = 0.99, Enhancement Costs = 2000.65, Acquisition Date 05/04/1967, Disposal Date 31/07/2016" in {
-      val result = CalculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, "1967-04-05", "2016-07-31")
+      val result = CalculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, Some(DateTime.parse("1967-04-05")),
+        DateTime.parse("2016-07-31"))
       result shouldEqual 206
     }
   }
@@ -213,7 +214,7 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 12035.99,
           reliefs = 14000.11,
           allowableLossesAmt = 3000.01,
-          disposalDate = "2016-10-06",
+          disposalDate = DateTime.parse("2016-10-06"),
           isProperty = true
         )
 
@@ -263,8 +264,8 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some("2015-04-05"),
-          disposalDate = "2016-10-06",
+          acquisitionDate = Some(DateTime.parse("2015-04-05")),
+          disposalDate = DateTime.parse("2016-10-06"),
           isClaimingPRR = Some("Yes"),
           daysClaimed = Some(5),
           isProperty = true
@@ -303,8 +304,8 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some("2013-04-20"),
-          disposalDate = "2016-10-03",
+          acquisitionDate = Some(DateTime.parse("2013-04-20")),
+          disposalDate = DateTime.parse("2016-10-03"),
           isClaimingPRR = Some("Yes"),
           daysClaimed = Some(0),
           isProperty = true
@@ -358,8 +359,8 @@ class CalculationServiceSpec extends UnitSpec {
           reliefs = 14000.11,
           allowableLossesAmt = 3001,
           isClaimingPRR = Some("Yes"),
-          acquisitionDate = Some("2013-04-20"),
-          disposalDate = "2016-10-03",
+          acquisitionDate = Some(DateTime.parse("2013-04-20")),
+          disposalDate = DateTime.parse("2016-10-03"),
           daysClaimed = Some(3),
           isProperty = true
         )
@@ -411,7 +412,7 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 12035.99,
           reliefs = 14000.11,
           allowableLossesAmt = 3000.01,
-          disposalDate = "2016-10-06",
+          disposalDate = DateTime.parse("2016-10-06"),
           isProperty = true
         )
 
@@ -462,7 +463,7 @@ class CalculationServiceSpec extends UnitSpec {
           reliefs = 0,
           allowableLossesAmt = 0,
           acquisitionDate = None,
-          disposalDate = "2016-10-06",
+          disposalDate = DateTime.parse("2016-10-06"),
           isClaimingPRR = Some("Yes"),
           daysClaimedAfter = Some(0),
           isProperty = true
@@ -517,8 +518,8 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 39.99,
           reliefs = 300.99,
           allowableLossesAmt = 390.45,
-          acquisitionDate = Some("2015-04-06"),
-          disposalDate = "2017-03-25",
+          acquisitionDate = Some(DateTime.parse("2015-04-06")),
+          disposalDate = DateTime.parse("2017-03-25"),
           isClaimingPRR = Some("Yes"),
           daysClaimedAfter = Some(3),
           isProperty = true
@@ -572,8 +573,8 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some("2014-04-01"),
-          disposalDate = "2016-01-01",
+          acquisitionDate = Some(DateTime.parse("2014-04-01")),
+          disposalDate = DateTime.parse("2016-01-01"),
           isProperty = true
         )
 
@@ -624,8 +625,8 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some("2015-04-05"),
-          disposalDate = "2016-10-06",
+          acquisitionDate = Some(DateTime.parse("2015-04-05")),
+          disposalDate = DateTime.parse("2016-10-06"),
           isClaimingPRR = Some("Yes"),
           daysClaimedAfter = Some(3),
           isProperty = true
@@ -680,8 +681,8 @@ class CalculationServiceSpec extends UnitSpec {
           improvementsAmt = 39.99,
           reliefs = 300.99,
           allowableLossesAmt = 390.45,
-          acquisitionDate = Some("2015-04-06"),
-          disposalDate = "2017-03-25",
+          acquisitionDate = Some(DateTime.parse("2015-04-06")),
+          disposalDate = DateTime.parse("2017-03-25"),
           isClaimingPRR = Some("Yes"),
           daysClaimedAfter = Some(3),
           isProperty = true
@@ -864,12 +865,12 @@ class CalculationServiceSpec extends UnitSpec {
 
         override def calculateGainTA(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
                                      acquisitionCostsAmt: Double, improvementsAmt: Double,
-                                     acquisitionDate: String, disposalDate: String) = 0.00
+                                     acquisitionDate: Option[DateTime], disposalDate: DateTime) = 0.00
 
       }
 
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.taxOwed shouldEqual 0.0
       result.totalGain shouldEqual 0.0
       result.baseTaxGain shouldEqual 0.0
@@ -887,7 +888,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "for an individual performing flat who is not claiming ER resulting in a £200 loss" should {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
 
       "return -200 for total gain" in {
         result.totalGain shouldEqual -200.0
@@ -900,7 +901,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "for an individual performing flat who is claiming ER resulting in a £200 loss" should {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = "2016-10-10",isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"),isProperty = true)
 
       "return -200 for total gain" in {
         result.totalGain shouldEqual -200.0
@@ -922,35 +923,35 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain beyond zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the allowable losses reduce the gain to zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with -200.00 taxable gain if the allowable losses reduce the gain beyond zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.0
       result.baseTaxGain shouldEqual -200.0
     }
 
     "return a calculation result model with 0 taxable gain if the AEA can reduce the gain too or beyond zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = "2016-10-10", isProperty = true)
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
 

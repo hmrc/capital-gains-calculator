@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import akka.routing.Router
+import play.PlayImport.PlayKeys._
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import sbt._
@@ -71,6 +71,10 @@ trait MicroService {
       testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
       parallelExecution in IntegrationTest := false)
     .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"))
+    .settings(routesImport += "models.nonResident._")
+    .settings(routesImport += "common.binders._")
+//    .settings(routesImport += "models.resident.shares.TotalGainModel._")
+//    .settings(routesImport += "common.binders.CommonBinders.dateTimeBinder")
 }
 
 private object TestPhases {
