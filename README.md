@@ -23,3 +23,519 @@ This service is written in [Scala](http://www.scala-lang.org/) and [Play](http:/
 ## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
+
+## End points
+
+These are the available end points for the service. The table below gives details on each one.
+
+<table>
+    <tr>
+        <th>Path</th>
+        <th>Supported Methods</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/calculate-flat</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the flat calculation. This requires a CalculationRequestModel which is made
+            of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
+            otherPropertiesAmount: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
+            disposalValue: Double, disposalCosts: Double, initialValueAmt: Double, initialCostsAmt: Double, improvementsAmt: Double, reliefs: Double,
+            allowableLossesAmt: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRR: Option[String],
+            daysClaimed: Option[Double]</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/calculate-rebased</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the flat calculation. This requires a CalculationRequestModel which is made
+            of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
+            otherProperties: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
+            disposalValue: Double, disposalCost: Double, initialValue: Double, initialCost: Double, improvements: Double, reliefs: Double,
+            allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRR: Option[String],
+            daysClaimed: Option[Double]</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/calculate-time-apportioned</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the time apportionment calculation. This requires a TimeApportionmentCalculationRequestModel
+            which is made of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
+            otherProperties: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
+            disposalValue: Double, disposalCost: Double, initialValue: Double, initialCost: Double, revaluedAmount: Double, revaluationCost: Double,
+            improvements: Double, reliefs: Double, allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime,
+            isClaimingPRR: Option[String], daysClaimed: Option[Double], daysClaimedAfter: Option[Double], isProperty: Boolean</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/calculate-total-gain</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the property total gain calculation. This requires a propertyTotalGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            improvements: Double</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/calculate-chargeable-gain</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the property chargeable gain calculation. This requires a propertyChargeableGainModel which is
+            made of the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double],
+            broughtForwardLosses: Option[Double], annualExemptAmount: Double, disposalDate: DateTime</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/calculate-resident-capital-gains-tax</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the property tax owed calculation. This requires a taxOwedModel which is made of the
+            following variables:disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double],
+            broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
+            previousIncome: Double, personalAllowance: Double, disposalDate: String</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/shares/calculate-total-gain</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the shares total gain calculation. This requires a totalGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/shares/calculate-chargeable-gain</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the shares chargeable gain calculation. This requires a chargeableGainModel which is
+            made of the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/shares/calculate-resident-capital-gains-tax</code></tax>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the shares tax owed calculation. This requires a chargeableGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
+            previousIncome: Double, personalAllowance: Double, disposalDate: DateTime</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/tax-rates-and-bands/max-full-aea</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the get max Annual Exempt Amount. This method has one argument which is: year: Int. </td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/tax-rates-and-bands/max-partial-aea</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the get max partial Annual Exempt Amount calculation. This method has one argument which is: 
+            taxYear: Int</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/tax-rates-and-bands/max-pa</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the get max personal allowance calculation. This method has two arguments which
+            are: taxYear: Int, isEligibleBlindPersonsAllowance: Option[Boolean]</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/tax-year </td>
+        <td>GET</td>
+        <td>Returns a JSON object with the results from the get tax year method. This method has one argument which is: dateString: String</td>
+    </tr>
+</table>
+
+## GET /capital-gains-calculator/calculate-flat
+
+Calculates the amount of capital gains tax owed for a non resident user.
+
+### Example of usage
+
+GET /capital-gains-calculator/calculate-flat
+
+**Request Body**
+
+```json
+{
+    "customerType": "Individual", 
+    "priorDisposal": "Yes",
+    "annualExemptAmount": 0,
+    "otherPropertiesAmount": 20000.0,
+    "currentIncome": 28000.0, 
+    "personalAllowance": 11000.0,
+    "disposalValue": 250000.0, 
+    "disposalCosts": 500.0,
+    "initialValueAmt": 100000.0, 
+    "initialCostsAmt": 1000.0,
+    "improvementsAmt": 20000.0, 
+    "reliefs": 0.0,
+    "allowableLossesAmt": 30000.0, 
+    "acquisitionDate": "2005-12-12",
+    "disposalDate": "2016-12-12", 
+    "isClaimingPRR": "No"
+}
+```
+
+**Response**
+```json
+{
+    "taxOwed":27580.0,
+    "totalGain":128500.0,
+    "baseTaxGain":0.0,
+    "baseTaxRate":0,
+    "usedAnnualExemptAmount":0.0,
+    "aeaRemaining":0.0,
+    "upperTaxGain":98500.0,
+    "upperTaxRate":28
+}
+```
+
+## GET /capital-gains-calculator/calculate-rebased
+
+Calculates the amount of capital gains tax owed using the value of the property on the 5/4/2015 for a non resident user.
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "customerType": "Individual", 
+    "priorDisposal": "Yes",
+    "annualExemptAmount": 0,
+    "otherPropertiesAmount": 20000.0,
+    "currentIncome": 28000.0, 
+    "personalAllowance": 11000.0,
+    "disposalValue": 250000.0, 
+    "disposalCosts": 500.0,
+    "initialValueAmt": 100000.0, 
+    "initialCostsAmt": 1000.0,
+    "improvementsAmt": 20000.0, 
+    "reliefs": 0.0,
+    "allowableLossesAmt": 30000.0, 
+    "acquisitionDate": "2005-12-12",
+    "disposalDate": "2016-12-12", 
+    "isClaimingPRR": "No"
+}
+```
+
+**Response**
+
+```json
+{
+    "taxOwed":27580.0,
+    "totalGain":128500.0,
+    "baseTaxGain":0.0,
+    "baseTaxRate":0,
+    "usedAnnualExemptAmount":0.0,
+    "aeaRemaining":0.0,
+    "upperTaxGain":98500.0,
+    "upperTaxRate":28
+}
+```
+
+## GET /capital-gains-calculator/calculate-time-apportioned
+
+Calculates the amount of capital gains tax owed based on the percentage of time the property has been owned after the 5/4/2015
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "customerType": "Individual", 
+    "priorDisposal": "Yes",
+    "annualExemptAmount": 0,
+    "otherPropertiesAmount": 20000.0,
+    "currentIncome": 28000.0, 
+    "personalAllowance": 11000.0,
+    "disposalValue": 250000.0, 
+    "disposalCosts": 500.0,
+    "initialValueAmt": 100000.0, 
+    "initialCostsAmt": 1000.0,
+    "improvementsAmt": 20000.0, 
+    "reliefs": 0.0,
+    "allowableLossesAmt": 30000.0, 
+    "acquisitionDate": "2005-12-12",
+    "disposalDate": "2016-12-12", 
+    "isClaimingPRR": "No"
+}
+```
+
+**Response**
+
+```json
+{
+    "taxOwed":0.0,
+    "totalGain":19727.0,
+    "baseTaxGain":0.0,
+    "baseTaxRate":0,
+    "usedAnnualExemptAmount":0.0,
+    "aeaRemaining":0.0,
+    "upperTaxGain":-10273.0,
+    "upperTaxRate":28
+}
+```
+
+## GET /capital-gains-calculator/calculate-total-gain 
+
+Calculates the basic amount of gain for a resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "improvements": 25000.0,
+}
+```
+
+**Response**
+
+-75700.0
+
+## GET /capital-gains-calculator/calculate-chargeable-gain
+
+Calculates the basic amount of gain minus deductions for a resident capital gains user 
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "improvements": 25000.0,
+    "prrValue": 50000.0,
+    "allowableLosses": 2000.0,
+    "broughtForwardLosses": 2000.0,
+    "annualExemptAmount": 0,
+    "disposalDate": 2016-12-12
+}
+```
+
+**Response**
+
+```json
+{
+    "gain":-75700.0,
+    "chargeableGain":-75700.0,
+    "aeaUsed":0.0,
+    "aeaRemaining":0.0,
+    "deductions":-147400.0,
+    "allowableLossesRemaining":0.0,
+    "broughtForwardLossesRemaining":0.0,
+    "lettingReliefsUsed":-75700.0,
+    "prrUsed":-75700.0,
+    "broughtForwardLossesUsed":2000.0,
+    "allowableLossesUsed":2000.0
+}
+```
+
+## GET /capital-gains-calculator/calculate-resident-capital-gains-tax
+
+Calculates the amount of tax owed and the tax bands for a resident capital gains user 
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "improvements": 25000.0,
+    "prrValue": 50000.0,
+    "allowableLosses": 2000.0,
+    "broughtForwardLosses": 2000.0,
+    "annualExemptAmount": 0,
+    "disposalDate": 2016-12-12,
+    "previousIncome": 28000.0,
+    "personalAllowance:11000.0
+}
+```
+
+**Response**
+
+```json
+{
+    "gain":-95700.0,
+    "chargeableGain":-95700.0,
+    "aeaUsed":0.0,
+    "deductions":-191400.0,
+    "taxOwed":-17226.0,
+    "firstBand":0.0,
+    "firstRate":0,
+    "lettingReliefsUsed":-95700.0,
+    "prrUsed":-95700.0,
+    "broughtForwardLossesUsed":0.0,
+    "allowableLossesUsed":0.0
+}
+```
+
+## GET /capital-gains-calculator/shares/calculate-total-gain
+
+Calculates the basic amount of gain for a shares capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0
+}
+```
+
+**Reponse**
+
+-50700.0
+
+## GET /capital-gains-calculator/shares/calculate-chargeable-gain
+
+Calculates the basic amount of gain minus deductions for a shares capital gains user 
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "allowableLosses": 2000.0,
+    "broughtForwardLosses": 2000.0,
+    "annualExemptAmount": 0
+}
+```
+
+**Reponse**
+
+```json
+{
+    "gain":-50700.0,
+    "chargeableGain":-50700.0,
+    "aeaUsed":0.0,
+    "aeaRemaining":0.0,
+    "deductions":0.0,
+    "allowableLossesRemaining":2000.0,
+    "broughtForwardLossesRemaining":0.0,
+    "broughtForwardLossesUsed":0.0,
+    "allowableLossesUsed":0.0
+}
+```
+
+## GET /capital-gains-calculator/shares/calculate-resident-capital-gains-tax
+
+Calculates the amount of tax owed and the tax bands for a resident capital gains user 
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "allowableLosses": 2000.0,
+    "broughtForwardLosses": 2000.0,
+    "annualExemptAmount": 0,
+    "previousTaxableGain" : 0,
+    "previousIncome": 28000.0,
+    "personalAllowance":11000.0,
+    "disposalDate":2016-12-12
+}
+```
+
+**Response**
+
+```json
+{
+    "gain":-50700.0,
+    "chargeableGain":-50700.0,
+    "aeaUsed":0.0,
+    "deductions":2000.0,
+    "taxOwed":-5070.0,
+    "firstBand":0.0,
+    "firstRate":0,
+    "broughtForwardLossesUsed":0.0,
+    "allowableLossesUsed":2000.0
+}
+```
+
+## GET /capital-gains-calculator/tax-rates-and-bands/max-full-aea
+
+Returns the max Annual Exempt Amount an individual can claim for a tax year
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "taxYear":2016
+}
+```
+
+**Response**
+
+11100
+
+## GET /capital-gains-calculator/tax-rates-and-bands/max-partial-aea
+
+Returns the maximum a trustee can claim on behalf of an individual for a tax year
+
+**Request Body**
+
+```json
+{
+    "taxYear":2016
+}
+```
+
+**Response**
+
+5550
+ 
+## GET /capital-gains-calculator/tax-rates-and-bands/max-pa
+
+Returns the maximum personal allowance an individual can claim for a tax year
+
+**Request Body**
+
+```json
+{
+    "taxYear":2016
+}
+```
+
+**Response**
+
+11100
+
+## GET /capital-gains-calculator/tax-year
+
+Returns the tax year for a given date
+
+**Request Body**
+
+```json
+{
+    "disposalDate":2016-12-12
+}
+```
+
+**Response**
+
+```json
+{
+    "taxYearSupplied":"2016/17",
+    "isValidYear":true,
+    "calculationTaxYear":"2016/17"
+}
