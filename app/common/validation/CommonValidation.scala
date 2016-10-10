@@ -82,4 +82,34 @@ object CommonValidation {
     if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(disposalDate)
     else Left("disposalDate cannot be before 2015-04-06")
   }
+
+  //When the refactor the the non-resident calculator happens this validation should become
+  //redundant.
+  def validateYesNo(input: String, key: String): Either[String, String] = {
+    if (input == "Yes" || input == "No") Right(input)
+    else Left(s"$key must be either Yes or No")
+  }
+
+  def validateOptionYesNo(input: Option[String], key: String): Either[String, Option[String]] = {
+    input match {
+      case Some(data) => validateYesNo(data, key) match {
+        case Right(value) => Right(Some(value))
+        case Left(message) => Left(message)
+      }
+      case _ => Right(None)
+    }
+  }
+
+  def validateCustomerType(input: String, key: String): Either[String, String] = {
+    if (input == "individual" || input == "trustee" || input == "personalRep") Right(input)
+    else Left(s"$key must be either individual, trustee or personalRep")
+  }
+
+  def validateAcquisitionDate(disposalDate: DateTime, acquisitionDate: Option[DateTime]): Either[String, Option[DateTime]] = {
+    acquisitionDate match {
+      case Some(data) if data.isBefore(disposalDate) => Right(Some(acquisitionDate.get))
+      case None => Right(None)
+      case _ => Left(s"The acquisitionDate must be before the disposalDate")
+    }
+  }
 }

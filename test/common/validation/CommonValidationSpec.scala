@@ -228,4 +228,70 @@ class CommonValidationSpec extends UnitSpec {
       result shouldBe Left("disposalDate cannot be before 2015-04-06")
     }
   }
+
+  "Calling ValidateYesNo" should {
+    "return a Right when given Yes" in {
+      CommonValidation.validateYesNo("Yes", "option") shouldBe Right("Yes")
+    }
+
+    "return a Right when given No" in {
+      CommonValidation.validateYesNo("No", "option") shouldBe Right("No")
+    }
+
+    "return a Left when given any other string" in {
+      CommonValidation.validateYesNo("Fasd", "option") shouldBe Left("option must be either Yes or No")
+    }
+  }
+
+  "Calling ValidateOptionYesNo" should {
+    "return a Right when given Yes" in {
+      CommonValidation.validateOptionYesNo(Some("Yes"), "option") shouldBe Right(Some("Yes"))
+    }
+
+    "return a Right when given No" in {
+      CommonValidation.validateOptionYesNo(Some("No"), "option") shouldBe Right(Some("No"))
+    }
+
+    "return a Left when given any other string" in {
+      CommonValidation.validateOptionYesNo(Some("Fasd"), "option") shouldBe Left("option must be either Yes or No")
+    }
+  }
+
+  "Calling validateCustomerType" should {
+    "return a Right when given individual" in {
+      CommonValidation.validateCustomerType("individual", "option") shouldBe Right("individual")
+    }
+
+    "return a Right when given trustee" in {
+      CommonValidation.validateCustomerType("trustee", "option") shouldBe Right("trustee")
+    }
+
+    "return a Right when given personalRep" in {
+      CommonValidation.validateCustomerType("personalRep", "option") shouldBe Right("personalRep")
+    }
+
+    "return a Left when given an invalid input" in {
+      CommonValidation.validateCustomerType("frfsdaf", "option") shouldBe Left("option must be either individual, trustee or personalRep")
+    }
+  }
+
+  "Calling validateAcquisitionDate" should {
+
+    val disposalDate = DateTime.parse("2016-12-12")
+
+    "return a Left when given an AcquisitionDate after the disposal date" in {
+      CommonValidation.validateAcquisitionDate(disposalDate, Some(DateTime.parse("2016-12-20"))) shouldBe
+        Left("The acquisitionDate must be before the disposalDate")
+    }
+
+    "return a Left when given an acquisition date that is equal to the disposal date" in {
+      CommonValidation.validateAcquisitionDate(disposalDate, Some(disposalDate)) shouldBe
+        Left("The acquisitionDate must be before the disposalDate")
+    }
+
+    "return a Right when given an acuisition date that is before the disposal date" in {
+      CommonValidation.validateAcquisitionDate(disposalDate, Some(DateTime.parse("2016-11-11"))) shouldBe
+        Right(Some(DateTime.parse("2016-11-11")))
+    }
+  }
 }
