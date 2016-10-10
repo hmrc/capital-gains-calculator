@@ -16,7 +16,8 @@
 
 package controllers
 
-import common.Date
+import common._
+import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -27,33 +28,54 @@ import config.TaxRatesAndBands._
 import models._
 import org.joda.time.DateTime
 
+import scala.util.{Success, Try}
+
 object TaxRatesAndBandsController extends TaxRatesAndBandsController {
 }
 
 trait TaxRatesAndBandsController extends BaseController {
 
   def getMaxAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
+   if(TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
+   else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
   def getMaxNonVulnerableAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(getRates(year).notVulnerableMaxAnnualExemptAmount)))
+    if(TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).notVulnerableMaxAnnualExemptAmount)))
+    else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
   def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>
-    isEligibleBlindPersonsAllowance match {
-      case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
-      case _ =>     Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
+    if(TaxRatesAndBandsValidation.checkValidTaxYear(year)){
+      isEligibleBlindPersonsAllowance match {
+        case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
+        case _ =>     Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
+      }
     }
+    else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
   def getTaxYear(dateString: String): Action[AnyContent] = Action.async { implicit request =>
-    val date = DateTime.parse(dateString)
-    val taxYear = Date.getTaxYear(date)
-    val result = TaxYearModel(Date.taxYearToString(taxYear),
-      TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
-      Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
-    Future.successful(Ok(Json.toJson(result)))
-  }
 
+    def tryParsing(): Either[String, DateTime] = {
+      Try {
+        DateTime.parse(dateString)
+      } match {
+        case Success(date) => Right(date)
+        case _ => Left(ValidationErrorMessages.invalidDateFormat(dateString))
+      }
+    }
+
+    tryParsing() match {
+      case Right(parsedDate) =>
+        val taxYear = Date.getTaxYear(parsedDate)
+        val result = TaxYearModel(Date.taxYearToString(taxYear), TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
+          Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
+        Future.successful(Ok(Json.toJson(result)))
+
+      case Left(errorMessage) =>
+        Future.successful(BadRequest(Json.toJson(errorMessage)))
+
+    }
+  }
 }
