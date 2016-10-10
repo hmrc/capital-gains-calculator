@@ -53,9 +53,8 @@ object PropertyValidation {
     val propertyChargeableGainModel = validatePropertyChargeableGain(propertyCalculateTaxOwedModel.propertyChargeableGainModel)
     val previousTaxableGain = validateOptionDouble(propertyCalculateTaxOwedModel.previousTaxableGain, residentPropertyKeys.previousTaxableGain)
     val previousIncome = validateDouble(propertyCalculateTaxOwedModel.previousIncome, residentPropertyKeys.previousIncome)
-    val disposalDate = validateDisposalDate(propertyCalculateTaxOwedModel.propertyChargeableGainModel.disposalDate)
-    val personalAllowance = disposalDate match {
-      case Right(date) => validateResidentPersonalAllowance (propertyCalculateTaxOwedModel.personalAllowance, date)
+    val personalAllowance = propertyChargeableGainModel match {
+      case Right(data) => validateResidentPersonalAllowance (propertyCalculateTaxOwedModel.personalAllowance, data.disposalDate)
       case Left(_) => Right(propertyCalculateTaxOwedModel.personalAllowance)
     }
 
