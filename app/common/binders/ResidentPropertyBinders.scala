@@ -17,7 +17,7 @@
 package common.binders
 
 import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => queryKeys}
-import common.Validation
+import common.validation.{CommonValidation, PropertyValidation}
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import play.api.mvc.QueryStringBindable
@@ -46,10 +46,8 @@ trait ResidentPropertyBinders extends CommonBinders {
             val inputs = (totalGainModelEither, improvementsEither)
             inputs match {
               case (Right(totalGainModel), Right(improvements)) =>
-                Right(PropertyTotalGainModel(totalGainModel, improvements))
-              case _ =>
-                val inputs = Seq(totalGainModelEither, improvementsEither)
-                Left(Validation.getFirstErrorMessage(inputs))
+                PropertyValidation.validatePropertyTotalGain(PropertyTotalGainModel(totalGainModel, improvements))
+              case fail => Left(CommonValidation.getFirstErrorMessage(Seq(totalGainModelEither, improvementsEither)))
             }
           }
         }
@@ -88,12 +86,11 @@ trait ResidentPropertyBinders extends CommonBinders {
             inputs match {
               case (Right(propertyTotalGain), Right(prrValue), Right(lettingReliefs), Right(allowableLosses), Right(broughtForwardLosses),
                 Right(annualExemptAmount), Right(disposalDate)) =>
-                Right(PropertyChargeableGainModel(propertyTotalGain, prrValue, lettingReliefs, allowableLosses, broughtForwardLosses,
-                  annualExemptAmount, disposalDate))
-              case _ =>
-                val inputs = Seq(propertyTotalGainModelEither, prrValueEither, lettingReliefsEither, allowableLossesEither,
-                  broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)
-                Left(Validation.getFirstErrorMessage(inputs))
+                  PropertyValidation.validatePropertyChargeableGain(PropertyChargeableGainModel(propertyTotalGain, prrValue, lettingReliefs,
+                    allowableLosses, broughtForwardLosses, annualExemptAmount, disposalDate))
+
+              case _ => Left(CommonValidation.getFirstErrorMessage(Seq(propertyTotalGainModelEither, prrValueEither, lettingReliefsEither,
+                allowableLossesEither, broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)))
             }
           }
         }
@@ -132,10 +129,12 @@ trait ResidentPropertyBinders extends CommonBinders {
             val inputs = (propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
             inputs match {
               case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance)) =>
-                Right(PropertyCalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance))
+                PropertyValidation.validatePropertyTaxOwed(
+                  PropertyCalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance)
+                )
               case _ =>
                 val inputs = Seq(propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
-                Left(Validation.getFirstErrorMessage(inputs))
+                Left(CommonValidation.getFirstErrorMessage(inputs))
             }
           }
         }

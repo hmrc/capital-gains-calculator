@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package common
+package assets
 
-object Validation {
+object ValidationMessageLookup {
 
-  def getFirstErrorMessage(inputs: Seq[Either[String, Any]]): String = {
-    inputs.find(_.isLeft).fold("")(_.left.get)
-  }
+  val invalidDateFormat: String => String = input => s"""Cannot parse input as DateTime: For input string: "$input""""
 }
+

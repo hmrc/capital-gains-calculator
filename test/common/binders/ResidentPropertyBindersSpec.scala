@@ -70,6 +70,16 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
 
         result shouldBe Some(Left("acquisitionCosts is required."))
       }
+
+      "return an error message when a value fails validation" in {
+        val result = binder.bind("Any", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1500.0"),
+          "acquisitionValue" -> Seq("2000.0"),
+          "acquisitionCosts" -> Seq("2500.0"),
+          "improvements" -> Seq("-3000.0")))
+
+        result shouldBe Some(Left("improvements cannot be negative."))
+      }
     }
 
     "calling .unBind" should {
@@ -164,6 +174,23 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "disposalDate" -> Seq("2016-10-10")))
 
         result shouldBe Some(Left("acquisitionCosts is required."))
+      }
+
+      "return an error message when a value fails validation" in {
+        val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000, 2500, 3000, 3500), 1500)
+        val result = binder.bind("", Map("disposalValue" -> Seq("2000.0"),
+          "disposalCosts" -> Seq("2500.0"),
+          "acquisitionValue" -> Seq("3000.0"),
+          "acquisitionCosts" -> Seq("3500.0"),
+          "improvements" -> Seq("1500.0"),
+          "prrValue" -> Seq("-2050.0"),
+          "lettingReliefs" -> Seq("2100.0"),
+          "allowableLosses" -> Seq("2200.0"),
+          "broughtForwardLosses" -> Seq("2300.0"),
+          "annualExemptAmount" -> Seq("2400.0"),
+          "disposalDate" -> Seq("2016-10-10")))
+
+        result shouldBe Some(Left("prrValue cannot be negative."))
       }
     }
 
@@ -352,6 +379,26 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
         ))
 
         result shouldBe Some(Left("previousIncome is required."))
+      }
+
+      "return an error message when model fails validation" in {
+        val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1000.0"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "improvements" -> Seq("1000.0"),
+          "prrValue" -> Seq("1000.0"),
+          "lettingReliefs" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0"),
+          "disposalDate" -> Seq("2016-10-10"),
+          "previousTaxableGain" -> Seq("1000.0"),
+          "previousIncome" -> Seq("1000.0"),
+          "personalAllowance" -> Seq("-1000.0")
+        ))
+
+        result shouldBe Some(Left("personalAllowance cannot be negative."))
       }
 
     }
