@@ -381,6 +381,26 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
         result shouldBe Some(Left("previousIncome is required."))
       }
 
+      "return an error message when model fails validation" in {
+        val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
+          "disposalCosts" -> Seq("1000.0"),
+          "acquisitionValue" -> Seq("1000.0"),
+          "acquisitionCosts" -> Seq("1000.0"),
+          "improvements" -> Seq("1000.0"),
+          "prrValue" -> Seq("1000.0"),
+          "lettingReliefs" -> Seq("1000.0"),
+          "allowableLosses" -> Seq("1000.0"),
+          "broughtForwardLosses" -> Seq("1000.0"),
+          "annualExemptAmount" -> Seq("1000.0"),
+          "disposalDate" -> Seq("2016-10-10"),
+          "previousTaxableGain" -> Seq("1000.0"),
+          "previousIncome" -> Seq("1000.0"),
+          "personalAllowance" -> Seq("-1000.0")
+        ))
+
+        result shouldBe Some(Left("personalAllowance cannot be negative."))
+      }
+
     }
   }
 }

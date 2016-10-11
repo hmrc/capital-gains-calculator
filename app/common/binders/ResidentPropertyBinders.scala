@@ -129,7 +129,9 @@ trait ResidentPropertyBinders extends CommonBinders {
             val inputs = (propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
             inputs match {
               case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance)) =>
-                Right(PropertyCalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance))
+                PropertyValidation.validatePropertyTaxOwed(
+                  PropertyCalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance)
+                )
               case _ =>
                 val inputs = Seq(propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
                 Left(CommonValidation.getFirstErrorMessage(inputs))
