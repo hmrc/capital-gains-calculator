@@ -54,7 +54,7 @@ object CommonValidation {
 
   def validateMaximum(input: Double, key: String): Either[String, Double] = {
     if (input <= maxNumeric) Right(input)
-    else Left(s"$key cannot be larger than 100,000,000.")
+    else Left(s"$key cannot be larger than 1,000,000,000.")
   }
 
   def validateDecimalPlaces(input: Double, key: String): Either[String, Double] = {
