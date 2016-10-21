@@ -69,6 +69,12 @@ class CommonValidationSpec extends UnitSpec {
       result shouldBe Right(1.01)
     }
 
+    "return a Right with a value of 10 million" in {
+      val result = CommonValidation.validateDecimalPlaces(22222222.0, "disposalValue")
+
+      result shouldBe Right(22222222.0)
+    }
+
     "return a Left with three decimal places" in {
       val result = CommonValidation.validateDecimalPlaces(1.011, "disposalValue")
 
