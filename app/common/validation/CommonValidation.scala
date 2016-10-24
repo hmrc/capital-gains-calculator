@@ -54,15 +54,12 @@ object CommonValidation {
 
   def validateMaximum(input: Double, key: String): Either[String, Double] = {
     if (input <= maxNumeric) Right(input)
-    else Left(s"$key cannot be larger than 100,000,000.")
+    else Left(s"$key cannot be larger than 1,000,000,000.")
   }
 
   def validateDecimalPlaces(input: Double, key: String): Either[String, Double] = {
-    val value = input.toString.split("\\.")
-    if (value.size > 1) {
-      if (value.apply(1).length <= 2) Right(input)
-      else Left(s"$key has too many decimal places.")
-    } else Right(input)
+    if (BigDecimal(input).scale <= 2) Right(input)
+    else Left(s"$key has too many decimal places.")
   }
 
   def validateResidentPersonalAllowance(input: Double, disposalDate: DateTime): Either[String, Double] = {

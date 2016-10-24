@@ -85,7 +85,7 @@ class NonResidentValidationSpec extends UnitSpec {
         "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(9123182324127123.0), Some(-12314.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
         DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("currentIncome cannot be larger than 100,000,000.")
+      )) shouldBe Left("currentIncome cannot be larger than 1,000,000,000.")
     }
 
     "When the first error is the personalAllowanceAmount" in {
@@ -117,7 +117,7 @@ class NonResidentValidationSpec extends UnitSpec {
         "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
         200000.0, 800.0, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
         DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("initialValueAmt cannot be larger than 100,000,000.")
+      )) shouldBe Left("initialValueAmt cannot be larger than 1,000,000,000.")
     }
 
     "When the first error is the initialCosts" in {
