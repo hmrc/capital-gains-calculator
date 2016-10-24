@@ -99,7 +99,7 @@ class CommonValidationSpec extends UnitSpec {
     "return a Left when the value is above the maximum" in {
       val result = CommonValidation.validateMaximum(1000000000.1, "acquisitionValue")
 
-      result shouldBe Left("acquisitionValue cannot be larger than 100,000,000.")
+      result shouldBe Left("acquisitionValue cannot be larger than 1,000,000,000.")
     }
   }
 
@@ -141,7 +141,7 @@ class CommonValidationSpec extends UnitSpec {
     "return a Left when number is above maximum" in {
       val result = CommonValidation.validateDouble(1100000000.0, "acquisitionCosts")
 
-      result shouldBe Left("acquisitionCosts cannot be larger than 100,000,000.")
+      result shouldBe Left("acquisitionCosts cannot be larger than 1,000,000,000.")
     }
 
     "return a Left when number is has too many decimal places" in {
