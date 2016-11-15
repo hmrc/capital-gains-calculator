@@ -31,7 +31,6 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
-  //####### Flat Rate Tests #####################
   "GET /capital-gains-calculator/calculate-flat" should {
 
     val mockCalculationService = mock[CalculationService]
@@ -106,7 +105,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   }
 
-  //####### Rebased Tests #####################
   "GET /capital-gains-calculator/calculate-rebased" should {
 
     val mockCalculationService = mock[CalculationService]
@@ -181,7 +179,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   }
 
-  //####### Time Apportioned Tests ##################
   "GET /capital-gains-calculator/calculate-time-apportioned" should {
 
     val mockCalculationService = mock[CalculationService]
@@ -254,5 +251,35 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       (json \ "taxOwed").as[Double] shouldBe 368.64
     }
 
+  }
+
+  "Calling .calculateTotalGain" when {
+
+    "only provided with mandatory values" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val result = target.calculateTotalGain(1, 1, 1, 1, 1, None, None, None, None, None)(fakeRequest)
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return a valid result" in {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+        (json \ "flatGain").as[Double] shouldBe 1.0
+      }
+    }
   }
 }

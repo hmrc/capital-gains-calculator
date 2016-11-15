@@ -17,7 +17,7 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
-import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
+import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel, TotalGainModel}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 import services.CalculationService
@@ -127,12 +127,44 @@ trait CalculatorController extends BaseController {
                          disposalCosts: Double,
                          acquisitionValue: Double,
                          acquisitionCosts: Double,
+                         improvements: Double,
                          rebasedValue: Option[Double],
                          rebasedCosts: Option[Double],
                          disposalDate: Option[DateTime],
-                         acquisitionDate: Option[DateTime]): Action[AnyContent] = Action.async { implicit request =>
+                         acquisitionDate: Option[DateTime],
+                         improvementsAfterTaxStarted: Option[Double]): Action[AnyContent] = Action.async { implicit request =>
 
-    ???
+    def calculateRebasedGain(rebasedAmount: Option[Double],
+                             rebasedCosts: Option[Double]) = {
+      (rebasedAmount, rebasedCosts) match {
+        case (Some(value), Some(costs)) => Some(calculationService.calculateGainRebased(disposalValue, disposalCosts, value, costs, improvements))
+        case _ => None
+      }
+    }
+
+    def calculateTimeApportionedGain(improvementsAfterTaxStarted: Option[Double]) = (disposalDate, acquisitionDate) match {
+      case (Some(soldDate), Some(_)) => {
+        val totalImprovements = improvementsAfterTaxStarted.fold(improvements)(amount => improvements + amount)
+        Some(calculationService.calculateGainTA(
+          disposalValue,
+          disposalCosts,
+          acquisitionValue,
+          acquisitionCosts,
+          totalImprovements,
+          acquisitionDate,
+          soldDate))
+      }
+      case _ => None
+    }
+
+
+    val result = TotalGainModel(
+      flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements),
+      rebasedGain = calculateRebasedGain(rebasedValue, rebasedCosts),
+      timeApportionedGain = calculateTimeApportionedGain(improvementsAfterTaxStarted)
+    )
+
+    Future.successful(Ok(Json.toJson(result)))
   }
 }
 

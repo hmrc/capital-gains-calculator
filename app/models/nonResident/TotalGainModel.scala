@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package common
+package models.nonResident
 
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.libs.json.Json
 
-class RouteSpec extends UnitSpec {
+case class TotalGainModel (flatGain: Double, rebasedGain: Option[Double], timeApportionedGain: Option[Double])
 
-  "The route for calculating total gain for non-resident properties" should {
-    "be /non-resident/calculate-total-gain" in {
-      controllers.nonresident.routes.CalculatorController.calculateTotalGain(0, 0, 0, 0, 0, None, None, None, None, None).url shouldBe
-        "/non-resident/calculate-total-gain?disposalValue=0.0&disposalCosts=0.0&acquisitionValue=0.0&acquisitionCosts=0.0&improvements=0.0"
-    }
-  }
-
+object TotalGainModel {
+  implicit val format = Json.format[TotalGainModel]
 }
