@@ -122,6 +122,18 @@ trait CalculatorController extends BaseController {
 
     Future.successful(Ok(Json.toJson(result)))
   }
+
+  def calculateTotalGain(disposalValue: Double,
+                         disposalCosts: Double,
+                         acquisitionValue: Double,
+                         acquisitionCosts: Double,
+                         rebasedValue: Option[Double],
+                         rebasedCosts: Option[Double],
+                         disposalDate: Option[DateTime],
+                         acquisitionDate: Option[DateTime]): Action[AnyContent] = Action.async { implicit request =>
+
+    ???
+  }
 }
 
 object CalculatorController extends CalculatorController {
