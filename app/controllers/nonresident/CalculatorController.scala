@@ -125,15 +125,12 @@ trait CalculatorController extends BaseController {
   }
 
   def useRebasedCalculation(rebasedValue: Option[Double], rebasedCosts: Option[Double], improvementsAft: Option[Double]): Boolean = {
-    (rebasedValue, rebasedCosts, improvementsAft) match {
-      case (Some(_), Some(_), Some(_)) => true
-      case _ => false
-    }
+    Seq(rebasedValue, rebasedCosts, improvementsAft).forall(_.isDefined)
   }
 
   def useTimeApportionedCalculation(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
     (disposalDate, acquisitionDate) match {
-      case (Some(soldDate), Some(boughtDate)) if !Date.dateAfterTaxStart(boughtDate) && Date.dateAfterTaxStart(soldDate) => true
+      case (Some(soldDate), Some(boughtDate)) => !Date.dateAfterTaxStart(boughtDate) && Date.dateAfterTaxStart(soldDate)
       case _ => false
     }
   }
