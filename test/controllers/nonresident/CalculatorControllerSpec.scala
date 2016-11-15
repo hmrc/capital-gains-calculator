@@ -253,6 +253,74 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   }
 
+  "Calling useRebasedCalculation" should {
+
+    "return a true when all 3 values are provided" in {
+      val result = CalculatorController.useRebasedCalculation(Some(1), Some(1), Some(1))
+
+      result shouldBe true
+    }
+
+    "return a false when no rebasedValue is provided" in {
+      val result = CalculatorController.useRebasedCalculation(None, Some(1), Some(1))
+
+      result shouldBe false
+    }
+
+    "return a false when no rebasedCosts are provided" in {
+      val result = CalculatorController.useRebasedCalculation(Some(1), None, Some(1))
+
+      result shouldBe false
+    }
+
+    "return a false when no improvementsAft are provided" in {
+      val result = CalculatorController.useRebasedCalculation(Some(1), Some(1), None)
+
+      result shouldBe false
+    }
+  }
+
+  "Calling useTimeApportionedCalculation" should {
+
+    "return a true when provided with valid dates" in {
+      val acquisitionDate = DateTime.parse("2013-03-10")
+      val disposalDate = DateTime.parse("2016-01-14")
+      val result = CalculatorController.useTimeApportionedCalculation(Some(disposalDate), Some(acquisitionDate))
+
+      result shouldBe true
+    }
+
+    "return a false when provided with an acquisition date after the tax start date" in {
+      val acquisitionDate = DateTime.parse("2015-07-10")
+      val disposalDate = DateTime.parse("2016-01-14")
+      val result = CalculatorController.useTimeApportionedCalculation(Some(disposalDate), Some(acquisitionDate))
+
+      result shouldBe false
+    }
+
+    "return a false when provided a disposal date before the tax start date" in {
+      val acquisitionDate = DateTime.parse("2013-07-10")
+      val disposalDate = DateTime.parse("2013-01-14")
+      val result = CalculatorController.useTimeApportionedCalculation(Some(disposalDate), Some(acquisitionDate))
+
+      result shouldBe false
+    }
+
+    "return a false when not provided with an acquisition date" in {
+      val disposalDate = DateTime.parse("2016-01-14")
+      val result = CalculatorController.useTimeApportionedCalculation(Some(disposalDate), None)
+
+      result shouldBe false
+    }
+
+    "return a false when not provided with a disposal date" in {
+      val acquisitionDate = DateTime.parse("2013-07-10")
+      val result = CalculatorController.useTimeApportionedCalculation(None, Some(acquisitionDate))
+
+      result shouldBe false
+    }
+  }
+
   "Calling .calculateTotalGain" when {
 
     "only provided with mandatory values" should {
@@ -275,10 +343,86 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         contentType(result) shouldBe Some("application/json")
       }
 
-      "return a valid result" in {
+      "return a valid result" which {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        (json \ "flatGain").as[Double] shouldBe 1.0
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatGain").as[Double] shouldBe 1.0
+        }
+
+        "should have no value for rebasedGain" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe None
+        }
+
+        "should have no value for timeApportionedGain" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+        }
+      }
+    }
+
+    "provided with the values for the rebased calculation" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+      when(mockService.calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(2.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val result = target.calculateTotalGain(1, 1, 1, 1, 1, Some(1), Some(1), None, None, Some(1))(fakeRequest)
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatGain").as[Double] shouldBe 1.0
+        }
+
+        "should have a rebasedGain of 2.0" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe Some(2.0)
+        }
+
+        "should have no value for timeApportionedGain" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+        }
+      }
+    }
+
+    "provided with the values for the time apportioned calculation" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+      val disposalDate = DateTime.parse("2016-05-08")
+      val acquisitionDate = DateTime.parse("2012-04-09")
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+      when(mockService.calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(3.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val result = target.calculateTotalGain(1, 1, 1, 1, 1, None, None, Some(disposalDate), Some(acquisitionDate), None)(fakeRequest)
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatGain").as[Double] shouldBe 1.0
+        }
+
+        "should have no value for rebasedGain" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe None
+        }
+
+        "should have a timeApportionedGain of 3.0" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe Some(3.0)
+        }
       }
     }
   }

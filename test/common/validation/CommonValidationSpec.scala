@@ -295,7 +295,7 @@ class CommonValidationSpec extends UnitSpec {
         Left("The acquisitionDate must be before the disposalDate")
     }
 
-    "return a Right when given an acuisition date that is before the disposal date" in {
+    "return a Right when given an acquisition date that is before the disposal date" in {
       CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(DateTime.parse("2016-11-11"))) shouldBe
         Right(Some(DateTime.parse("2016-11-11")))
     }
@@ -315,7 +315,7 @@ class CommonValidationSpec extends UnitSpec {
         Left("The acquisitionDate must be before the disposalDate")
     }
 
-    "return a Right when given an acuisition date that is before the disposal date" in {
+    "return a Right when given an acquisition date that is before the disposal date" in {
       CommonValidation.validateAcquisitionDate(disposalDate, DateTime.parse("2016-11-11")) shouldBe
         Right(Some(DateTime.parse("2016-11-11")))
     }

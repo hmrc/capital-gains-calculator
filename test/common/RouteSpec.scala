@@ -16,15 +16,15 @@
 
 package common
 
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class RouteSpec extends UnitSpec {
+class RouteSpec extends UnitSpec with WithFakeApplication {
 
   "The route for calculating total gain for non-resident properties" should {
     "be /non-resident/calculate-total-gain" in {
       controllers.nonresident.routes.CalculatorController.calculateTotalGain(0, 0, 0, 0, 0, None, None, None, None, None).url shouldBe
-        "/non-resident/calculate-total-gain?disposalValue=0.0&disposalCosts=0.0&acquisitionValue=0.0&acquisitionCosts=0.0&improvements=0.0"
+        "/capital-gains-calculator/non-resident/calculate-total-gain" +
+          "?disposalValue=0.0&disposalCosts=0.0&acquisitionValue=0.0&acquisitionCosts=0.0&improvements=0.0"
     }
   }
-
 }

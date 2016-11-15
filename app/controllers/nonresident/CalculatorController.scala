@@ -23,6 +23,7 @@ import play.api.libs.json.Json
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import play.api.mvc._
+import common.Date
 
 import scala.concurrent.Future
 
@@ -123,6 +124,21 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
+  def useRebasedCalculation(rebasedValue: Option[Double], rebasedCosts: Option[Double], improvementsAft: Option[Double]): Boolean = {
+    (rebasedValue, rebasedCosts, improvementsAft) match {
+      case (Some(_), Some(_), Some(_)) => true
+      case _ => false
+    }
+  }
+
+  def useTimeApportionedCalculation(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
+    (disposalDate, acquisitionDate) match {
+      case (Some(soldDate), Some(boughtDate)) if !Date.dateAfterTaxStart(boughtDate) && Date.dateAfterTaxStart(soldDate) => true
+      case _ => false
+    }
+  }
+
+
   def calculateTotalGain(disposalValue: Double,
                          disposalCosts: Double,
                          acquisitionValue: Double,
@@ -134,17 +150,16 @@ trait CalculatorController extends BaseController {
                          acquisitionDate: Option[DateTime],
                          improvementsAfterTaxStarted: Option[Double]): Action[AnyContent] = Action.async { implicit request =>
 
-    def calculateRebasedGain(rebasedAmount: Option[Double],
-                             rebasedCosts: Option[Double]) = {
-      (rebasedAmount, rebasedCosts) match {
-        case (Some(value), Some(costs)) => Some(calculationService.calculateGainRebased(disposalValue, disposalCosts, value, costs, improvements))
-        case _ => None
-      }
+    val totalImprovements = improvements + improvementsAfterTaxStarted.getOrElse(0.0)
+
+    val calculateRebasedGain = {
+      if (useRebasedCalculation(rebasedValue, rebasedCosts, improvementsAfterTaxStarted))
+        Some(calculationService.calculateGainRebased(disposalValue, disposalCosts, rebasedValue.get, rebasedCosts.get, improvementsAfterTaxStarted.get))
+      else None
     }
 
-    def calculateTimeApportionedGain(improvementsAfterTaxStarted: Option[Double]) = (disposalDate, acquisitionDate) match {
-      case (Some(soldDate), Some(_)) => {
-        val totalImprovements = improvementsAfterTaxStarted.fold(improvements)(amount => improvements + amount)
+    val calculateTimeApportionedGain = {
+      if (useTimeApportionedCalculation(disposalDate, acquisitionDate))
         Some(calculationService.calculateGainTA(
           disposalValue,
           disposalCosts,
@@ -152,16 +167,15 @@ trait CalculatorController extends BaseController {
           acquisitionCosts,
           totalImprovements,
           acquisitionDate,
-          soldDate))
-      }
-      case _ => None
+          disposalDate.get))
+      else None
     }
 
 
     val result = TotalGainModel(
-      flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, improvements),
-      rebasedGain = calculateRebasedGain(rebasedValue, rebasedCosts),
-      timeApportionedGain = calculateTimeApportionedGain(improvementsAfterTaxStarted)
+      flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, totalImprovements),
+      rebasedGain = calculateRebasedGain,
+      timeApportionedGain = calculateTimeApportionedGain
     )
 
     Future.successful(Ok(Json.toJson(result)))
