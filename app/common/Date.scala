@@ -48,7 +48,7 @@ object Date {
     s"$startYear/$endYear"
   }
 
-  def dateAfterTaxStart(date: DateTime): Boolean = {
+  def afterTaxStarted(date: DateTime): Boolean = {
     date.isAfter(taxStartDate)
   }
 }

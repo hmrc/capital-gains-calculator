@@ -125,7 +125,7 @@ trait CalculatorController extends BaseController {
 
   def timeApportionedCalculationApplicable(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
     (disposalDate, acquisitionDate) match {
-      case (Some(soldDate), Some(boughtDate)) => !Date.dateAfterTaxStart(boughtDate) && Date.dateAfterTaxStart(soldDate)
+      case (Some(soldDate), Some(boughtDate)) => !Date.afterTaxStarted(boughtDate) && Date.afterTaxStarted(soldDate)
       case _ => false
     }
   }
