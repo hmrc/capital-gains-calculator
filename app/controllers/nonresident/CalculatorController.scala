@@ -27,7 +27,6 @@ import common.Date
 
 import scala.concurrent.Future
 
-
 trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
@@ -124,17 +123,12 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def useRebasedCalculation(rebasedValue: Option[Double], rebasedCosts: Option[Double], improvementsAft: Option[Double]): Boolean = {
-    Seq(rebasedValue, rebasedCosts, improvementsAft).forall(_.isDefined)
-  }
-
-  def useTimeApportionedCalculation(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
+  def timeApportionedCalculationApplicable(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
     (disposalDate, acquisitionDate) match {
       case (Some(soldDate), Some(boughtDate)) => !Date.dateAfterTaxStart(boughtDate) && Date.dateAfterTaxStart(soldDate)
       case _ => false
     }
   }
-
 
   def calculateTotalGain(disposalValue: Double,
                          disposalCosts: Double,
@@ -142,21 +136,21 @@ trait CalculatorController extends BaseController {
                          acquisitionCosts: Double,
                          improvements: Double,
                          rebasedValue: Option[Double],
-                         rebasedCosts: Option[Double],
+                         rebasedCosts: Double,
                          disposalDate: Option[DateTime],
                          acquisitionDate: Option[DateTime],
-                         improvementsAfterTaxStarted: Option[Double]): Action[AnyContent] = Action.async { implicit request =>
+                         improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
 
-    val totalImprovements = improvements + improvementsAfterTaxStarted.getOrElse(0.0)
+    val totalImprovements = improvements + improvementsAfterTaxStarted
 
-    val calculateRebasedGain = {
-      if (useRebasedCalculation(rebasedValue, rebasedCosts, improvementsAfterTaxStarted))
-        Some(calculationService.calculateGainRebased(disposalValue, disposalCosts, rebasedValue.get, rebasedCosts.get, improvementsAfterTaxStarted.get))
-      else None
+    val flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, totalImprovements)
+
+    val rebasedGain = rebasedValue collect { case value =>
+      calculationService.calculateGainRebased(disposalValue, disposalCosts, value, rebasedCosts, improvementsAfterTaxStarted)
     }
 
-    val calculateTimeApportionedGain = {
-      if (useTimeApportionedCalculation(disposalDate, acquisitionDate))
+    val timeApportionedGain = {
+      if (timeApportionedCalculationApplicable(disposalDate, acquisitionDate))
         Some(calculationService.calculateGainTA(
           disposalValue,
           disposalCosts,
@@ -168,19 +162,12 @@ trait CalculatorController extends BaseController {
       else None
     }
 
-
-    val result = TotalGainModel(
-      flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, totalImprovements),
-      rebasedGain = calculateRebasedGain,
-      timeApportionedGain = calculateTimeApportionedGain
-    )
+    val result = TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
 
     Future.successful(Ok(Json.toJson(result)))
   }
 }
 
 object CalculatorController extends CalculatorController {
-  // $COVERAGE-OFF$
   override val calculationService = CalculationService
-  // $COVERAGE-ON$
 }
