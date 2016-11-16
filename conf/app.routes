@@ -4,7 +4,7 @@
 GET        /calculate-flat                          controllers.nonresident.CalculatorController.calculateFlat(model: CalculationRequestModel)
 GET        /calculate-rebased                       controllers.nonresident.CalculatorController.calculateRebased(model: CalculationRequestModel)
 GET        /calculate-time-apportioned              controllers.nonresident.CalculatorController.calculateTA(model: TimeApportionmentCalculationRequestModel)
-GET        /non-resident/calculate-total-gain       controllers.nonresident.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double], rebasedCosts: Double = 0, disposalDate: Option[org.joda.time.DateTime], acqusitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double = 0)
+GET        /non-resident/calculate-total-gain       controllers.nonresident.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: Option[org.joda.time.DateTime], acqusitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0)
 
 ## Resident Property Calculation Routes
 GET        /calculate-total-gain        controllers.resident.properties.CalculatorController.calculateTotalGain(totalGainModel: models.resident.properties.PropertyTotalGainModel)
