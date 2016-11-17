@@ -31,7 +31,6 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
-  //####### Flat Rate Tests #####################
   "GET /capital-gains-calculator/calculate-flat" should {
 
     val mockCalculationService = mock[CalculationService]
@@ -106,7 +105,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   }
 
-  //####### Rebased Tests #####################
   "GET /capital-gains-calculator/calculate-rebased" should {
 
     val mockCalculationService = mock[CalculationService]
@@ -181,7 +179,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   }
 
-  //####### Time Apportioned Tests ##################
   "GET /capital-gains-calculator/calculate-time-apportioned" should {
 
     val mockCalculationService = mock[CalculationService]
@@ -254,5 +251,212 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       (json \ "taxOwed").as[Double] shouldBe 368.64
     }
 
+  }
+
+  "Calling timeApportionedCalculationApplied" should {
+
+    "return a true when provided with valid dates" in {
+      val acquisitionDate = DateTime.parse("2013-03-10")
+      val disposalDate = DateTime.parse("2016-01-14")
+      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
+
+      result shouldBe true
+    }
+
+    "return a false when provided with an acquisition date after the tax start date" in {
+      val acquisitionDate = DateTime.parse("2015-07-10")
+      val disposalDate = DateTime.parse("2016-01-14")
+      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
+
+      result shouldBe false
+    }
+
+    "return a false when provided a disposal date before the tax start date" in {
+      val acquisitionDate = DateTime.parse("2013-07-10")
+      val disposalDate = DateTime.parse("2013-01-14")
+      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
+
+      result shouldBe false
+    }
+
+    "return a false when not provided with an acquisition date" in {
+      val disposalDate = DateTime.parse("2016-01-14")
+      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), None)
+
+      result shouldBe false
+    }
+
+    "return a false when not provided with a disposal date" in {
+      val acquisitionDate = DateTime.parse("2013-07-10")
+      val result = CalculatorController.timeApportionedCalculationApplicable(None, Some(acquisitionDate))
+
+      result shouldBe false
+    }
+  }
+
+  "Calling .calculateTotalGain" when {
+
+    "only provided with mandatory values" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val improvementsBefore = 2.0
+      val improvementsAfter = improvementsBefore + 2
+      val totalImprovements = improvementsBefore + improvementsAfter
+      val result = target.calculateTotalGain(1, 1, 1, 1, improvementsBefore, None, 0, None, None, improvementsAfter)(fakeRequest)
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatGain").as[Double] shouldBe 1.0
+        }
+
+        "should have no value for rebasedGain" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe None
+        }
+
+        "should have no value for timeApportionedGain" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+        }
+      }
+
+      "call the flat gain function on the calculator service once" in {
+        verify(mockService, times(1)).calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "pass the flat gain function on the calculator service the total of the improvements" in {
+        verify(mockService).calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.eq(totalImprovements))
+      }
+
+      "not call the rebased gain function on the calculator service" in {
+        verify(mockService, times(0)).calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "not call the time apportioned gain function on the calculator service" in {
+        verify(mockService, times(0))
+          .calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+    }
+
+    "provided with the values for the rebased calculation" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+      when(mockService.calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(2.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val improvementsBefore = 2.0
+      val improvementsAfter = improvementsBefore + 2
+      val result = target.calculateTotalGain(1, 1, 1, 1, improvementsBefore, Some(1), 1, None, None, improvementsAfter)(fakeRequest)
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatGain").as[Double] shouldBe 1.0
+        }
+
+        "should have a rebasedGain of 2.0" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe Some(2.0)
+        }
+
+        "should have no value for timeApportionedGain" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+        }
+      }
+
+      "call the flat gain function on the calculator service once" in {
+        verify(mockService, times(1)).calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "call the rebased gain function on the calculator service once" in {
+        verify(mockService, times(1)).calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "pass the rebased gain function on the calculator service with the improvements after value" in {
+        verify(mockService, times(1)).calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.eq(improvementsAfter))
+      }
+
+      "not call the time apportioned gain function on the calculator service" in {
+        verify(mockService, times(0))
+          .calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+    }
+
+    "provided with the values for the time apportioned calculation" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+      val disposalDate = DateTime.parse("2016-05-08")
+      val acquisitionDate = DateTime.parse("2012-04-09")
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+      when(mockService.calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(3.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val improvementsBefore = 2.0
+      val improvementsAfter = improvementsBefore + 2
+      val totalImprovements = improvementsBefore + improvementsAfter
+      val result = target.calculateTotalGain(1, 1, 1, 1, improvementsBefore, None, 0, Some(disposalDate), Some(acquisitionDate), improvementsAfter)(fakeRequest)
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatGain").as[Double] shouldBe 1.0
+        }
+
+        "should have no value for rebasedGain" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe None
+        }
+
+        "should have a timeApportionedGain of 3.0" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe Some(3.0)
+        }
+      }
+
+      "call the flat gain function on the calculator service once" in {
+        verify(mockService, times(1)).calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "not call the rebased gain function on the calculator service" in {
+        verify(mockService, times(0)).calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "call the time apportioned gain function on the calculator service once" in {
+        verify(mockService, times(1))
+          .calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      }
+
+      "pass the time apportioned gain function on the calculator service the total of the improvements" in {
+        verify(mockService)
+          .calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.eq(totalImprovements), Matchers.any(), Matchers.any())
+      }
+    }
   }
 }

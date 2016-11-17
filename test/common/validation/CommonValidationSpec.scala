@@ -69,6 +69,12 @@ class CommonValidationSpec extends UnitSpec {
       result shouldBe Right(1.01)
     }
 
+    "return a Right with a value of 10 million" in {
+      val result = CommonValidation.validateDecimalPlaces(22222222.0, "disposalValue")
+
+      result shouldBe Right(22222222.0)
+    }
+
     "return a Left with three decimal places" in {
       val result = CommonValidation.validateDecimalPlaces(1.011, "disposalValue")
 
@@ -93,7 +99,7 @@ class CommonValidationSpec extends UnitSpec {
     "return a Left when the value is above the maximum" in {
       val result = CommonValidation.validateMaximum(1000000000.1, "acquisitionValue")
 
-      result shouldBe Left("acquisitionValue cannot be larger than 100,000,000.")
+      result shouldBe Left("acquisitionValue cannot be larger than 1,000,000,000.")
     }
   }
 
@@ -135,7 +141,7 @@ class CommonValidationSpec extends UnitSpec {
     "return a Left when number is above maximum" in {
       val result = CommonValidation.validateDouble(1100000000.0, "acquisitionCosts")
 
-      result shouldBe Left("acquisitionCosts cannot be larger than 100,000,000.")
+      result shouldBe Left("acquisitionCosts cannot be larger than 1,000,000,000.")
     }
 
     "return a Left when number is has too many decimal places" in {
@@ -289,7 +295,7 @@ class CommonValidationSpec extends UnitSpec {
         Left("The acquisitionDate must be before the disposalDate")
     }
 
-    "return a Right when given an acuisition date that is before the disposal date" in {
+    "return a Right when given an acquisition date that is before the disposal date" in {
       CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(DateTime.parse("2016-11-11"))) shouldBe
         Right(Some(DateTime.parse("2016-11-11")))
     }
@@ -309,7 +315,7 @@ class CommonValidationSpec extends UnitSpec {
         Left("The acquisitionDate must be before the disposalDate")
     }
 
-    "return a Right when given an acuisition date that is before the disposal date" in {
+    "return a Right when given an acquisition date that is before the disposal date" in {
       CommonValidation.validateAcquisitionDate(disposalDate, DateTime.parse("2016-11-11")) shouldBe
         Right(Some(DateTime.parse("2016-11-11")))
     }

@@ -91,11 +91,37 @@ class DateSpec extends UnitSpec {
   "calling taxYearToString" should {
 
     "return a date of '2016/17' from 2017" in {
-      val result = taxYearToString(2017) shouldBe "2016/17"
+      val result = taxYearToString(2017)
+      result shouldBe "2016/17"
     }
 
     "return a date of '2015/16' from 2016" in {
-      val result = taxYearToString(2016) shouldBe "2015/16"
+      val result = taxYearToString(2016)
+      result shouldBe "2015/16"
+    }
+  }
+
+  "Calling afterTaxStarted" should {
+
+    "return a false with a date before the start date" in {
+      val date = DateTime.parse("2015-04-04")
+      val result = Date.afterTaxStarted(date)
+
+      result shouldBe false
+    }
+
+    "return a false with a date on the start date" in {
+      val date = DateTime.parse("2015-04-05")
+      val result = Date.afterTaxStarted(date)
+
+      result shouldBe false
+    }
+
+    "return a true with a date after the start date" in {
+      val date = DateTime.parse("2015-04-06")
+      val result = Date.afterTaxStarted(date)
+
+      result shouldBe true
     }
   }
 }
