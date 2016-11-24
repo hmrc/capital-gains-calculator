@@ -17,7 +17,7 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
-import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel, TotalGainModel}
+import models.nonResident._
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 import services.CalculationService
@@ -130,16 +130,16 @@ trait CalculatorController extends BaseController {
     }
   }
 
-  def calculateTotalGain(disposalValue: Double,
-                         disposalCosts: Double,
-                         acquisitionValue: Double,
-                         acquisitionCosts: Double,
-                         improvements: Double,
-                         rebasedValue: Option[Double],
-                         rebasedCosts: Double,
-                         disposalDate: Option[DateTime],
-                         acquisitionDate: Option[DateTime],
-                         improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalGainModel(disposalValue: Double,
+                              disposalCosts: Double,
+                              acquisitionValue: Double,
+                              acquisitionCosts: Double,
+                              improvements: Double,
+                              rebasedValue: Option[Double],
+                              rebasedCosts: Double,
+                              disposalDate: Option[DateTime],
+                              acquisitionDate: Option[DateTime],
+                              improvementsAfterTaxStarted: Double):TotalGainModel = {
 
     val totalImprovements = improvements + improvementsAfterTaxStarted
 
@@ -162,7 +162,65 @@ trait CalculatorController extends BaseController {
       else None
     }
 
-    val result = TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
+    TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
+  }
+
+  def calculateTotalGain(disposalValue: Double,
+                         disposalCosts: Double,
+                         acquisitionValue: Double,
+                         acquisitionCosts: Double,
+                         improvements: Double,
+                         rebasedValue: Option[Double],
+                         rebasedCosts: Double,
+                         disposalDate: Option[DateTime],
+                         acquisitionDate: Option[DateTime],
+                         improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
+
+    val result = calculateTotalGainModel(disposalValue,
+                                         disposalCosts,
+                                         acquisitionValue,
+                                         acquisitionCosts,
+                                         improvements,
+                                         rebasedValue,
+                                         rebasedCosts,
+                                         disposalDate,
+                                         acquisitionDate,
+                                         improvementsAfterTaxStarted)
+
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateTaxableGainAfterPRR(disposalValue: Double,
+                                   disposalCosts: Double,
+                                   acquisitionValue: Double,
+                                   acquisitionCosts: Double,
+                                   improvements: Double,
+                                   rebasedValue: Option[Double],
+                                   rebasedCosts: Double,
+                                   disposalDate: Option[DateTime],
+                                   acquisitionDate: Option[DateTime],
+                                   improvementsAfterTaxStarted: Double,
+                                   claimingPRR: Boolean,
+                                   daysClaimed: Double,
+                                   daysClaimedAfter: Double): Action[AnyContent] = Action.async { implicit request =>
+
+    val totalGainModel = calculateTotalGainModel(disposalValue,
+                                                 disposalCosts,
+                                                 acquisitionValue,
+                                                 acquisitionCosts,
+                                                 improvements,
+                                                 rebasedValue,
+                                                 rebasedCosts,
+                                                 disposalDate,
+                                                 acquisitionDate,
+                                                 improvementsAfterTaxStarted)
+
+    val flatPRR = CalculationService.calculateFlatPRR(disposalDate.get, acquisitionDate.get, daysClaimed, totalGainModel.flatGain)
+    val flatChargeableGain = CalculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR, 0, 0, 0)
+    val flatPRRUsed = CalculationService.determinePRRUsed(flatChargeableGain, Some(flatPRR))
+
+    val result = CalculationResultsWithPRRModel(GainsAfterPRRModel(totalGainModel.flatGain, flatChargeableGain, flatPRRUsed),
+      Some(GainsAfterPRRModel(0, 0, 0)), Some(GainsAfterPRRModel(0, 0, 0)))
 
     Future.successful(Ok(Json.toJson(result)))
   }

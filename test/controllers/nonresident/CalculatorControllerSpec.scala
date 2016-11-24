@@ -17,7 +17,7 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
-import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
+import models.nonResident.{CalculationRequestModel,  TimeApportionmentCalculationRequestModel}
 import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -456,6 +456,54 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       "pass the time apportioned gain function on the calculator service the total of the improvements" in {
         verify(mockService)
           .calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.eq(totalImprovements), Matchers.any(), Matchers.any())
+      }
+    }
+  }
+
+  "Calling .calculateTaxableGainAfterPRR" when {
+
+    "only provided with mandatory values" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+      val disposalDate = DateTime.parse("2016-05-08")
+      val acquisitionDate = DateTime.parse("2012-04-09")
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val claimingPRR = false
+      val daysClaimed = 0
+      val daysClaimedAfter = 0
+
+      val result = target.calculateTaxableGainAfterPRR(1, 1, 1, 1, 2.0, None, 0, Some(disposalDate), Some(acquisitionDate),
+        4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flatGain of 1.0" in {
+          (json \ "flatResult" \ "totalGain").as[Double] shouldEqual 1.0
+        }
+
+        "should have a rebasedGain of None" in {
+          (json \ "rebasedGain").asOpt[Double] shouldBe None
+        }
+
+        "should have a timeApportionedGain of None" in {
+          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+        }
       }
     }
   }
