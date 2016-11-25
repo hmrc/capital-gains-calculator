@@ -130,7 +130,7 @@ trait CalculatorController extends BaseController {
     }
   }
 
-  def calculateTotalGainModel(disposalValue: Double,
+  def buildTotalGainsModel(disposalValue: Double,
                               disposalCosts: Double,
                               acquisitionValue: Double,
                               acquisitionCosts: Double,
@@ -162,6 +162,7 @@ trait CalculatorController extends BaseController {
       else None
     }
 
+    print(Json.toJson(TotalGainModel(flatGain, rebasedGain, timeApportionedGain)))
     TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
   }
 
@@ -176,7 +177,7 @@ trait CalculatorController extends BaseController {
                          acquisitionDate: Option[DateTime],
                          improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
 
-    val result = calculateTotalGainModel(disposalValue,
+    val result = buildTotalGainsModel(disposalValue,
                                          disposalCosts,
                                          acquisitionValue,
                                          acquisitionCosts,
@@ -204,7 +205,7 @@ trait CalculatorController extends BaseController {
                                    daysClaimed: Double,
                                    daysClaimedAfter: Double): Action[AnyContent] = Action.async { implicit request =>
 
-    val totalGainModel = calculateTotalGainModel(disposalValue,
+    val totalGainModel = buildTotalGainsModel(disposalValue,
                                                  disposalCosts,
                                                  acquisitionValue,
                                                  acquisitionCosts,
@@ -216,35 +217,45 @@ trait CalculatorController extends BaseController {
                                                  improvementsAfterTaxStarted)
 
     def flatModel(): GainsAfterPRRModel = {
-      val flatPRR = acquisitionDate match {
-        case Some(_) => CalculationService.calculateFlatPRR(disposalDate.get, acquisitionDate.get, daysClaimed, totalGainModel.flatGain)
-        case _ => 0
+
+      def flatPRRValue = (acquisitionDate, disposalDate) match {
+        case (Some(_), Some(_)) => CalculationService.calculateFlatPRR(disposalDate.get, acquisitionDate.get, daysClaimed, totalGainModel.flatGain)
+        case _ => 0.0
       }
+
+      val flatPRR = flatPRRValue
       val flatChargeableGain = CalculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR, 0, 0, 0)
       val flatPRRUsed = CalculationService.determinePRRUsed(flatChargeableGain, Some(flatPRR))
       GainsAfterPRRModel(totalGainModel.flatGain, flatChargeableGain, flatPRRUsed)
     }
 
-    def rebasedModel(): Option[GainsAfterPRRModel] = totalGainModel.rebasedGain match {
-      case Some(model) =>
-        val rebasedPRR = CalculationService.calculateRebasedPRR(disposalDate.get, daysClaimedAfter, model)
-        val taxableGain = CalculationService.calculateChargeableGain(model, rebasedPRR, 0, 0, 0)
-        val prrUsed = CalculationService.determinePRRUsed(model, Some(rebasedPRR))
-        Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
-      case None => None
+    def rebasedModel(): Option[GainsAfterPRRModel] = {
+
+      def rebasedPRRValue(rebasedGain: Double) = disposalDate match {
+        case Some(_) => CalculationService.calculateRebasedPRR(disposalDate.get, daysClaimedAfter, rebasedGain)
+        case _ => 0.0
+      }
+
+      totalGainModel.rebasedGain match {
+        case Some(model) =>
+          val rebasedPRR = rebasedPRRValue(model)
+          val taxableGain = CalculationService.calculateChargeableGain(model, rebasedPRR, 0, 0, 0)
+          val prrUsed = CalculationService.determinePRRUsed(model, Some(rebasedPRR))
+          Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
+        case None => None
+      }
     }
 
-    def timeApportionedGain(): Option[GainsAfterPRRModel] = totalGainModel.timeApportionedGain match{
-      case Some(model) =>
-        val timeApportionedPRR = CalculationService.calculateTimeApportionmentPRR(disposalDate.get, daysClaimedAfter, model)
-        val taxableGain = CalculationService.calculateChargeableGain(model, timeApportionedPRR, 0, 0, 0)
-        val prrUsed = CalculationService.determinePRRUsed(model, Some(timeApportionedPRR))
-        Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
-      case None => None
+    def timeApportionedGain(): Option[GainsAfterPRRModel] = totalGainModel.timeApportionedGain match {
+        case Some(model) =>
+          val timeApportionedPRR = CalculationService.calculateRebasedPRR(disposalDate.get, daysClaimedAfter, model)
+          val taxableGain = CalculationService.calculateChargeableGain(model, timeApportionedPRR, 0, 0, 0)
+          val prrUsed = CalculationService.determinePRRUsed(model, Some(timeApportionedPRR))
+          Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
+        case None => None
     }
 
     val result = CalculationResultsWithPRRModel(flatModel(), rebasedModel(), timeApportionedGain())
-
     Future.successful(Ok(Json.toJson(result)))
   }
 }

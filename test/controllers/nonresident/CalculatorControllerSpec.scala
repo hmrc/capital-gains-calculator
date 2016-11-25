@@ -682,8 +682,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         val data = contentAsString(result)
         val json = Json.parse(data)
 
-        print(json)
-
         "should have a flat result" which {
 
           val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
@@ -733,6 +731,65 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           "should have a prrUsed of 44.0" in {
             timeApportionedResultJson.prrUsed shouldEqual 44.0
           }
+        }
+      }
+    }
+
+    "provided with values for the flat, rebased and time apportioned calculations but no disposal date" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(6.0)
+      when(mockService.calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(100.0)
+      when(mockService.calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(),
+        Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(50.0)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val claimingPRR = true
+      val daysClaimed = 2847
+      val daysClaimedAfter = 1
+      val acquisitionDate = DateTime.parse("2005-10-16")
+
+      val result = target.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, None, Some(acquisitionDate),
+        4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        "should have a flat result" which {
+          val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
+
+          "should have a totalGain of 6.0" in {
+            flatResultJson.totalGain shouldEqual 6.0
+          }
+
+          "should have a taxableGain of 6.0" in {
+            flatResultJson.taxableGain shouldEqual 6.0
+          }
+
+          "should have a prrUsed of 0.0" in {
+            flatResultJson.prrUsed shouldEqual 0.0
+          }
+        }
+
+        "should have a rebasedGain of None" in {
+          json.toString should not include "rebasedGain"
+        }
+
+        "should have a timeApportionedGain of None" in {
+          json.toString should not include "timeApportionedGain"
         }
       }
     }
