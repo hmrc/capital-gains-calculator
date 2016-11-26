@@ -65,6 +65,21 @@ These are the available end points for the service. The table below gives detail
             isClaimingPRR: Option[String], daysClaimed: Option[Double], daysClaimedAfter: Option[Double], isProperty: Boolean</td>
     </tr>
     <tr>
+        <td><code>/non-resident/calculate-total-gain</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object with a constructed total gains model. This requires the following parameters:
+            disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double],
+            rebasedCosts: Double, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double</td>
+    </tr>
+    <tr>
+        <td><code>/non-resident/calculate-gain-after-prr</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the results for the flat, rebased and time apportioned gains with prr applied. This requires the following parameters:
+            disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double],
+            rebasedCosts: Double, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double,
+            claimingPRR: Boolean, daysClaimed: Double, daysClaimedAfter: Double</td>
+    </tr>
+    <tr>
         <td><code>/capital-gains-calculator/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with the results from the property total gain calculation. This requires a propertyTotalGainModel which is made of
@@ -263,6 +278,87 @@ Calculates the amount of capital gains tax owed based on the percentage of time 
     "aeaRemaining":0.0,
     "upperTaxGain":-10273.0,
     "upperTaxRate":28
+}
+```
+
+## GET /capital-gains-calculator/non-resident/calculate-total-gain
+
+Calculates the basic amount of gain for a non-resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue":1000.0,
+    "disposalCosts":55.0,
+    "acquisitionValue":750.0,
+    "acquisitionCosts":50.0,
+    "improvements":2.0,
+    "rebasedValue":150.0,
+    "rebasedCosts":5.0,
+    "disposalDate":"2017-01-02"
+    "aquisitionDate":"2005-10-16"
+    "improvementsAfterTaxStarted":4.0
+}
+```
+
+**Response**
+
+```json
+{
+    "flatGain":6.0,
+    "rebasedGain":100.0,
+    "timeApportionedGain":50.0
+}
+```
+
+## GET /capital-gains-calculator/non-resident/calculate-total-gain
+
+Calculates the basic amount of gain for a non-resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue":1000.0,
+    "disposalCosts":55.0,
+    "acquisitionValue":750.0,
+    "acquisitionCosts":50.0,
+    "improvements":2.0,
+    "rebasedValue":150.0,
+    "rebasedCosts":5.0,
+    "disposalDate":"2017-01-02"
+    "aquisitionDate":"2005-10-16"
+    "improvementsAfterTaxStarted":4.0
+    "claimingPRR":true
+    "daysClaimed":2847
+    "daysClaimedAfter":1
+}
+```
+
+**Response**
+
+```json
+{
+    "flatResult":{
+        "totalGain":6.0,
+        "taxableGain":1.0,
+        "prrUsed":1.0
+    },
+    "rebasedResult":{
+        "totalGain":100.0,
+        "taxableGain":13.0,
+        "prrUsed":87.0
+    },
+    "timeApportionedResult":{
+        "totalGain":50.0,
+        "taxableGain":6.0,
+        "prrUsed":44.0
+    }
 }
 ```
 
