@@ -690,12 +690,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
             flatResultJson.totalGain shouldEqual 6.0
           }
 
-          "should have a taxableGain of 6.0" in {
+          "should have a taxableGain of 1.0" in {
             flatResultJson.taxableGain shouldEqual 1.0
           }
 
-          "should have a prrUsed of 1.0" in {
-            flatResultJson.prrUsed shouldEqual 1.0
+          "should have a prrUsed of 5.0" in {
+            flatResultJson.prrUsed shouldEqual 5.0
           }
         }
 

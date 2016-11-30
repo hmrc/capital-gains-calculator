@@ -162,7 +162,6 @@ trait CalculatorController extends BaseController {
       else None
     }
 
-    print(Json.toJson(TotalGainModel(flatGain, rebasedGain, timeApportionedGain)))
     TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
   }
 
@@ -225,7 +224,7 @@ trait CalculatorController extends BaseController {
 
       val flatPRR = flatPRRValue
       val flatChargeableGain = CalculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR, 0, 0, 0)
-      val flatPRRUsed = CalculationService.determinePRRUsed(flatChargeableGain, Some(flatPRR))
+      val flatPRRUsed = CalculationService.determinePRRUsed(totalGainModel.flatGain, Some(flatPRR))
       GainsAfterPRRModel(totalGainModel.flatGain, flatChargeableGain, flatPRRUsed)
     }
 
