@@ -299,7 +299,7 @@ trait CalculatorController extends BaseController {
 
     def flatModel() = {
       val flatPRR = (claimingPRR, acquisitionDate) match {
-        case (true, Some(_)) => calculationService.calculateFlatPRR(disposalDate, acquisitionDate.get, daysClaimed.get, totalGainModel.flatGain)
+        case (true, Some(_)) => calculationService.calculateFlatPRR(disposalDate, acquisitionDate.get, daysClaimed.getOrElse(0.0), totalGainModel.flatGain)
         case _ => 0.0
       }
       val brRemaining = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
@@ -324,7 +324,7 @@ trait CalculatorController extends BaseController {
       totalGainModel.rebasedGain match {
         case Some(data) =>
           val rebasedPRR = {
-            if (claimingPRR) calculationService.calculateRebasedPRR(disposalDate, daysClaimedAfter.get, data)
+            if (claimingPRR) calculationService.calculateRebasedPRR(disposalDate, daysClaimedAfter.getOrElse(0.0), data)
             else 0.0
           }
           val brRemaining = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
@@ -351,7 +351,7 @@ trait CalculatorController extends BaseController {
       totalGainModel.timeApportionedGain match {
         case Some(data) =>
           val timeApportionedPRR = {
-            if (claimingPRR) calculationService.calculateTimeApportionmentPRR(disposalDate, daysClaimedAfter.get, data)
+            if (claimingPRR) calculationService.calculateTimeApportionmentPRR(disposalDate, daysClaimedAfter.getOrElse(0.0), data)
             else 0.0
           }
           val brRemaining = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
