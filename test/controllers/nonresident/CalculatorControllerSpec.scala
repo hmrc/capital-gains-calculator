@@ -889,5 +889,100 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         }
       }
     }
+
+    "all calculation methods are available" should {
+      val fakeRequest = FakeRequest("GET", "")
+      val mockService = mock[CalculationService]
+      val returnModel = CalculationResultModel(8.0, 9.0, 10.0, 20, 0.0, 0.0)
+
+      when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(15.0)
+      when(mockService.calculateGainRebased(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(16.0)
+      when(mockService.calculateGainTA(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(17.0)
+      when(mockService.brRemaining(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
+      when(mockService.calculateChargeableGain(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(2.0)
+      when(mockService.determinePRRUsed(Matchers.any(), Matchers.any())).thenReturn(3.0)
+      when(mockService.determineLossLeft(Matchers.any(), Matchers.any())).thenReturn(4.0)
+      when(mockService.annualExemptAmountUsed(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(5.0)
+      when(mockService.annualExemptAmountLeft(Matchers.any(), Matchers.any())).thenReturn(6.0)
+      when(mockService.determineLossLeft(Matchers.any(), Matchers.any())).thenReturn(7.0)
+      when(mockService.calculationResult(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(),
+        Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(returnModel)
+
+      val target = new CalculatorController {
+        override val calculationService: CalculationService = mockService
+      }
+
+      val result = target.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, DateTime.parse("2017-10-10"), Some(DateTime.parse("2011-01-05")),
+        0, false, None, None, "Individual", None, 1, 1, 0, 0, 0, 0)(fakeRequest)
+
+      "should have a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return a valid result" which {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+        val flatResultModel = TaxOwedModel(
+          returnModel.taxOwed,
+          returnModel.baseTaxGain,
+          returnModel.baseTaxRate,
+          returnModel.upperTaxGain,
+          returnModel.upperTaxRate,
+          15.0,
+          2,
+          Some(3.0),
+          Some(7.0),
+          Some(5.0),
+          6.0,
+          Some(7.0)
+        )
+        val rebasedResultModel = TaxOwedModel(
+          returnModel.taxOwed,
+          returnModel.baseTaxGain,
+          returnModel.baseTaxRate,
+          returnModel.upperTaxGain,
+          returnModel.upperTaxRate,
+          16.0,
+          2,
+          Some(3.0),
+          Some(7.0),
+          Some(5.0),
+          6.0,
+          Some(7.0)
+        )
+        val timeApportionedResultModel = TaxOwedModel(
+          returnModel.taxOwed,
+          returnModel.baseTaxGain,
+          returnModel.baseTaxRate,
+          returnModel.upperTaxGain,
+          returnModel.upperTaxRate,
+          17.0,
+          2,
+          Some(3.0),
+          Some(7.0),
+          Some(5.0),
+          6.0,
+          Some(7.0)
+        )
+
+        "should have a flat result" in {
+          (json \ "flatResult").as[TaxOwedModel] shouldBe flatResultModel
+        }
+
+        "should not have a rebased result" in {
+          (json \ "rebasedResult").as[Option[TaxOwedModel]] shouldBe Some(rebasedResultModel)
+        }
+
+        "should not have a timeApportioned result" in {
+          (json \ "timeApportionedResult").as[Option[TaxOwedModel]] shouldBe Some(timeApportionedResultModel)
+        }
+      }
+    }
   }
 }
