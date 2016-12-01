@@ -16,14 +16,17 @@
 
 package controllers.nonresident
 
+import common.Date
+import common.Date._
+import common.Math._
+import config.TaxRatesAndBands
 import models.CalculationResultModel
 import models.nonResident._
 import org.joda.time.DateTime
 import play.api.libs.json.Json
+import play.api.mvc._
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import play.api.mvc._
-import common.Date
 
 import scala.concurrent.Future
 
@@ -131,15 +134,15 @@ trait CalculatorController extends BaseController {
   }
 
   def buildTotalGainsModel(disposalValue: Double,
-                              disposalCosts: Double,
-                              acquisitionValue: Double,
-                              acquisitionCosts: Double,
-                              improvements: Double,
-                              rebasedValue: Option[Double],
-                              rebasedCosts: Double,
-                              disposalDate: Option[DateTime],
-                              acquisitionDate: Option[DateTime],
-                              improvementsAfterTaxStarted: Double):TotalGainModel = {
+                           disposalCosts: Double,
+                           acquisitionValue: Double,
+                           acquisitionCosts: Double,
+                           improvements: Double,
+                           rebasedValue: Option[Double],
+                           rebasedCosts: Double,
+                           disposalDate: Option[DateTime],
+                           acquisitionDate: Option[DateTime],
+                           improvementsAfterTaxStarted: Double): TotalGainModel = {
 
     val totalImprovements = improvements + improvementsAfterTaxStarted
 
@@ -177,15 +180,15 @@ trait CalculatorController extends BaseController {
                          improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
 
     val result = buildTotalGainsModel(disposalValue,
-                                         disposalCosts,
-                                         acquisitionValue,
-                                         acquisitionCosts,
-                                         improvements,
-                                         rebasedValue,
-                                         rebasedCosts,
-                                         disposalDate,
-                                         acquisitionDate,
-                                         improvementsAfterTaxStarted)
+      disposalCosts,
+      acquisitionValue,
+      acquisitionCosts,
+      improvements,
+      rebasedValue,
+      rebasedCosts,
+      disposalDate,
+      acquisitionDate,
+      improvementsAfterTaxStarted)
 
     Future.successful(Ok(Json.toJson(result)))
   }
@@ -205,15 +208,15 @@ trait CalculatorController extends BaseController {
                                    daysClaimedAfter: Double): Action[AnyContent] = Action.async { implicit request =>
 
     val totalGainModel = buildTotalGainsModel(disposalValue,
-                                                 disposalCosts,
-                                                 acquisitionValue,
-                                                 acquisitionCosts,
-                                                 improvements,
-                                                 rebasedValue,
-                                                 rebasedCosts,
-                                                 disposalDate,
-                                                 acquisitionDate,
-                                                 improvementsAfterTaxStarted)
+      disposalCosts,
+      acquisitionValue,
+      acquisitionCosts,
+      improvements,
+      rebasedValue,
+      rebasedCosts,
+      disposalDate,
+      acquisitionDate,
+      improvementsAfterTaxStarted)
 
     def flatModel(): GainsAfterPRRModel = {
 
@@ -246,15 +249,79 @@ trait CalculatorController extends BaseController {
     }
 
     def timeApportionedGain(): Option[GainsAfterPRRModel] = totalGainModel.timeApportionedGain match {
-        case Some(model) =>
-          val timeApportionedPRR = CalculationService.calculateRebasedPRR(disposalDate.get, daysClaimedAfter, model)
-          val taxableGain = CalculationService.calculateChargeableGain(model, timeApportionedPRR, 0, 0, 0)
-          val prrUsed = CalculationService.determinePRRUsed(model, Some(timeApportionedPRR))
-          Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
-        case None => None
+      case Some(model) =>
+        val timeApportionedPRR = CalculationService.calculateRebasedPRR(disposalDate.get, daysClaimedAfter, model)
+        val taxableGain = CalculationService.calculateChargeableGain(model, timeApportionedPRR, 0, 0, 0)
+        val prrUsed = CalculationService.determinePRRUsed(model, Some(timeApportionedPRR))
+        Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
+      case None => None
     }
 
     val result = CalculationResultsWithPRRModel(flatModel(), rebasedModel(), timeApportionedGain())
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateTaxOwed(disposalValue: Double,
+                       disposalCosts: Double,
+                       acquisitionValue: Double,
+                       acquisitionCosts: Double,
+                       improvements: Double,
+                       rebasedValue: Option[Double],
+                       rebasedCosts: Double,
+                       disposalDate: DateTime,
+                       acquisitionDate: Option[DateTime],
+                       improvementsAfterTaxStarted: Double,
+                       claimingPRR: Boolean,
+                       daysClaimed: Option[Double],
+                       daysClaimedAfter: Option[Double],
+                       customerType: String,
+                       isVulnerable: Option[String],
+                       currentIncome: Double,
+                       personalAllowanceAmt: Double,
+                       allowableLoss: Double,
+                       previousGain: Double,
+                       annualExemptAmount: Double,
+                       broughtForwardLoss: Double): Action[AnyContent] = {
+
+    val totalGainModel = buildTotalGainsModel(disposalValue,
+      disposalCosts,
+      acquisitionValue,
+      acquisitionCosts,
+      improvements,
+      rebasedValue,
+      rebasedCosts,
+      Some(disposalDate),
+      acquisitionDate,
+      improvementsAfterTaxStarted)
+
+    def flatModel() = {
+      val flatPRR = (claimingPRR, acquisitionDate) match {
+        case (true, Some(_)) => CalculationService.calculateFlatPRR(disposalDate, acquisitionDate.get, daysClaimed.get, totalGainModel.flatGain)
+        case _ => 0.0
+      }
+      val taxYear = getTaxYear(disposalDate)
+      val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+      val brRemaining = CalculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
+      val flatChargeableGain = CalculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR, allowableLoss, annualExemptAmount, broughtForwardLoss)
+
+
+      val flatPRRUsed = CalculationService.determinePRRUsed(totalGainModel.flatGain, Some(flatPRR))
+      val allowableLossesUsed = CalculationService.determineLossLeft(totalGainModel.flatGain, allowableLoss)
+      val aeaUsed = CalculationService.annualExemptAmountUsed(annualExemptAmount, totalGainModel.flatGain, flatChargeableGain, flatPRR, allowableLoss)
+      val aeaRemaining = CalculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
+      val broughtForwardLossRemaining = CalculationService.determineLossLeft(totalGainModel.flatGain - (flatPRRUsed +
+        round("up", allowableLoss) + aeaUsed),
+        broughtForwardLoss)
+
+      val taxOwed = CalculationService.calculationResult(customerType, totalGainModel.flatGain, negativeToZero(flatChargeableGain), flatChargeableGain,
+        brRemaining, flatPRR, if(claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, true)
+
+      TaxOwedModel(taxOwed.taxOwed, taxOwed.baseTaxGain, taxOwed.baseTaxRate, taxOwed.upperTaxGain, taxOwed.upperTaxRate, totalGainModel.flatGain, flatChargeableGain,
+        if (flatPRRUsed > 0) Some(flatPRRUsed) else None, if (allowableLossesUsed > 0) Some(allowableLossesUsed) else None, if (aeaUsed > 0) Some(aeaUsed) else None,
+        aeaRemaining, if (broughtForwardLossRemaining > 0) Some(broughtForwardLossRemaining) else None)
+    }
+
+    val result = CalculationResultsWithTaxOwed(flatModel(), None, None)
     Future.successful(Ok(Json.toJson(result)))
   }
 }
