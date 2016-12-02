@@ -369,6 +369,7 @@ Calculates the basic amount of gain for a non-resident capital gains user includ
         "prrUsed":44.0
     }
 }
+```
 
 ## GET /capital-gains-calculator/non-resident/calculate-tax-owed
 
