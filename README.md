@@ -80,6 +80,15 @@ These are the available end points for the service. The table below gives detail
             claimingPRR: Boolean, daysClaimed: Double, daysClaimedAfter: Double</td>
     </tr>
     <tr>
+        <td><code>/non-resident/calculate-tax-owed</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the results for the flat, rebased and time apportioned tax owed values. This requires the following parameters:
+            disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double],
+            rebasedCosts: Double, disposalDate: org.joda.time.DateTime, acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double,
+            claimingPRR: Boolean, daysClaimed: Double, daysClaimedAfter: Double, customerType: String, isVulnerable: Option[String], currentIncome: Option[Double],
+            personalAllowanceAmt: Option[Double], allowableLoss: Option[Double], previousGain: Option[Double], annualExemptAmount: Double, broughtForwardLoss: Option[Double]</td>
+    </tr>
+    <tr>
         <td><code>/capital-gains-calculator/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with the results from the property total gain calculation. This requires a propertyTotalGainModel which is made of
@@ -299,7 +308,7 @@ Calculates the basic amount of gain for a non-resident capital gains user
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
     "disposalDate":"2017-01-02"
-    "aquisitionDate":"2005-10-16"
+    "acquisitionDate":"2005-10-16"
     "improvementsAfterTaxStarted":4.0
 }
 ```
@@ -314,9 +323,9 @@ Calculates the basic amount of gain for a non-resident capital gains user
 }
 ```
 
-## GET /capital-gains-calculator/non-resident/calculate-total-gain
+## GET /capital-gains-calculator/non-resident/calculate-gain-after-prr
 
-Calculates the basic amount of gain for a non-resident capital gains user
+Calculates the basic amount of gain for a non-resident capital gains user including prr
 
 ### Example of usage
 
@@ -332,7 +341,7 @@ Calculates the basic amount of gain for a non-resident capital gains user
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
     "disposalDate":"2017-01-02"
-    "aquisitionDate":"2005-10-16"
+    "acquisitionDate":"2005-10-16"
     "improvementsAfterTaxStarted":4.0
     "claimingPRR":true
     "daysClaimed":2847
@@ -358,6 +367,87 @@ Calculates the basic amount of gain for a non-resident capital gains user
         "totalGain":50.0,
         "taxableGain":6.0,
         "prrUsed":44.0
+    }
+}
+
+## GET /capital-gains-calculator/non-resident/calculate-tax-owed
+
+Calculates the tax owed for a non-resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue":1000.0,
+    "disposalCosts":55.0,
+    "acquisitionValue":750.0,
+    "acquisitionCosts":50.0,
+    "improvements":2.0,
+    "rebasedValue":150.0,
+    "rebasedCosts":5.0,
+    "disposalDate":"2017-01-02"
+    "acquisitionDate":"2005-10-16"
+    "improvementsAfterTaxStarted":4.0
+    "claimingPRR":true
+    "daysClaimed":2847
+    "daysClaimedAfter":1
+    "customerType":individual,
+    "currentIncome":25000,
+    "personalAllowanceAmt":11000,
+    "allowableLoss":50000,
+    "previousGain":0,
+    "annualExemptAmount":11000,
+    "broughtForwardLoss":5000
+}
+```
+
+**Response**
+
+```json
+{
+    "flatResult":{
+        "taxOwed":600.0,
+        "taxGain":1000.0,
+        "taxRate":18,
+        "upperTaxGain":500.0,
+        "upperTaxRate:28,
+        "totalGain":2500.0,
+        "taxableGain":1500.0,
+        "prrUsed":100.0,
+        "allowableLossesUsed":100.0,
+        "aeaUsed":4000.0,
+        "aeaRemaining":0.0,
+        "broughtForwardLossesUsed":800.0
+    },
+    "rebasedResult":{
+        "taxOwed":600.0,
+        "taxGain":1000.0,
+        "taxRate":18,
+        "upperTaxGain":500.0,
+        "upperTaxRate:28,
+        "totalGain":2500.0,
+        "taxableGain":1500.0,
+        "prrUsed":100.0,
+        "allowableLossesUsed":100.0,
+        "aeaUsed":4000.0,
+        "aeaRemaining":0.0,
+        "broughtForwardLossesUsed":800.0
+    },
+    "timeApportionedResult":{
+        "taxOwed":600.0,
+        "taxGain":1000.0,
+        "taxRate":18,
+        "upperTaxGain":500.0,
+        "upperTaxRate:28,
+        "totalGain":2500.0,
+        "taxableGain":1500.0,
+        "prrUsed":100.0,
+        "allowableLossesUsed":100.0,
+        "aeaUsed":4000.0,
+        "aeaRemaining":0.0,
+        "broughtForwardLossesUsed":800.0
     }
 }
 ```
