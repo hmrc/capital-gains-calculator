@@ -848,7 +848,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
 
       val result = target.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0, false, None, None, "Individual",
-        None, 1, 1, 0, 0, 0, 0)(fakeRequest)
+        None, 1, 1, 7, 0, 0, 0)(fakeRequest)
 
       "should have a status of 200" in {
         status(result) shouldBe 200
@@ -870,10 +870,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           15.0,
           2,
           Some(3.0),
-          Some(7.0),
+          None,
           Some(5.0),
           6.0,
-          Some(7.0)
+          None
         )
 
         "should have a flat result" in {
@@ -937,10 +937,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           15.0,
           2,
           Some(3.0),
-          Some(7.0),
+          None,
           Some(5.0),
           6.0,
-          Some(7.0)
+          None
         )
         val rebasedResultModel = TaxOwedModel(
           returnModel.taxOwed,
@@ -951,10 +951,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           16.0,
           2,
           Some(3.0),
-          Some(7.0),
+          None,
           Some(5.0),
           6.0,
-          Some(7.0)
+          None
         )
         val timeApportionedResultModel = TaxOwedModel(
           returnModel.taxOwed,
@@ -965,10 +965,10 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           17.0,
           2,
           Some(3.0),
-          Some(7.0),
+          None,
           Some(5.0),
           6.0,
-          Some(7.0)
+          None
         )
 
         "should have a flat result" in {
