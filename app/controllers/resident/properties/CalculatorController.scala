@@ -56,7 +56,7 @@ trait CalculatorController extends BaseController {
       propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.acquisitionCosts,
       propertyChargeableGainModel.propertyTotalGainModel.improvements)
 
-    val prrUsed = CalculationService.determinePRRUsed(gain, propertyChargeableGainModel.prrValue)
+    val prrUsed = CalculationService.determineReliefsUsed(gain, propertyChargeableGainModel.prrValue)
     val lettingReliefsUsed = CalculationService.determineLettingsReliefsUsed(gain, prrUsed,
       propertyChargeableGainModel.lettingReliefs,calcTaxYear)
     val chargeableGain = calculationService.calculateChargeableGain(
@@ -101,7 +101,7 @@ trait CalculatorController extends BaseController {
       propertyCalculateTaxOwedModel.propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.acquisitionValue,
       propertyCalculateTaxOwedModel.propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.acquisitionCosts,
       propertyCalculateTaxOwedModel.propertyChargeableGainModel.propertyTotalGainModel.improvements)
-    val prrUsed = CalculationService.determinePRRUsed(gain, propertyCalculateTaxOwedModel.propertyChargeableGainModel.prrValue)
+    val prrUsed = CalculationService.determineReliefsUsed(gain, propertyCalculateTaxOwedModel.propertyChargeableGainModel.prrValue)
     val lettingReliefsUsed = CalculationService.determineLettingsReliefsUsed(gain, prrUsed, propertyCalculateTaxOwedModel.
       propertyChargeableGainModel.lettingReliefs, calcTaxYear)
     val chargeableGain = calculationService.calculateChargeableGain(

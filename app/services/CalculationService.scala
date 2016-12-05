@@ -253,7 +253,7 @@ trait CalculationService {
 
   }
 
-  def determinePRRUsed (gain: Double, prrValue: Option[Double]): Double = {
+  def determineReliefsUsed(gain: Double, prrValue: Option[Double]): Double = {
     prrValue match {
       case (Some(a)) if a < gain => round("up", a)
       case (Some(a)) => gain
