@@ -31,7 +31,7 @@ object PrivateResidenceReliefModel {
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PrivateResidenceReliefModel]] = {
         for {
-          isClaiming <- booleanBinder.bind("claimingPrr", params)
+          isClaiming <- booleanBinder.bind("claimingPRR", params)
           daysClaimed <- optionDoubleBinder.bind("daysClaimed", params)
           daysClaimedAfter <- optionDoubleBinder.bind("daysClaimedAfter", params)
         } yield {
