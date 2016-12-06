@@ -30,20 +30,10 @@ object PrivateResidenceReliefModel {
         s"claimingPRR=${value.claimingPRR}&daysClaimed=${value.daysClaimed.getOrElse(0)}&daysClaimedAfter=${value.daysClaimedAfter.getOrElse(0)}"
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PrivateResidenceReliefModel]] = {
-        val daysClaimed = optionDoubleBinder.bind("daysClaimed", params) match {
-          case Some(Right(value)) => Some(Right(value))
-          case _ => Some(Right(None))
-        }
-
-        val daysClaimedAfter = optionDoubleBinder.bind("daysClaimedAfter", params) match {
-          case Some(Right(value)) => Some(Right(value))
-          case _ => Some(Right(None))
-        }
-
         for {
-          isClaiming <- booleanBinder.bind("claimingPrr", params)
-          daysClaimed <- daysClaimed
-          daysClaimedAfter <- daysClaimedAfter
+          isClaiming <- booleanBinder.bind("claimingPRR", params)
+          daysClaimed <- optionDoubleBinder.bind("daysClaimed", params)
+          daysClaimedAfter <- optionDoubleBinder.bind("daysClaimedAfter", params)
         } yield {
           (isClaiming, daysClaimed, daysClaimedAfter) match {
             case (Right(a), Right(b), Right(c)) => Right(PrivateResidenceReliefModel(a, b, c))
