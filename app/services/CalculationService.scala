@@ -16,13 +16,11 @@
 
 package services
 
-import java.time.format.DateTimeFormatter
-
 import config.TaxRatesAndBands
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
-import org.joda.time.{DateTime, Days}
+import org.joda.time.DateTime
 
 object CalculationService extends CalculationService {
 
