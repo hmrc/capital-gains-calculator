@@ -16,6 +16,7 @@
 
 package common
 
+import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -132,6 +133,113 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
     "include the days claimed after the tax started query string parameter" in {
       queryStringParameters should include("daysClaimedAfter=1.0")
+    }
+  }
+
+  "The route for calculate tax owed for non-resident properties" should {
+    val testDate = Some(new DateTime("2001-01-01"))
+    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1,1,1,1,1,Some(1),1,testDate.get, testDate,
+      1, PrivateResidenceReliefModel(true, Some(1), Some(1)),"test",Some("test"),1,1,1,1,1,1, OtherReliefsModel(1, 1, 1)).url
+    lazy val queryStringParameters = url.substring(url.indexOf('?'))
+
+    "have the path /non-resident/calculate-gain-after-prr" in {
+      url should startWith("/capital-gains-calculator/non-resident/calculate-tax-owed")
+    }
+
+    "have query string parameters" in {
+      queryStringParameters should not be empty
+    }
+
+    "include the disposal value query string parameter" in {
+      url should include("disposalValue=1.0")
+    }
+
+    "include the disposal costs query string parameter" in {
+      queryStringParameters should include("disposalCosts=1.0")
+    }
+
+    "include the acquisition value query string parameter" in {
+      queryStringParameters should include("acquisitionValue=1.0")
+    }
+
+    "include the acquisition costs query string parameter" in {
+      queryStringParameters should include("acquisitionCosts=1.0")
+    }
+
+    "include the improvements query string parameter" in {
+      queryStringParameters should include("improvements=1.0")
+    }
+
+    "include the rebased value query string parameter" in {
+      queryStringParameters should include("rebasedValue=1.0")
+    }
+
+    "include the disposal date query string parameter" in {
+      queryStringParameters should include("disposalDate=2001-1-1")
+    }
+
+    "include the acquisition date query string parameter" in {
+      queryStringParameters should include("acquisitionDate=2001-1-1")
+    }
+
+    "include the improvements after the tax started query string parameter" in {
+      queryStringParameters should include("improvementsAfterTaxStarted=1.0")
+    }
+
+    "include the claiming PRR query string parameter" in {
+      queryStringParameters should include("claimingPRR=true")
+    }
+
+    "include the days claimed query string parameter" in {
+      queryStringParameters should include("daysClaimed=1.0")
+    }
+
+    "include the days claimed after the tax started query string parameter" in {
+      queryStringParameters should include("daysClaimedAfter=1.0")
+    }
+
+    "include the customer type query string parameter" in {
+      queryStringParameters should include("customerType=test")
+    }
+
+    "include the is vulnerable query string parameter" in {
+      queryStringParameters should include("isVulnerable=test")
+    }
+
+    "include the current income query string parameter" in {
+      queryStringParameters should include("currentIncome=1.0")
+    }
+
+    "include the personal allowance query string parameter" in {
+      queryStringParameters should include("personalAllowanceAmt=1.0")
+    }
+
+    "include the allowable loss query string parameter" in {
+      queryStringParameters should include("allowableLoss=1.0")
+    }
+
+    "include the previous gain query string parameter" in {
+      queryStringParameters should include("previousGain=1.0")
+    }
+
+    "include the annual exempt amount query string parameter" in {
+      queryStringParameters should include("annualExemptAmount=1.0")
+    }
+
+    "include the brought forward loss query string parameter" in {
+      queryStringParameters should include("broughtForwardLoss=1.0")
+    }
+
+    "include the other reliefs flat query string parameter" in {
+      queryStringParameters should include("otherReliefsFlat=1.0")
+    }
+
+    "include the other reliefs rebased query string parameter" in {
+      queryStringParameters should include("otherReliefsRebased=1.0")
+    }
+
+    "include the other reliefs time apportioned query string parameter" in {
+      queryStringParameters should include("otherReliefsTimeApportioned=1.0")
     }
   }
 }

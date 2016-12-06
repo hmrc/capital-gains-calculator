@@ -983,32 +983,32 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determinePRRUsed method" should {
 
     "return a value of PRR claimed when less than total gain" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(500))
+      val result = CalculationService.determineReliefsUsed(1000, Some(500))
       result shouldEqual 500
     }
 
     "return a value of PRR claimed when equal to total gain" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(1000))
+      val result = CalculationService.determineReliefsUsed(1000, Some(1000))
       result shouldEqual 1000
     }
 
     "return a value equal to the total gain when PRR claimed is greater" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(1200))
+      val result = CalculationService.determineReliefsUsed(1000, Some(1200))
       result shouldEqual 1000
     }
 
     "return a value of PRR claimed with correct rounding when less than total gain" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(500.01))
+      val result = CalculationService.determineReliefsUsed(1000, Some(500.01))
       result shouldEqual 501
     }
 
     "return a value equal to the total gain when PRR claimed is greater with correct rounding" in {
-      val result = CalculationService.determinePRRUsed(1000, Some(1000.01))
+      val result = CalculationService.determineReliefsUsed(1000, Some(1000.01))
       result shouldEqual 1000
     }
 
     "return a value of 0 when PRR is not claimed" in {
-      val result = CalculationService.determinePRRUsed(1000, None)
+      val result = CalculationService.determineReliefsUsed(1000, None)
       result shouldEqual 0
     }
   }
