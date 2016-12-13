@@ -16,6 +16,7 @@
 
 package common
 
+import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -138,7 +139,7 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
   "The route for calculate tax owed for non-resident properties" should {
     val testDate = Some(new DateTime("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1,1,1,1,1,Some(1),1,testDate.get, testDate,
-      1, true, Some(1), Some(1),"test",Some("test"),1,1,1,1,1,1).url
+      1, PrivateResidenceReliefModel(true, Some(1), Some(1)),"test",Some("test"),1,1,1,1,1,1, OtherReliefsModel(1, 1, 1)).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -227,6 +228,18 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
     "include the brought forward loss query string parameter" in {
       queryStringParameters should include("broughtForwardLoss=1.0")
+    }
+
+    "include the other reliefs flat query string parameter" in {
+      queryStringParameters should include("otherReliefsFlat=1.0")
+    }
+
+    "include the other reliefs rebased query string parameter" in {
+      queryStringParameters should include("otherReliefsRebased=1.0")
+    }
+
+    "include the other reliefs time apportioned query string parameter" in {
+      queryStringParameters should include("otherReliefsTimeApportioned=1.0")
     }
   }
 }

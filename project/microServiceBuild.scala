@@ -32,21 +32,21 @@ object MicroServiceBuild extends Build with MicroService {
 }
 
 private object AppDependencies {
-  import play.PlayImport._
+  import play.sbt.PlayImport._
   import play.core.PlayVersion
 
-  private val hmrcTestVersion = "1.8.0"
+  private val hmrcTestVersion = "2.2.0"
   private val jsoupVersion = "1.8.3"
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "microservice-bootstrap" % "4.4.0",
-    "uk.gov.hmrc" %% "play-authorisation" % "3.3.0",
-    "uk.gov.hmrc" %% "play-health" % "1.1.0",
-    "uk.gov.hmrc" %% "play-url-binders" % "1.1.0",
-    "uk.gov.hmrc" %% "play-config" % "2.1.0",
-    "uk.gov.hmrc" %% "play-json-logger" % "2.1.1",
-    "uk.gov.hmrc" %% "domain" % "3.7.0",
+    "uk.gov.hmrc" %% "microservice-bootstrap" % "5.8.0",
+    "uk.gov.hmrc" %% "play-authorisation" % "4.2.0",
+    "uk.gov.hmrc" %% "play-health" % "2.0.0",
+    "uk.gov.hmrc" %% "play-url-binders" % "2.0.0",
+    "uk.gov.hmrc" %% "play-config" % "3.0.0",
+    "uk.gov.hmrc" %% "logback-json-logger" % "3.1.0",
+    "uk.gov.hmrc" %% "domain" % "4.0.0",
     "joda-time" % "joda-time" % "2.9.4"
   )
 
@@ -59,7 +59,8 @@ private object AppDependencies {
     def apply() = new TestDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
-        "org.scalatest" %% "scalatest" % "2.2.6" % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
+        "org.mockito" % "mockito-core" % "2.2.29" % "test",
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.jsoup" % "jsoup" % jsoupVersion % scope

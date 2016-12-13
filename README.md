@@ -110,7 +110,8 @@ These are the available end points for the service. The table below gives detail
             following variables:disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
             improvements: Double, prrValue: Option[Double], lettingReliefs: Option[Double], allowableLosses: Option[Double],
             broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
-            previousIncome: Double, personalAllowance: Double, disposalDate: String</td>
+            previousIncome: Double, personalAllowance: Double, disposalDate: String, otherReliefsFlat: Option[Double],
+            otherReliefsRebased: Option[Double], otherReliefsTimeApportioned: Option[Double]</td>
     </tr>
     <tr>
         <td><code>/capital-gains-calculator/shares/calculate-total-gain</code></td>
@@ -400,7 +401,10 @@ Calculates the tax owed for a non-resident capital gains user
     "allowableLoss":50000,
     "previousGain":0,
     "annualExemptAmount":11000,
-    "broughtForwardLoss":5000
+    "broughtForwardLoss":5000,
+    "otherReliefsFlat":100,
+    "otherReliefsRebased":100,
+    "otherReliefsTimeApportioned":100
 }
 ```
 
@@ -413,10 +417,11 @@ Calculates the tax owed for a non-resident capital gains user
         "taxGain":1000.0,
         "taxRate":18,
         "upperTaxGain":500.0,
-        "upperTaxRate:28,
+        "upperTaxRate":28,
         "totalGain":2500.0,
         "taxableGain":1500.0,
         "prrUsed":100.0,
+        "otherReliefsUsed":100.0,
         "allowableLossesUsed":100.0,
         "aeaUsed":4000.0,
         "aeaRemaining":0.0,
@@ -427,10 +432,11 @@ Calculates the tax owed for a non-resident capital gains user
         "taxGain":1000.0,
         "taxRate":18,
         "upperTaxGain":500.0,
-        "upperTaxRate:28,
+        "upperTaxRate":28,
         "totalGain":2500.0,
         "taxableGain":1500.0,
         "prrUsed":100.0,
+        "otherReliefsUsed":100.0,
         "allowableLossesUsed":100.0,
         "aeaUsed":4000.0,
         "aeaRemaining":0.0,
@@ -441,10 +447,11 @@ Calculates the tax owed for a non-resident capital gains user
         "taxGain":1000.0,
         "taxRate":18,
         "upperTaxGain":500.0,
-        "upperTaxRate:28,
+        "upperTaxRate":28,
         "totalGain":2500.0,
         "taxableGain":1500.0,
         "prrUsed":100.0,
+        "otherReliefsUsed":100.0,
         "allowableLossesUsed":100.0,
         "aeaUsed":4000.0,
         "aeaRemaining":0.0,

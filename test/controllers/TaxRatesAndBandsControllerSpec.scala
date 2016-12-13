@@ -39,7 +39,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 11100 as the annual exempt amount" in {
@@ -60,7 +59,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 11100 as the annual exempt amount" in {
@@ -81,7 +79,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 'This tax year is not valid' as the annual exempt amount" in {
@@ -102,7 +99,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 'This tax year is not valid' as the annual exempt amount" in {
@@ -126,7 +122,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 5550 as the annual exempt amount" in {
@@ -147,7 +142,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 5550 as the annual exempt amount" in {
@@ -168,7 +162,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 'This tax year is not valid' as the annual exempt amount" in {
@@ -189,7 +182,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 'This tax year is not valid' as the annual exempt amount" in {
@@ -213,7 +205,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 11000 as the annual exempt amount" in {
@@ -234,7 +225,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 12890 as the annual exempt amount" in {
@@ -254,7 +244,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 13290 as the annual exempt amount" in {
@@ -275,7 +264,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return This tax year is not valid" in {
@@ -296,7 +284,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return This tax year is not valid" in {
@@ -317,7 +304,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return 11000 as the annual exempt amount" in {
@@ -341,7 +327,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return a supplied TaxYearModel for 2016/17" in {
@@ -369,7 +354,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       "return a supplied TaxYearModel for 2014/15" in {
@@ -396,7 +380,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return a JSON result" in {
         contentType(result) shouldBe Some("application/json")
-        charset(result) shouldBe Some("utf-8")
       }
 
       s"return a message with the text ${assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")}" in {
