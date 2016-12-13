@@ -43,7 +43,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
       "return a Some" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Option[BigDecimal]] shouldBe Some(BigDecimal(20000.0))
+        json.asOpt[BigDecimal] shouldBe Some(BigDecimal(20000.0))
       }
     }
   }
@@ -378,11 +378,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         }
 
         "has no second tax rate" in {
-          (json \ "secondRate").as[Option[Int]] shouldBe None
+          (json \ "secondRate").asOpt[Int] shouldBe None
         }
 
         "has no second tax band" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe None
+          (json \ "secondBand").asOpt[Double] shouldBe None
         }
 
         "has the letting reliefs used as £0" in {
@@ -464,11 +464,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         }
 
         "has a second tax rate of 28%" in {
-          (json \ "secondRate").as[Option[Int]] shouldBe Some(28)
+          (json \ "secondRate").asOpt[Int] shouldBe Some(28)
         }
 
         "has a second tax band of 35115" in {
-          (json \ "secondBand").as[Option[Double]] shouldBe Some(35115)
+          (json \ "secondBand").asOpt[Double] shouldBe Some(35115)
         }
 
         "has the letting reliefs used as £1000" in {
