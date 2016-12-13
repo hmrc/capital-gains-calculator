@@ -17,7 +17,7 @@
 package controllers.nonresident
 
 import models.CalculationResultModel
-import models.nonResident.{CalculationRequestModel, GainsAfterPRRModel, TaxOwedModel, TimeApportionmentCalculationRequestModel}
+import models.nonResident._
 import org.joda.time.DateTime
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -530,7 +530,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         .thenReturn(6.0)
       when(mockService.calculateFlatPRR(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(5.0)
-      when(mockService.determinePRRUsed(Matchers.any(), Matchers.any()))
+      when(mockService.determineReliefsUsed(Matchers.any(), Matchers.any()))
         .thenReturn(100.0)
 
       val target = new CalculatorController {
@@ -597,7 +597,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         .thenReturn(5.0)
       when(mockService.calculateRebasedPRR(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(87.0)
-      when(mockService.determinePRRUsed(Matchers.any(), Matchers.any()))
+      when(mockService.determineReliefsUsed(Matchers.any(), Matchers.any()))
         .thenReturn(100.0)
 
       val target = new CalculatorController {
@@ -680,7 +680,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         .thenReturn(87.0)
       when(mockService.calculateTimeApportionmentPRR(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(44.0)
-      when(mockService.determinePRRUsed(Matchers.any(), Matchers.any()))
+      when(mockService.determineReliefsUsed(Matchers.any(), Matchers.any()))
         .thenReturn(100.0)
 
       val target = new CalculatorController {
@@ -834,7 +834,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       when(mockService.calculateGainFlat(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(15.0)
       when(mockService.brRemaining(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
       when(mockService.calculateChargeableGain(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(2.0)
-      when(mockService.determinePRRUsed(Matchers.any(), Matchers.any())).thenReturn(3.0)
+      when(mockService.determineReliefsUsed(Matchers.any(), Matchers.any())).thenReturn(3.0)
       when(mockService.determineLossLeft(Matchers.any(), Matchers.any())).thenReturn(4.0)
       when(mockService.annualExemptAmountUsed(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(Matchers.any(), Matchers.any())).thenReturn(6.0)
@@ -847,8 +847,8 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         override val calculationService: CalculationService = mockService
       }
 
-      val result = target.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0, false, None, None, "Individual",
-        None, 1, 1, 7, 0, 0, 0)(fakeRequest)
+      val result = target.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0,
+        PrivateResidenceReliefModel(false, None, None), "Individual", None, 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
         status(result) shouldBe 200
@@ -869,6 +869,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           returnModel.upperTaxRate,
           15.0,
           2,
+          Some(3.0),
           Some(3.0),
           None,
           Some(5.0),
@@ -901,7 +902,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         .thenReturn(17.0)
       when(mockService.brRemaining(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(1.0)
       when(mockService.calculateChargeableGain(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(2.0)
-      when(mockService.determinePRRUsed(Matchers.any(), Matchers.any())).thenReturn(3.0)
+      when(mockService.determineReliefsUsed(Matchers.any(), Matchers.any())).thenReturn(3.0)
       when(mockService.determineLossLeft(Matchers.any(), Matchers.any())).thenReturn(4.0)
       when(mockService.annualExemptAmountUsed(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(Matchers.any(), Matchers.any())).thenReturn(6.0)
@@ -915,7 +916,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
 
       val result = target.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, DateTime.parse("2017-10-10"), Some(DateTime.parse("2011-01-05")),
-        0, false, None, None, "Individual", None, 1, 1, 0, 0, 0, 0)(fakeRequest)
+        0, PrivateResidenceReliefModel(false, None, None), "Individual", None, 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
         status(result) shouldBe 200
@@ -937,6 +938,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           15.0,
           2,
           Some(3.0),
+          Some(3.0),
           None,
           Some(5.0),
           6.0,
@@ -951,6 +953,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           16.0,
           2,
           Some(3.0),
+          Some(3.0),
           None,
           Some(5.0),
           6.0,
@@ -964,6 +967,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           returnModel.upperTaxRate,
           17.0,
           2,
+          Some(3.0),
           Some(3.0),
           None,
           Some(5.0),
