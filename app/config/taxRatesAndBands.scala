@@ -57,6 +57,24 @@ object TaxRatesAndBands {
   }
 }
 
+object TaxRatesAndBands20172018 extends TaxRatesAndBands {
+  override val taxYear = 2018
+  override val maxAnnualExemptAmount = 11300
+  override val notVulnerableMaxAnnualExemptAmount = 5650
+  override val basicRatePercentage = 18
+  override val higherRatePercentage = 28
+  override val shareBasicRatePercentage = 10
+  override val shareHigherRatePercentage = 20
+  override val maxPersonalAllowance = 11500
+  override val basicRate = basicRatePercentage / 100.toDouble
+  override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
+  override val basicRateBand = 33500
+  override val blindPersonsAllowance = 2320
+  override val maxLettingsRelief = 40000.0
+}
+
 object TaxRatesAndBands20162017 extends TaxRatesAndBands {
   override val taxYear = 2017
   override val maxAnnualExemptAmount = 11100
