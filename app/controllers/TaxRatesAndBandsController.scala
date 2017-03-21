@@ -49,7 +49,7 @@ trait TaxRatesAndBandsController extends BaseController {
     if(TaxRatesAndBandsValidation.checkValidTaxYear(year)){
       isEligibleBlindPersonsAllowance match {
         case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
-        case _ =>     Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
+        case _ =>     Future.successful(BadRequest)
       }
     }
     else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))

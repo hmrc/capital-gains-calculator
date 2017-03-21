@@ -54,18 +54,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       val result = getMaxAEA(2015)(fakeRequest)
 
       "return status 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 11100 as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[Int] shouldBe 11100
-
+        status(result) shouldBe 400
       }
     }
 
@@ -137,18 +126,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       val result = getMaxNonVulnerableAEA(2015)(fakeRequest)
 
       "return status 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 5550 as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[Int] shouldBe 5550
-
+        status(result) shouldBe 400
       }
     }
 
@@ -160,16 +138,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
         status(result) shouldBe 400
       }
 
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 'This tax year is not valid' as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[String] shouldBe "This tax year is not valid"
-
-      }
     }
 
     "calling with the year after the valid tax year" should {
@@ -199,19 +167,8 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       val result = getMaxPersonalAllowance(2017, None)(fakeRequest)
 
-      "return status 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 11000 as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[Int] shouldBe 11000
-
+      "return status 400" in {
+        status(result) shouldBe 400
       }
     }
 
@@ -239,18 +196,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       val result = getMaxPersonalAllowance(2015, Some(true))(fakeRequest)
 
       "return status 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 13290 as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[Int] shouldBe 13290
-
+        status(result) shouldBe 400
       }
     }
 
@@ -261,16 +207,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       "return status 400" in {
         status(result) shouldBe 400
       }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return This tax year is not valid" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[String] shouldBe "This tax year is not valid"
-
       }
     }
 
@@ -280,17 +216,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       "return status 400" in {
         status(result) shouldBe 400
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return This tax year is not valid" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[String] shouldBe "This tax year is not valid"
-
       }
     }
 
@@ -312,7 +237,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
         json.as[String] shouldBe "This tax year is not valid"
       }
     }
-  }
 
   "validating the getTaxYear method" when {
 
