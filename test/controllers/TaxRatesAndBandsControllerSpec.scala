@@ -167,8 +167,8 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
       val result = getMaxPersonalAllowance(2017, None)(fakeRequest)
 
-      "return status 400" in {
-        status(result) shouldBe 400
+      "return status 200" in {
+        status(result) shouldBe 200
       }
     }
 
