@@ -32,12 +32,13 @@
 
 package common.validation
 
+import config.TaxRatesAndBands
 import org.joda.time.DateTime
 
 object TaxRatesAndBandsValidation {
 
   def checkValidTaxYear(year: Int): Boolean = {
-    if(year >= 2015 && year <= DateTime.now().getYear + 1) true
+    if(TaxRatesAndBands.rates.map(_.taxYear).contains(year) || (year <= DateTime.now().getYear + 1 && year >= TaxRatesAndBands.rates.map(_.taxYear).min)) true
     else false
   }
 
