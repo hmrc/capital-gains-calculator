@@ -107,9 +107,59 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
 
     }
 
+    "calling with the year 2018" should {
+
+      "return 2018 for the tax year" in {
+        TaxRatesAndBands.getRates(2018).taxYear shouldBe 2018
+      }
+
+      "return 18 as the basic percentage rate for the tax year" in {
+        TaxRatesAndBands.getRates(2018).basicRate shouldBe 0.18
+        TaxRatesAndBands.getRates(2018).basicRatePercentage shouldBe 18
+      }
+
+      "return 28 as the higher percentage rate for the tax year" in {
+        TaxRatesAndBands.getRates(2018).higherRate shouldBe 0.28
+        TaxRatesAndBands.getRates(2018).higherRatePercentage shouldBe 28
+      }
+
+      "return 11100 as the maximum Annual Exempt Amount" in {
+        TaxRatesAndBands.getRates(2018).maxAnnualExemptAmount shouldBe 11300
+      }
+
+      "return 5550 as the non-vulnerable trustee Annual Exempt Amount" in {
+        TaxRatesAndBands.getRates(2018).notVulnerableMaxAnnualExemptAmount shouldBe 5650
+      }
+
+      "return 32000 as the basic rate band" in {
+        TaxRatesAndBands.getRates(2018).basicRateBand shouldBe 33500
+      }
+
+      "return 11000 as the maximum Personal Allowance" in {
+        TaxRatesAndBands.getRates(2018).maxPersonalAllowance shouldBe 11500
+      }
+
+    }
+
   }
 
   "calling the .filterRatesByTaxYear method" when {
+
+    "passed a tax year of 2018" should {
+      val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2018)
+
+      "return non-empty list" in {
+        taxYearList.nonEmpty shouldBe true
+      }
+
+      "return a list with a single value" in {
+        taxYearList.size shouldBe 1
+      }
+
+      "the listed item should be for the tax year 2018" in {
+        taxYearList.head.taxYear shouldBe 2018
+      }
+    }
 
     "passed a tax year of 2017" should {
       val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2017)
@@ -154,8 +204,16 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
 
   "calling .getClosestTaxYear" should {
 
-    "return 2017 for a tax year input of 2018" in {
+    "return 2018 for a tax year input of 2019" in {
+      TaxRatesAndBands.getClosestTaxYear(2019) shouldBe 2018
+    }
+
+    "return 2018 for a tax year input of 2018" in {
       TaxRatesAndBands.getClosestTaxYear(2018) shouldBe 2018
+    }
+
+    "return 2017 for a tax year input of 2017" in {
+      TaxRatesAndBands.getClosestTaxYear(2017) shouldBe 2017
     }
 
     "return the year 2016 for a tax year input of 2015" in {
