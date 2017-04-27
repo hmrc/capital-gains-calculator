@@ -143,8 +143,13 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTotalCosts(totalGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("hello"))
+  def calculateTotalCosts(propertyTotalGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async { implicit request =>
+
+    val result = calculationService.calculateTotalCosts(propertyTotalGainModel.totalGainModel.disposalCosts,
+      propertyTotalGainModel.totalGainModel.acquisitionCosts,
+      propertyTotalGainModel.improvements)
+
+    Future.successful(Ok(Json.toJson(result)))
   }
 }
 
