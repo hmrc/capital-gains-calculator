@@ -22,9 +22,10 @@ import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
+class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   "CalculatorController.calculateTotalGain" when {
     lazy val fakeRequest = FakeRequest("GET", "")
@@ -540,5 +541,32 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         }
       }
     }
+  }
+
+  "Calling calculateTotalCosts" when {
+
+    "a valid request is supplied" should {
+
+      val propertyTotalGainModel = PropertyTotalGainModel(TotalGainModel(0, 999.99, 0, 299.50), 5000.01)
+
+      lazy val fakeRequest = FakeRequest("GET", "")
+      lazy val result = CalculatorController.calculateTotalCosts(propertyTotalGainModel)(fakeRequest)
+
+      "return a 200 status" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return totalCosts" in {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        json.as[Double] shouldEqual 6301.00
+      }
+    }
+
   }
 }

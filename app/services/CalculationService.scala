@@ -20,6 +20,7 @@ import config.TaxRatesAndBands
 import models.CalculationResultModel
 import common.Math._
 import common.Date._
+import models.resident.properties.PropertyTotalGainModel
 import org.joda.time.DateTime
 
 object CalculationService extends CalculationService {
@@ -290,4 +291,10 @@ trait CalculationService {
   }
 
   def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
+
+  def calculateTotalCosts(disposalCosts: Double, acquisitionCosts: Double, improvements: Double): Double = {
+    round("up", disposalCosts) +
+    round("up", acquisitionCosts) +
+    round("up", improvements)
+  }
 }
