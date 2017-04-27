@@ -17,6 +17,8 @@
 package common
 
 import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
+import models.resident.properties.PropertyTotalGainModel
+import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -240,6 +242,38 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
     "include the other reliefs time apportioned query string parameter" in {
       queryStringParameters should include("otherReliefsTimeApportioned=1.0")
+    }
+  }
+
+  "The route for calculate total costs for resident properties" should {
+
+    val totalGainModel = TotalGainModel(0,0,0,0)
+    val propertyTotalGainModel = PropertyTotalGainModel(totalGainModel, 0)
+
+    lazy val url = controllers.resident.properties.routes.CalculatorController.calculateTotalCosts(propertyTotalGainModel).url
+
+    "be equal to '/capital-gains-calculator/calculate-total-costs'" in {
+      url should startWith("/capital-gains-calculator/calculate-total-costs")
+    }
+
+    "include the disposal value" in {
+      url should include("disposalValue=0")
+    }
+
+    "include the disposal costs" in {
+      url should include("disposalCosts=0")
+    }
+
+    "include the acquisition value" in {
+      url should include("acquisitionValue=0")
+    }
+
+    "include the acquisition costs" in {
+      url should include("acquisitionCosts=0")
+    }
+
+    "include the improvements" in {
+      url should include("improvements=0")
     }
   }
 }

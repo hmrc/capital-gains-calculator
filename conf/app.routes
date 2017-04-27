@@ -1,25 +1,26 @@
 # microservice specific routes
 
 ## Non-Resident Calculation Routes
-GET        /calculate-flat                          controllers.nonresident.CalculatorController.calculateFlat(model: CalculationRequestModel)
-GET        /calculate-rebased                       controllers.nonresident.CalculatorController.calculateRebased(model: CalculationRequestModel)
-GET        /calculate-time-apportioned              controllers.nonresident.CalculatorController.calculateTA(model: TimeApportionmentCalculationRequestModel)
-GET        /non-resident/calculate-total-gain       controllers.nonresident.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0)
-GET        /non-resident/calculate-gain-after-prr   controllers.nonresident.CalculatorController.calculateTaxableGainAfterPRR(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0, claimingPRR: Boolean, daysClaimed: Double ?= 0, daysClaimedAfter: Double ?= 0)
-GET        /non-resident/calculate-tax-owed         controllers.nonresident.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: org.joda.time.DateTime, acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0, privateResidenceReliefModel: models.nonResident.PrivateResidenceReliefModel, customerType: String, isVulnerable: Option[String], currentIncome: Double ?=0, personalAllowanceAmt: Double ?=0, allowableLoss: Double ?=0, previousGain: Double ?=0, annualExemptAmount: Double, broughtForwardLoss: Double ?=0, otherReliefsModel: models.nonResident.OtherReliefsModel)
+GET        /calculate-flat                                  controllers.nonresident.CalculatorController.calculateFlat(model: CalculationRequestModel)
+GET        /calculate-rebased                               controllers.nonresident.CalculatorController.calculateRebased(model: CalculationRequestModel)
+GET        /calculate-time-apportioned                      controllers.nonresident.CalculatorController.calculateTA(model: TimeApportionmentCalculationRequestModel)
+GET        /non-resident/calculate-total-gain               controllers.nonresident.CalculatorController.calculateTotalGain(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0)
+GET        /non-resident/calculate-gain-after-prr           controllers.nonresident.CalculatorController.calculateTaxableGainAfterPRR(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0, claimingPRR: Boolean, daysClaimed: Double ?= 0, daysClaimedAfter: Double ?= 0)
+GET        /non-resident/calculate-tax-owed                 controllers.nonresident.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: org.joda.time.DateTime, acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0, privateResidenceReliefModel: models.nonResident.PrivateResidenceReliefModel, customerType: String, isVulnerable: Option[String], currentIncome: Double ?=0, personalAllowanceAmt: Double ?=0, allowableLoss: Double ?=0, previousGain: Double ?=0, annualExemptAmount: Double, broughtForwardLoss: Double ?=0, otherReliefsModel: models.nonResident.OtherReliefsModel)
 
 ## Resident Property Calculation Routes
-GET        /calculate-total-gain        controllers.resident.properties.CalculatorController.calculateTotalGain(totalGainModel: models.resident.properties.PropertyTotalGainModel)
-GET        /calculate-chargeable-gain   controllers.resident.properties.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.properties.PropertyChargeableGainModel)
-GET        /calculate-resident-capital-gains-tax    controllers.resident.properties.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.properties.PropertyCalculateTaxOwedModel)
+GET        /calculate-total-gain                            controllers.resident.properties.CalculatorController.calculateTotalGain(totalGainModel: models.resident.properties.PropertyTotalGainModel)
+GET        /calculate-chargeable-gain                       controllers.resident.properties.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.properties.PropertyChargeableGainModel)
+GET        /calculate-resident-capital-gains-tax            controllers.resident.properties.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.properties.PropertyCalculateTaxOwedModel)
+GET        /calculate-total-costs                           controllers.resident.properties.CalculatorController.calculateTotalCosts(totalGainModel: models.resident.properties.PropertyTotalGainModel)
 
 ## Resident Share Calculation Routes
-GET        /shares/calculate-total-gain        controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
-GET        /shares/calculate-chargeable-gain   controllers.resident.shares.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.shares.ChargeableGainModel)
-GET        /shares/calculate-resident-capital-gains-tax    controllers.resident.shares.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.shares.CalculateTaxOwedModel)
+GET        /shares/calculate-total-gain                     controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
+GET        /shares/calculate-chargeable-gain                controllers.resident.shares.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.shares.ChargeableGainModel)
+GET        /shares/calculate-resident-capital-gains-tax     controllers.resident.shares.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.shares.CalculateTaxOwedModel)
 
 ## Tax Rates and Bands Routes
-GET        /tax-rates-and-bands/max-full-aea        controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)
-GET        /tax-rates-and-bands/max-partial-aea     controllers.TaxRatesAndBandsController.getMaxNonVulnerableAEA(taxYear: Int)
-GET        /tax-rates-and-bands/max-pa              controllers.TaxRatesAndBandsController.getMaxPersonalAllowance(taxYear: Int, isEligibleBlindPersonsAllowance: Option[Boolean])
-GET        /tax-year                                controllers.TaxRatesAndBandsController.getTaxYear(date: String)
+GET        /tax-rates-and-bands/max-full-aea                controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)
+GET        /tax-rates-and-bands/max-partial-aea             controllers.TaxRatesAndBandsController.getMaxNonVulnerableAEA(taxYear: Int)
+GET        /tax-rates-and-bands/max-pa                      controllers.TaxRatesAndBandsController.getMaxPersonalAllowance(taxYear: Int, isEligibleBlindPersonsAllowance: Option[Boolean])
+GET        /tax-year                                        controllers.TaxRatesAndBandsController.getTaxYear(date: String)
