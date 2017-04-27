@@ -17,6 +17,8 @@
 package services
 
 import config.TaxRatesAndBands
+import models.resident.properties.PropertyTotalGainModel
+import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
 import services.CalculationService._
@@ -1157,6 +1159,27 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return 0 when supplied with 9 and 10" in {
       calculateAmountUsed(9,10) shouldEqual 0
+    }
+  }
+
+  "Calling .calculateTotalCosts" when {
+
+    "disposal costs are £999.99, acquisition costs are £299.50 and improvements are £5,000.01" should {
+
+      val result = CalculationService.calculateTotalCosts(999.99, 299.50, 5000.01)
+
+      "return 6301" in {
+        result shouldEqual 6301.00
+      }
+    }
+
+    "disposal costs are £999, acquisition costs are £299 and improvements are £5,000" should {
+
+      val result = CalculationService.calculateTotalCosts(999.00, 299.00, 5000.00)
+
+      "return 6298" in {
+        result shouldEqual 6298.00
+      }
     }
   }
 }
