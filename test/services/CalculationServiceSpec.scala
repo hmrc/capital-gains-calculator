@@ -1182,4 +1182,79 @@ class CalculationServiceSpec extends UnitSpec {
       }
     }
   }
+
+  "Calling .calculationResult" when {
+
+    "customer type is individual and is property" should {
+
+      "when taxable gain is lower than basic rate remaining" should {
+
+        val result = CalculationService.calculationResult(customerType = "individual",
+          gain = 10000,
+          taxableGain = 10000,
+          chargeableGain = 10000,
+          basicRateRemaining = 10001,
+          prrAmount = 0,
+          isClaimingPRR = "No",
+          usedAEA = 0,
+          aeaLeft = 11000,
+          taxYear = 2016,
+          isProperty = true)
+
+        "return basic rate total of 1800" in {
+          result.baseRateTotal shouldEqual 1800
+        }
+
+        "return an upper rate total of 0" in {
+          result.upperRateTotal shouldEqual 0
+        }
+      }
+
+      "when taxable gain is higher than basic rate remaining" should {
+
+        val result = CalculationService.calculationResult(customerType = "individual",
+          gain = 10000,
+          taxableGain = 20000,
+          chargeableGain = 20000,
+          basicRateRemaining = 10000,
+          prrAmount = 0,
+          isClaimingPRR = "No",
+          usedAEA = 0,
+          aeaLeft = 11000,
+          taxYear = 2016,
+          isProperty = true)
+
+        "return basic rate total of 1800" in {
+          result.baseRateTotal shouldEqual 1800
+        }
+
+        "return an upper rate total of 2800" in {
+          result.upperRateTotal shouldEqual 2800
+        }
+      }
+
+      "when a decimal result is produced" should {
+
+        val result = CalculationService.calculationResult(customerType = "individual",
+          gain = 10000,
+          taxableGain = 56789,
+          chargeableGain = 56789,
+          basicRateRemaining = 34567,
+          prrAmount = 0,
+          isClaimingPRR = "No",
+          usedAEA = 0,
+          aeaLeft = 11000,
+          taxYear = 2016,
+          isProperty = true)
+
+        "return a rounded number for base rate total" in {
+          result.baseRateTotal shouldEqual 6222.05
+        }
+
+        "return a rounded number for upper rate total" in {
+          result.upperRateTotal shouldEqual 6222.16
+        }
+      }
+    }
+  }
 }

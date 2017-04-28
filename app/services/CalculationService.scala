@@ -97,6 +97,10 @@ trait CalculationService {
     val higherRate = if(isProperty) taxRates.higherRate else taxRates.shareHigherRate
     val basicRatePercentage = if(isProperty) taxRates.basicRatePercentage else taxRates.shareBasicRatePercentage
     val higherRatePercentage = if(isProperty) taxRates.higherRatePercentage else taxRates.shareHigherRatePercentage
+
+    val basicRateOwed = round("result", min(basicRateRemaining, taxableGain) * basicRate)
+    val upperRateOwed = round("result", negativeToZero(taxableGain - basicRateRemaining) * higherRate)
+
     customerType match {
       case "individual" => CalculationResultModel(
         taxOwed = round("result", min(basicRateRemaining, taxableGain) * basicRate + negativeToZero(taxableGain - basicRateRemaining) *
@@ -114,7 +118,9 @@ trait CalculationService {
         aeaRemaining = aeaLeft,
         upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
         upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None,
-        simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None)
+        simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None,
+        baseRateTotal = basicRateOwed,
+        upperRateTotal = upperRateOwed)
       case _ => CalculationResultModel(
         taxOwed = round("result", taxableGain * higherRate),
         totalGain = gain,
