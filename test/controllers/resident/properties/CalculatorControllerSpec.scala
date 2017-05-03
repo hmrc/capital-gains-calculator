@@ -401,6 +401,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         "has the allowableLossesUsed as £0.00" in {
           (json \ "allowableLossesUsed").as[Double] shouldBe 0
         }
+
+        "has the baseRateTotal as £3,042.00" in {
+          (json \ "baseRateTotal").as[Double] shouldBe 3042
+        }
+
+        "has the upperRateTotal as £0.00" in {
+          (json \ "upperRateTotal").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -417,7 +425,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         allowableLosses = Some(20000),
         broughtForwardLosses = Some(10000),
         annualExemptAmount = 11100,
-          disposalDate = DateTime.parse("2015-10-10")),
+        disposalDate = DateTime.parse("2015-10-10")),
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
         personalAllowance = 11000)
@@ -486,6 +494,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
         "has the allowableLossesUsed as £20000" in {
           (json \ "allowableLossesUsed").as[Double] shouldBe 20000
+        }
+
+        "has the baseRateTotal as £3,921.29" in {
+          (json \ "baseRateTotal").as[Double] shouldBe 3921.29
+        }
+
+        "has the upperRateTotal as £9,832.20" in {
+          (json \ "upperRateTotal").as[Double] shouldBe 9832.2
         }
       }
     }

@@ -26,7 +26,9 @@ case class CalculationResultModel(taxOwed: Double,
                                   aeaRemaining: Double,
                                   upperTaxGain: Option[Double] = None,
                                   upperTaxRate: Option[Int] = None,
-                                  simplePRR: Option[Double] = None)
+                                  simplePRR: Option[Double] = None,
+                                  baseRateTotal: Double = 0,
+                                  upperRateTotal: Double = 0)
 
 object CalculationResultModel {
   implicit val formats = Json.format[CalculationResultModel]

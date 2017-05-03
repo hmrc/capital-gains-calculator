@@ -138,7 +138,9 @@ trait CalculatorController extends BaseController {
       //Logic here is that there has been a total gain made.  Therefore any brought forward losses gained have been used entirely.
       //As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
       Some(propertyCalculateTaxOwedModel.propertyChargeableGainModel.broughtForwardLosses.getOrElse(0)),
-      propertyCalculateTaxOwedModel.propertyChargeableGainModel.allowableLosses.getOrElse(0)
+      propertyCalculateTaxOwedModel.propertyChargeableGainModel.allowableLosses.getOrElse(0),
+      calculationResult.baseRateTotal,
+      calculationResult.upperRateTotal
     )
     Future.successful(Ok(Json.toJson(result)))
   }
