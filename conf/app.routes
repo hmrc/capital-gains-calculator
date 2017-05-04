@@ -18,6 +18,7 @@ GET        /calculate-total-costs                           controllers.resident
 GET        /shares/calculate-total-gain                     controllers.resident.shares.CalculatorController.calculateTotalGain(totalGainModel: models.resident.shares.TotalGainModel)
 GET        /shares/calculate-chargeable-gain                controllers.resident.shares.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.shares.ChargeableGainModel)
 GET        /shares/calculate-resident-capital-gains-tax     controllers.resident.shares.CalculatorController.calculateTaxOwed(calculateTaxOwedModel: models.resident.shares.CalculateTaxOwedModel)
+GET        /shares/calculate-total-costs                    controllers.resident.shares.CalculatorController.calculateTotalCosts(totalGainModel: models.resident.shares.TotalGainModel)
 
 ## Tax Rates and Bands Routes
 GET        /tax-rates-and-bands/max-full-aea                controllers.TaxRatesAndBandsController.getMaxAEA(taxYear: Int)

@@ -253,6 +253,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the allowableLossesUsed as £0.00" in {
           (json \ "allowableLossesUsed").as[Double] shouldBe 0
         }
+
+        "has the baseRateTotal as £3,942.00" in {
+          (json \ "baseRateTotal").as[Double] shouldBe 3942.0
+        }
+
+        "has the upperRateTotal as £0.00" in {
+          (json \ "upperRateTotal").as[Double] shouldBe 0
+        }
       }
     }
 
@@ -325,6 +333,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
         "has the allowableLossesUsed as £20000" in {
           (json \ "allowableLossesUsed").as[Double] shouldBe 20000
+        }
+
+        "has the baseRateTotal as £3,921.29" in {
+          (json \ "baseRateTotal").as[Double] shouldBe 3921.29
+        }
+
+        "has the upperRateTotal as £18,792.20" in {
+          (json \ "upperRateTotal").as[Double] shouldBe 18792.2
         }
       }
     }
@@ -400,6 +416,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the allowableLossesUsed as £20000" in {
           (json \ "allowableLossesUsed").as[Double] shouldBe 20000
         }
+
+        "has the baseRateTotal as £2,200.00" in {
+          (json \ "baseRateTotal").as[Double] shouldBe 2200.0
+        }
+
+        "has the upperRateTotal as £13,380.00" in {
+          (json \ "upperRateTotal").as[Double] shouldBe 13380.0
+        }
       }
     }
 
@@ -450,6 +474,32 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
         "has the allowableLossesUsed as £50000" in {
           (json \ "allowableLossesUsed").as[Double] shouldBe 50000
         }
+      }
+    }
+  }
+
+  "Calling calculateTotalCosts" when {
+
+    "a valid request is supplied" should {
+
+      val totalGainModel = TotalGainModel(0, 999.99, 0, 299.50)
+
+      lazy val fakeRequest = FakeRequest("GET", "")
+      lazy val result = CalculatorController.calculateTotalCosts(totalGainModel)(fakeRequest)
+
+      "return a 200 status" in {
+        status(result) shouldBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) shouldBe Some("application/json")
+      }
+
+      "return totalCosts" in {
+        val data = contentAsString(result)
+        val json = Json.parse(data)
+
+        json.as[Double] shouldEqual 1300.0
       }
     }
   }

@@ -127,8 +127,18 @@ trait CalculatorController extends BaseController {
       //Logic here is that there has been a total gain made.  Therefore any brought forward losses claimed have been used entirely.
       //As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
       Some(chargeableGainModel.broughtForwardLosses.getOrElse(0)),
-      chargeableGainModel.allowableLosses.getOrElse(0)
+      chargeableGainModel.allowableLosses.getOrElse(0),
+      calculationResult.baseRateTotal,
+      calculationResult.upperRateTotal
     )
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateTotalCosts(totalGainModel: TotalGainModel): Action[AnyContent] = Action.async { implicit request =>
+
+    val result = calculationService.calculateTotalCosts(totalGainModel.disposalCosts,
+      totalGainModel.acquisitionCosts)
+
     Future.successful(Ok(Json.toJson(result)))
   }
 }

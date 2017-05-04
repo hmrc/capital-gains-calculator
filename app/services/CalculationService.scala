@@ -298,7 +298,7 @@ trait CalculationService {
 
   def calculateAmountUsed(total: Double, remaining: Double): Double = negativeToZero(round("up", total - remaining))
 
-  def calculateTotalCosts(disposalCosts: Double, acquisitionCosts: Double, improvements: Double): Double = {
+  def calculateTotalCosts(disposalCosts: Double, acquisitionCosts: Double, improvements: Double = 0): Double = {
     round("up", disposalCosts) +
     round("up", acquisitionCosts) +
     round("up", improvements)
