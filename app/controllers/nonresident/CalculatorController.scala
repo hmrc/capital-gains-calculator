@@ -308,7 +308,7 @@ trait CalculatorController extends BaseController {
       val otherReliefsUsed = calculationService.determineReliefsUsed(totalGainModel.flatGain - flatPRRUsed, Some(otherReliefsModel.flatReliefs))
       val allowableLossesLeft = calculationService.determineLossLeft(totalGainModel.flatGain, allowableLoss)
       val allowableLossesUsed = allowableLoss - allowableLossesLeft
-      val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, totalGainModel.flatGain, flatChargeableGain, flatPRR + otherReliefsModel.flatReliefs, allowableLoss)
+      val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, totalGainModel.flatGain, flatPRR + otherReliefsModel.flatReliefs, allowableLoss)
       val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
       val broughtForwardLossRemaining = calculationService.determineLossLeft(totalGainModel.flatGain - (flatPRRUsed +
         round("up", allowableLoss) + aeaUsed),
@@ -337,7 +337,7 @@ trait CalculatorController extends BaseController {
           val otherReliefsUsed = calculationService.determineReliefsUsed(totalGainModel.rebasedGain.get - rebasedPRRUsed, Some(otherReliefsModel.rebasedReliefs))
           val allowableLossesLeft = calculationService.determineLossLeft(data, allowableLoss)
           val allowableLossesUsed = allowableLoss - allowableLossesLeft
-          val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, data, rebasedChargeableGain, rebasedPRR + otherReliefsModel.rebasedReliefs, allowableLoss)
+          val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, data, rebasedPRR + otherReliefsModel.rebasedReliefs, allowableLoss)
           val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
           val broughtForwardLossRemaining = calculationService.determineLossLeft(data - (rebasedPRRUsed +
             round("up", allowableLoss) + aeaUsed),
@@ -368,7 +368,7 @@ trait CalculatorController extends BaseController {
           val otherReliefsUsed = calculationService.determineReliefsUsed(totalGainModel.timeApportionedGain.get - timeApportionedPRRUsed, Some(otherReliefsModel.timeApportionedReliefs))
           val allowableLossesLeft = calculationService.determineLossLeft(data, allowableLoss)
           val allowableLossesUsed = allowableLoss - allowableLossesLeft
-          val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, data, timeApportionedChargeableGain, timeApportionedPRR + otherReliefsModel.timeApportionedReliefs, allowableLoss)
+          val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, data, timeApportionedPRR + otherReliefsModel.timeApportionedReliefs, allowableLoss)
           val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
           val broughtForwardLossRemaining = calculationService.determineLossLeft(data - (timeApportionedPRRUsed +
             round("up", allowableLoss) + aeaUsed),

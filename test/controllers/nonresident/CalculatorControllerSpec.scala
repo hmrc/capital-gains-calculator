@@ -833,7 +833,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(2.0)
       when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(3.0)
       when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(4.0)
-      when(mockService.annualExemptAmountUsed(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(5.0)
+      when(mockService.annualExemptAmountUsed(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
       when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(7.0)
       when(mockService.calculationResult(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
@@ -901,7 +901,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(2.0)
       when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(3.0)
       when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(4.0)
-      when(mockService.annualExemptAmountUsed(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(5.0)
+      when(mockService.annualExemptAmountUsed(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
       when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(7.0)
       when(mockService.calculationResult(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),

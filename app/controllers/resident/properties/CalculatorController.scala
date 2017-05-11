@@ -66,8 +66,6 @@ trait CalculatorController extends BaseController {
     val aeaUsed = calculationService.annualExemptAmountUsed(
       propertyChargeableGainModel.annualExemptAmount,
       gain,
-      calculationService.calculateChargeableGain(gain, lettingReliefsUsed + prrUsed,
-        propertyChargeableGainModel.allowableLosses.getOrElse(0), propertyChargeableGainModel.annualExemptAmount, 0),
       lettingReliefsUsed + prrUsed,
       propertyChargeableGainModel.allowableLosses.getOrElse(0)
     )
@@ -111,9 +109,6 @@ trait CalculatorController extends BaseController {
     )
     val aeaUsed: Double = calculationService.annualExemptAmountUsed(
       propertyCalculateTaxOwedModel.propertyChargeableGainModel.annualExemptAmount, gain,
-      calculationService.calculateChargeableGain(gain, lettingReliefsUsed + prrUsed, propertyCalculateTaxOwedModel.
-        propertyChargeableGainModel.allowableLosses.getOrElse(0.0),
-        propertyCalculateTaxOwedModel.propertyChargeableGainModel.annualExemptAmount, 0.0),
       lettingReliefsUsed + prrUsed, propertyCalculateTaxOwedModel.propertyChargeableGainModel.allowableLosses.getOrElse(0.0)
     )
     val deductions = prrUsed + lettingReliefsUsed + propertyCalculateTaxOwedModel.propertyChargeableGainModel.allowableLosses.getOrElse(0.0) +

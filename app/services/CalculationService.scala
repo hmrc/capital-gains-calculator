@@ -22,6 +22,7 @@ import common.Math._
 import common.Date._
 import models.resident.properties.PropertyTotalGainModel
 import org.joda.time.DateTime
+import play.api.Logger
 
 object CalculationService extends CalculationService {
 
@@ -78,7 +79,7 @@ trait CalculationService {
 
     val calculatedAEA = calculateAEA(customerType, priorDisposal, annualExemptAmount, isVulnerable, disposalDate)
     val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
-    val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, calculatedChargeableGain, reliefs + prrAmount, allowableLossesAmt)
+    val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, reliefs + prrAmount, allowableLossesAmt)
     val aeaRemaining = annualExemptAmountLeft(calculatedAEA, usedAEA)
     val taxableGain = negativeToZero(calculatedChargeableGain)
     val basicRateRemaining = customerType match {
@@ -266,10 +267,10 @@ trait CalculationService {
     }
   }
 
-  def annualExemptAmountUsed (available: Double, totalGain: Double, chargeableGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
-    chargeableGain match {
-      case a if a < 0 => 0.toDouble
-      case b if b > 0 => round("down", available)
+  def annualExemptAmountUsed (available: Double, totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
+    totalGain - reliefs - allowableLossesAmt match {
+      case a if a <= 0 => 0.toDouble
+      case b if b >= available => round("down", available)
       case _ => partialAEAUsed(totalGain, reliefs, allowableLossesAmt)
     }
   }

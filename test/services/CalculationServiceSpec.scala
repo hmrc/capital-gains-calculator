@@ -1017,24 +1017,24 @@ class CalculationServiceSpec extends UnitSpec {
 
   "Calling the annualExemptAmountUsed method" should {
 
-    "return an AEA used equal to the max remaining when the chargeable gain is positive" in {
-      val result = CalculationService.annualExemptAmountUsed(11100, 50000, 38900, 5000, 5000)
-      result shouldEqual 11100
+    "return an AEA used of 0 when reliefs and in year losses equal the gain" in {
+      CalculationService.annualExemptAmountUsed(10000, 100, 50, 50) shouldBe 0
     }
 
-    "return an AEA used equal to the max remaining rounded down when the chargeable gain is positive" in {
-      val result = CalculationService.annualExemptAmountUsed(10000.99, 50000, 38900, 5000, 5000)
-      result shouldEqual 10000
+    "return an AEA used of 0 when reliefs and in year losses are greater than the gain" in {
+      CalculationService.annualExemptAmountUsed(10000, 100, 100, 100) shouldBe 0
     }
 
-    "return an AEA used of 0 when the chargeable gain is negative" in {
-      val result = CalculationService.annualExemptAmountUsed(11100, 20000, -10000, 15000, 15000)
-      result shouldEqual 0
+    "return an AEA used equal to the available amount when the gain minus losses and reliefs is greater than the available amount" in {
+      CalculationService.annualExemptAmountUsed(10000, 150000, 5000, 5000) shouldBe 10000
     }
 
-    "return an AEA from the partialAEAUsed method when chargeable gain is zero" in {
-      val result = CalculationService.annualExemptAmountUsed(11100, 20000, 0, 7000, 7000)
-      result shouldEqual 6000
+    "return an AEA used equal to the available amount when the gain minus losses and reliefs is equal to the available amount" in {
+      CalculationService.annualExemptAmountUsed(5000, 10000, 2500, 2500) shouldBe 5000
+    }
+
+    "return the result of the partial AEA used when the available AEA is greater than the remaining gain" in {
+      CalculationService.annualExemptAmountUsed(5000, 7500, 2500, 2500) shouldBe 2500
     }
   }
 
