@@ -871,7 +871,13 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           None,
           Some(5.0),
           6.0,
-          None
+          None,
+          None,
+          Some(7.0),
+          Some(7.0),
+          None,
+          Some(0.0),
+          Some(0.0)
         )
 
         "should have a flat result" in {
@@ -939,7 +945,13 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           None,
           Some(5.0),
           6.0,
-          None
+          None,
+          None,
+          Some(7.0),
+          Some(7.0),
+          None,
+          Some(0.0),
+          Some(0.0)
         )
         val rebasedResultModel = TaxOwedModel(
           returnModel.taxOwed,
@@ -954,7 +966,13 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           None,
           Some(5.0),
           6.0,
-          None
+          None,
+          None,
+          Some(7.0),
+          Some(7.0),
+          None,
+          Some(0.0),
+          Some(0.0)
         )
         val timeApportionedResultModel = TaxOwedModel(
           returnModel.taxOwed,
@@ -969,7 +987,13 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           None,
           Some(5.0),
           6.0,
-          None
+          None,
+          None,
+          Some(7.0),
+          Some(7.0),
+          None,
+          Some(0.0),
+          Some(0.0)
         )
 
         "should have a flat result" in {
@@ -984,6 +1008,41 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           (json \ "timeApportionedResult").asOpt[TaxOwedModel] shouldBe Some(timeApportionedResultModel)
         }
       }
+    }
+  }
+
+  "Calling calculateTotalCosts" when {
+
+    val mockCalculationService = mock[CalculationService]
+    when(mockCalculationService.calculateTotalCosts(
+      ArgumentMatchers.anyDouble,
+      ArgumentMatchers.anyDouble,
+      ArgumentMatchers.anyDouble
+    )).thenReturn(5000.00)
+
+    val target: CalculatorController = new CalculatorController {
+      override val calculationService: CalculationService = mockCalculationService
+    }
+
+    val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-total-costs")
+    val result = target.calculateTotalCosts(
+        disposalCosts = 3000.00,
+        improvements = 1000.00,
+        acquisitionCosts = 1000.00)(fakeRequest)
+
+    "return 200" in {
+      status(result) shouldBe Status.OK
+    }
+
+    "return a JSON result" in {
+      contentType(result) shouldBe Some("application/json")
+    }
+
+    "return a valid result" in {
+      val data = contentAsString(result)
+      val json = Json.parse(data)
+
+      json.as[Double] shouldEqual 5000.0
     }
   }
 }
