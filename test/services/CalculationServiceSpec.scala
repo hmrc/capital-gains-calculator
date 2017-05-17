@@ -206,7 +206,7 @@ class CalculationServiceSpec extends UnitSpec {
           priorDisposal = "Yes",
           annualExemptAmount = Some(5000),
           currentIncome = Some(50000),
-          personalAllowanceAmt = Some(11000),
+          personalAllowanceAmt = Some(11000.00),
           disposalValue = 124000.68,
           disposalCosts = 1241.22,
           revaluedAmount = 0,

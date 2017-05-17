@@ -90,7 +90,7 @@ trait CalculationService {
     calculationResult(customerType, gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, aeaRemaining, calcTaxYear, isProperty)
   }
 
-  def calculationResult (customerType: String, gain: Double, taxableGain: Double, chargeableGain: Double,
+  def calculationResult(customerType: String, gain: Double, taxableGain: Double, chargeableGain: Double,
                          basicRateRemaining: Double, prrAmount: Double, isClaimingPRR: String, usedAEA: Double,
                          aeaLeft: Double, taxYear: Int, isProperty: Boolean): CalculationResultModel = {
     val taxRates = TaxRatesAndBands.getRates(taxYear)
@@ -267,7 +267,7 @@ trait CalculationService {
     }
   }
 
-  def annualExemptAmountUsed (available: Double, totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
+  def annualExemptAmountUsed(available: Double, totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
     totalGain - reliefs - allowableLossesAmt match {
       case a if a <= 0 => 0.toDouble
       case b if b >= available => round("down", available)
@@ -275,11 +275,11 @@ trait CalculationService {
     }
   }
 
-  def partialAEAUsed (totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
+  def partialAEAUsed(totalGain: Double, reliefs: Double, allowableLossesAmt: Double) = {
     negativeToZero(round("down", totalGain - round("up", reliefs) - round("up", allowableLossesAmt)))
   }
 
-  def annualExemptAmountLeft (available: Double, aeaUsed: Double)  = {
+  def annualExemptAmountLeft(available: Double, aeaUsed: Double)  = {
     round("up", available) - aeaUsed
   }
 

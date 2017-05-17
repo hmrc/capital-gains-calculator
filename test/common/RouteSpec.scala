@@ -245,6 +245,32 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
+  "The route for calculate total costs for non-resident properties" should {
+
+    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTotalCosts(1000.00, 500.00, 300.00).url
+    lazy val queryStringParameters = url.substring(url.indexOf('?'))
+
+    "have the path /non-resident/calculate-total-costs" in {
+      url should startWith("/capital-gains-calculator/non-resident/calculate-total-costs")
+    }
+
+    "have query string parameters" in {
+      queryStringParameters should not be empty
+    }
+
+    "include the disposal costs query string parameter" in {
+      queryStringParameters should include("disposalCosts=1000.0")
+    }
+
+    "include the acquisition costs  query string parameter" in {
+      queryStringParameters should include("acquisitionCosts=500.0")
+    }
+
+    "include the improvements value query string parameter" in {
+      queryStringParameters should include("improvements=300.0")
+    }
+  }
+
   "The route for calculate total costs for resident properties" should {
 
     val totalGainModel = TotalGainModel(0,0,0,0)
