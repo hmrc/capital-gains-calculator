@@ -306,12 +306,12 @@ trait CalculatorController extends BaseController {
       val flatChargeableGain = calculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR + otherReliefsModel.flatReliefs, allowableLoss, annualExemptAmount, broughtForwardLoss)
       val flatPRRUsed = calculationService.determineReliefsUsed(totalGainModel.flatGain, Some(flatPRR))
       val otherReliefsUsed = calculationService.determineReliefsUsed(totalGainModel.flatGain - flatPRRUsed, Some(otherReliefsModel.flatReliefs))
-      val allowableLossesLeft = calculationService.determineLossLeft(totalGainModel.flatGain, allowableLoss)
+      val allowableLossesLeft = calculationService.determineLossLeft(totalGainModel.flatGain - (flatPRRUsed + otherReliefsUsed), allowableLoss)
       val allowableLossesUsed = allowableLoss - allowableLossesLeft
       val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, totalGainModel.flatGain, flatPRR + otherReliefsModel.flatReliefs, allowableLoss)
       val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
       val broughtForwardLossRemaining = calculationService.determineLossLeft(totalGainModel.flatGain - (flatPRRUsed +
-        round("up", allowableLoss) + aeaUsed),
+        round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
         broughtForwardLoss)
       val broughtForwardLossUsed = broughtForwardLoss - broughtForwardLossRemaining
 
@@ -345,12 +345,12 @@ trait CalculatorController extends BaseController {
           val rebasedChargeableGain = calculationService.calculateChargeableGain(data, rebasedPRR + otherReliefsModel.rebasedReliefs, allowableLoss, annualExemptAmount, broughtForwardLoss)
           val rebasedPRRUsed = calculationService.determineReliefsUsed(data, Some(rebasedPRR))
           val otherReliefsUsed = calculationService.determineReliefsUsed(totalGainModel.rebasedGain.get - rebasedPRRUsed, Some(otherReliefsModel.rebasedReliefs))
-          val allowableLossesLeft = calculationService.determineLossLeft(data, allowableLoss)
+          val allowableLossesLeft = calculationService.determineLossLeft(data - (otherReliefsUsed + rebasedPRRUsed), allowableLoss)
           val allowableLossesUsed = allowableLoss - allowableLossesLeft
           val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, data, rebasedPRR + otherReliefsModel.rebasedReliefs, allowableLoss)
           val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
           val broughtForwardLossRemaining = calculationService.determineLossLeft(data - (rebasedPRRUsed +
-            round("up", allowableLoss) + aeaUsed),
+            round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
             broughtForwardLoss)
           val broughtForwardLossUsed = broughtForwardLoss - broughtForwardLossRemaining
 
@@ -359,7 +359,7 @@ trait CalculatorController extends BaseController {
           val taxOwed = calculationService.calculationResult(customerType, data, negativeToZero(rebasedChargeableGain), rebasedChargeableGain,
             brRemaining, rebasedPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, true)
 
-          val totalDeductions = rebasedPRR + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
+          val totalDeductions = rebasedPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
 
           Some(TaxOwedModel(taxOwed.taxOwed, taxOwed.baseTaxGain, taxOwed.baseTaxRate, taxOwed.upperTaxGain, taxOwed.upperTaxRate, data, rebasedChargeableGain,
             if (rebasedPRRUsed > 0) Some(rebasedPRRUsed) else None, if (otherReliefsUsed > 0) Some(otherReliefsUsed) else None,
@@ -387,12 +387,12 @@ trait CalculatorController extends BaseController {
           val timeApportionedChargeableGain = calculationService.calculateChargeableGain(data, timeApportionedPRR + otherReliefsModel.timeApportionedReliefs, allowableLoss, annualExemptAmount, broughtForwardLoss)
           val timeApportionedPRRUsed = calculationService.determineReliefsUsed(data, Some(timeApportionedPRR))
           val otherReliefsUsed = calculationService.determineReliefsUsed(totalGainModel.timeApportionedGain.get - timeApportionedPRRUsed, Some(otherReliefsModel.timeApportionedReliefs))
-          val allowableLossesLeft = calculationService.determineLossLeft(data, allowableLoss)
+          val allowableLossesLeft = calculationService.determineLossLeft(data - (timeApportionedPRRUsed + otherReliefsUsed), allowableLoss)
           val allowableLossesUsed = allowableLoss - allowableLossesLeft
           val aeaUsed = calculationService.annualExemptAmountUsed(annualExemptAmount, data, timeApportionedPRR + otherReliefsModel.timeApportionedReliefs, allowableLoss)
           val aeaRemaining = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
           val broughtForwardLossRemaining = calculationService.determineLossLeft(data - (timeApportionedPRRUsed +
-            round("up", allowableLoss) + aeaUsed),
+            round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
             broughtForwardLoss)
           val broughtForwardLossUsed = broughtForwardLoss - broughtForwardLossRemaining
           val taxOwed = calculationService.calculationResult(customerType, data, negativeToZero(timeApportionedChargeableGain), timeApportionedChargeableGain,
@@ -400,7 +400,7 @@ trait CalculatorController extends BaseController {
 
           val reliefsRemaining = (timeApportionedPRR + round("up", otherReliefsModel.timeApportionedReliefs)) - (timeApportionedPRR + otherReliefsUsed)
 
-          val totalDeductions = timeApportionedPRR + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
+          val totalDeductions = timeApportionedPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
 
           Some(TaxOwedModel(taxOwed.taxOwed, taxOwed.baseTaxGain, taxOwed.baseTaxRate, taxOwed.upperTaxGain, taxOwed.upperTaxRate, data, timeApportionedChargeableGain,
             if (timeApportionedPRRUsed > 0) Some(timeApportionedPRRUsed) else None, if (otherReliefsUsed > 0) Some(otherReliefsUsed) else None,
