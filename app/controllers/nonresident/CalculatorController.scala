@@ -338,7 +338,7 @@ trait CalculatorController extends BaseController {
       totalGainModel.rebasedGain match {
         case Some(data) =>
           val rebasedPRR = {
-            if (privateResidenceReliefModel.claimingPRR) calculationService.calculateRebasedPRR(disposalDate, privateResidenceReliefModel.daysClaimedAfter.getOrElse(0.0), data)
+            if (privateResidenceReliefModel.claimingPRR && data > 0) calculationService.calculateRebasedPRR(disposalDate, privateResidenceReliefModel.daysClaimedAfter.getOrElse(0.0), data)
             else 0.0
           }
           val brRemaining = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
