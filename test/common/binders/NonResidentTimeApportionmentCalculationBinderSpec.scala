@@ -30,11 +30,9 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
 
   // the values to bind to a valid request
   val validRequest: Map[String, Seq[String]] = Map(
-    keys.customerType -> Seq("individual"),
     keys.priorDisposal -> Seq("Yes"),
     keys.annualExemptAmount -> Seq("111.11"),
     keys.otherPropertiesAmount -> Seq("222.22"),
-    keys.vulnerable -> Seq("Yes"),
     keys.currentIncome -> Seq("333.33"),
     keys.personalAllowanceAmount -> Seq("444.44"),
     keys.disposalValue -> Seq("555.55"),
@@ -52,12 +50,10 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
 
   // the expected result of binding valid requests
   val expectedRequest = TimeApportionmentCalculationRequestModel(
-    "individual",
     "Yes",
     Some(111.11),
     Some(222.22),
-    Some("Yes"),
-    Some(333.33),
+    333.33,
     Some(444.44),
     555.55,
     666.66,
@@ -73,7 +69,7 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = TimeApportionmentCalculationRequestModel("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, DateTime.parse("0000-01-01"), DateTime.parse("0000-01-01"), None, None)
+  val emptyCalculationRequest = TimeApportionmentCalculationRequestModel("", None, None, 0.00, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, DateTime.parse("0000-01-01"), DateTime.parse("0000-01-01"), None, None)
 
   "Binding a invalid non resident calculation request" when {
 

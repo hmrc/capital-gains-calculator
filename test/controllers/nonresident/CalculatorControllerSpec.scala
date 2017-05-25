@@ -37,11 +37,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     when(mockCalculationService.calculateCapitalGainsTax(
       ArgumentMatchers.anyString,
       ArgumentMatchers.anyString,
-      ArgumentMatchers.anyString,
       Option(ArgumentMatchers.anyDouble),
       Option(ArgumentMatchers.anyDouble),
-      Option(ArgumentMatchers.anyString),
-      Option(ArgumentMatchers.anyDouble),
+      ArgumentMatchers.anyDouble,
       Option(ArgumentMatchers.anyDouble),
       ArgumentMatchers.anyDouble,
       ArgumentMatchers.anyDouble,
@@ -61,18 +59,16 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0, 0))
 
     val target: CalculatorController = new CalculatorController {
-      override val calculationService = mockCalculationService
+      override val calculationService: CalculationService = mockCalculationService
     }
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-flat")
     val result = target.calculateFlat(
       CalculationRequestModel(
-        customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         otherPropertiesAmount = Some(0),
-        isVulnerable = None,
-        currentIncome = Some(7000),
+        currentIncome = 7000,
         personalAllowanceAmount = Some(11000),
         disposalValue = 21100,
         disposalCosts = 0,
@@ -110,11 +106,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     when(mockCalculationService.calculateCapitalGainsTax(
       ArgumentMatchers.anyString,
       ArgumentMatchers.anyString,
-      ArgumentMatchers.anyString,
       Option(ArgumentMatchers.anyDouble),
       Option(ArgumentMatchers.anyDouble),
-      Option(ArgumentMatchers.anyString),
-      Option(ArgumentMatchers.anyDouble),
+      ArgumentMatchers.anyDouble,
       Option(ArgumentMatchers.anyDouble),
       ArgumentMatchers.anyDouble,
       ArgumentMatchers.anyDouble,
@@ -134,18 +128,16 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0, 0))
 
     val target: CalculatorController = new CalculatorController {
-      override val calculationService = mockCalculationService
+      override val calculationService: CalculationService = mockCalculationService
     }
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-rebased")
     val result = target.calculateRebased(
       CalculationRequestModel(
-        customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         otherPropertiesAmount = Some(0),
-        isVulnerable = None,
-        currentIncome = Some(7000),
+        currentIncome = 7000,
         personalAllowanceAmount = Some(11000),
         disposalValue = 21100,
         disposalCosts = 0,
@@ -183,11 +175,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     when(mockCalculationService.calculateCapitalGainsTax(
       ArgumentMatchers.anyString,
       ArgumentMatchers.anyString,
-      ArgumentMatchers.anyString,
       Option(ArgumentMatchers.anyDouble),
       Option(ArgumentMatchers.anyDouble),
-      Option(ArgumentMatchers.anyString),
-      Option(ArgumentMatchers.anyDouble),
+      ArgumentMatchers.anyDouble,
       Option(ArgumentMatchers.anyDouble),
       ArgumentMatchers.anyDouble,
       ArgumentMatchers.anyDouble,
@@ -207,18 +197,16 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     )).thenReturn(CalculationResultModel(1800, 21100, 10000, 18, 0, 0))
 
     val target: CalculatorController = new CalculatorController {
-      override val calculationService = mockCalculationService
+      override val calculationService: CalculationService = mockCalculationService
     }
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-time-apportioned")
     val result = target.calculateTA(
       TimeApportionmentCalculationRequestModel(
-        customerType = "individual",
         priorDisposal = "No",
         annualExemptAmount = Some(0),
         otherPropertiesAmount = Some(0),
-        isVulnerable = None,
-        currentIncome = Some(7000),
+        currentIncome = 7000,
         personalAllowanceAmount = Some(11000),
         disposalValue = 31100,
         disposalCosts = 0,
@@ -837,7 +825,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       when(mockService.annualExemptAmountLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
       when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(7.0)
       when(mockService.calculationResult(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(returnModel)
 
       val target = new CalculatorController {
@@ -845,7 +833,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
 
       val result = target.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0,
-        PrivateResidenceReliefModel(false, None, None), "Individual", None, 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
+        PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
         status(result) shouldBe 200
@@ -911,7 +899,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       when(mockService.annualExemptAmountLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
       when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(7.0)
       when(mockService.calculationResult(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(returnModel)
 
       val target = new CalculatorController {
@@ -919,7 +907,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
 
       val result = target.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, DateTime.parse("2017-10-10"), Some(DateTime.parse("2011-01-05")),
-        0, PrivateResidenceReliefModel(false, None, None), "Individual", None, 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
+        0, PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
         status(result) shouldBe 200
@@ -1026,9 +1014,9 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-total-costs")
     val result = target.calculateTotalCosts(
-        disposalCosts = 3000.00,
-        improvements = 1000.00,
-        acquisitionCosts = 1000.00)(fakeRequest)
+      disposalCosts = 3000.00,
+      improvements = 1000.00,
+      acquisitionCosts = 1000.00)(fakeRequest)
 
     "return 200" in {
       status(result) shouldBe Status.OK

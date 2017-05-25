@@ -24,7 +24,7 @@ import common.validation.{CommonValidation, NonResidentValidation}
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
   val requiredParams = Seq(
-    keys.customerType,
+    keys.currentIncome,
     keys.priorDisposal,
     keys.disposalValue,
     keys.disposalCosts,
@@ -48,12 +48,10 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
 
         if (missingParam.isDefined) Some(Left(s"${missingParam.get} is required."))
         else for {
-          customerTypeParam <- stringBinder.bind(keys.customerType, params)
           priorDisposalParam <- stringBinder.bind(keys.priorDisposal, params)
           aeaParam <- optionalDoubleBinder.bind(keys.annualExemptAmount, params)
           otherPropertiesParam <- optionalDoubleBinder.bind(keys.otherPropertiesAmount, params)
-          vulnerableParam <- optionalStringBinder.bind(keys.vulnerable, params)
-          currentIncomeParam <- optionalDoubleBinder.bind(keys.currentIncome, params)
+          currentIncomeParam <- doubleBinder.bind(keys.currentIncome, params)
           personalAllowanceParam <- optionalDoubleBinder.bind(keys.personalAllowanceAmount, params)
           disposalValueParam <- doubleBinder.bind(keys.disposalValue, params)
           disposalCostsParam <- doubleBinder.bind(keys.disposalCosts, params)
@@ -67,11 +65,9 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
           isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
           daysClaimedParam <- optionalDoubleBinder.bind(keys.daysClaimed, params)
         } yield {
-          (customerTypeParam,
-            priorDisposalParam,
+          ( priorDisposalParam,
             aeaParam,
             otherPropertiesParam,
-            vulnerableParam,
             currentIncomeParam,
             personalAllowanceParam,
             disposalValueParam,
@@ -86,11 +82,9 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
             isClaimingPRRParam,
             daysClaimedParam) match {
             case (
-              Right(customerType),
               Right(priorDisposal),
               Right(aea),
               Right(otherProperties),
-              Right(vulnerable),
               Right(currentIncome),
               Right(personalAllowance),
               Right(disposalValue),
@@ -105,11 +99,10 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
               Right(isClaimingPRR),
               Right(daysClaimed)) =>
               NonResidentValidation.validateNonResidentProperty(
-                CalculationRequestModel(customerType,
+                CalculationRequestModel(
                   priorDisposal,
                   aea,
                   otherProperties,
-                  vulnerable,
                   currentIncome,
                   personalAllowance,
                   disposalValue,
@@ -126,11 +119,10 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
                 )
               )
             case fail =>
-              Left(CommonValidation.getFirstErrorMessage(Seq(customerTypeParam,
+              Left(CommonValidation.getFirstErrorMessage(Seq(
                 priorDisposalParam,
                 aeaParam,
                 otherPropertiesParam,
-                vulnerableParam,
                 currentIncomeParam,
                 personalAllowanceParam,
                 disposalValueParam,
@@ -150,12 +142,10 @@ trait NonResidentCalculationRequestBinder extends CommonBinders {
 
       override def unbind(key: String, request: CalculationRequestModel): String =
         Seq(
-          stringBinder.unbind(keys.customerType, request.customerType),
           stringBinder.unbind(keys.priorDisposal, request.priorDisposal),
           optionalDoubleBinder.unbind(keys.annualExemptAmount, request.annualExemptAmount),
           optionalDoubleBinder.unbind(keys.otherPropertiesAmount, request.otherPropertiesAmount),
-          optionalStringBinder.unbind(keys.vulnerable, request.isVulnerable),
-          optionalDoubleBinder.unbind(keys.currentIncome, request.currentIncome),
+          doubleBinder.unbind(keys.currentIncome, request.currentIncome),
           optionalDoubleBinder.unbind(keys.personalAllowanceAmount, request.personalAllowanceAmount),
           doubleBinder.unbind(keys.disposalValue, request.disposalValue),
           doubleBinder.unbind(keys.disposalCosts, request.disposalCosts),

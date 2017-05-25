@@ -19,11 +19,9 @@ package common
 object QueryStringKeys {
 
   object NonResidentCalculationKeys {
-    val customerType = "customerType"
     val priorDisposal = "priorDisposal"
     val annualExemptAmount = "annualExemptAmount"
     val otherPropertiesAmount = "otherPropertiesAmt"
-    val vulnerable = "isVulnerable"
     val currentIncome = "currentIncome"
     val personalAllowanceAmount = "personalAllowanceAmt"
     val disposalValue = "disposalValue"

@@ -38,11 +38,9 @@ trait CalculatorController extends BaseController {
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "flat",
-      model.customerType,
       model.priorDisposal,
       model.annualExemptAmount,
       model.otherPropertiesAmount,
-      model.isVulnerable,
       model.currentIncome,
       model.personalAllowanceAmount,
       model.disposalValue,
@@ -68,11 +66,9 @@ trait CalculatorController extends BaseController {
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "rebased",
-      model.customerType,
       model.priorDisposal,
       model.annualExemptAmount,
       model.otherPropertiesAmount,
-      model.isVulnerable,
       model.currentIncome,
       model.personalAllowanceAmount,
       model.disposalValue,
@@ -99,11 +95,9 @@ trait CalculatorController extends BaseController {
 
     val result: CalculationResultModel = CalculationService.calculateCapitalGainsTax(
       "time",
-      model.customerType,
       model.priorDisposal,
       model.annualExemptAmount,
       model.otherPropertiesAmount,
-      model.isVulnerable,
       model.currentIncome,
       model.personalAllowanceAmount,
       model.disposalValue,
@@ -226,7 +220,7 @@ trait CalculatorController extends BaseController {
       }
 
       val flatPRR = flatPRRValue
-      val flatChargeableGain = calculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR, 0, 0, 0)
+      val flatChargeableGain = calculationService.calculateChargeableGain(totalGainModel.flatGain, flatPRR, 0, 0)
       val flatPRRUsed = calculationService.determineReliefsUsed(totalGainModel.flatGain, Some(flatPRR))
       GainsAfterPRRModel(totalGainModel.flatGain, flatChargeableGain, flatPRRUsed)
     }
@@ -241,7 +235,7 @@ trait CalculatorController extends BaseController {
       totalGainModel.rebasedGain match {
         case Some(model) =>
           val rebasedPRR = rebasedPRRValue
-          val taxableGain = calculationService.calculateChargeableGain(model, rebasedPRR, 0, 0, 0)
+          val taxableGain = calculationService.calculateChargeableGain(model, rebasedPRR, 0, 0)
           val prrUsed = calculationService.determineReliefsUsed(model, Some(rebasedPRR))
           Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
         case None => None
@@ -251,7 +245,7 @@ trait CalculatorController extends BaseController {
     def timeApportionedGain(): Option[GainsAfterPRRModel] = totalGainModel.timeApportionedGain match {
       case Some(model) =>
         val timeApportionedPRR = calculationService.calculateRebasedPRR(disposalDate.get, daysClaimedAfter, model)
-        val taxableGain = calculationService.calculateChargeableGain(model, timeApportionedPRR, 0, 0, 0)
+        val taxableGain = calculationService.calculateChargeableGain(model, timeApportionedPRR, 0, 0)
         val prrUsed = calculationService.determineReliefsUsed(model, Some(timeApportionedPRR))
         Some(GainsAfterPRRModel(model, taxableGain, prrUsed))
       case None => None
@@ -273,8 +267,6 @@ trait CalculatorController extends BaseController {
                        acquisitionDate: Option[DateTime],
                        improvementsAfterTaxStarted: Double,
                        privateResidenceReliefModel: PrivateResidenceReliefModel,
-                       customerType: String,
-                       isVulnerable: Option[String],
                        currentIncome: Double,
                        personalAllowanceAmt: Double,
                        allowableLoss: Double,
@@ -317,8 +309,8 @@ trait CalculatorController extends BaseController {
 
       val reliefsRemaining = (flatPRR + round("up", otherReliefsModel.flatReliefs)) - (flatPRRUsed + otherReliefsUsed)
 
-      val taxOwed = calculationService.calculationResult(customerType, totalGainModel.flatGain, negativeToZero(flatChargeableGain), flatChargeableGain,
-        brRemaining, flatPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, true)
+      val taxOwed = calculationService.calculationResult(totalGainModel.flatGain, negativeToZero(flatChargeableGain), flatChargeableGain,
+        brRemaining, flatPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, isProperty = true)
 
       val totalDeductions = flatPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
 
@@ -356,8 +348,8 @@ trait CalculatorController extends BaseController {
 
           val reliefsRemaining = (rebasedPRR + round("up", otherReliefsModel.rebasedReliefs)) - (rebasedPRR + otherReliefsUsed)
 
-          val taxOwed = calculationService.calculationResult(customerType, data, negativeToZero(rebasedChargeableGain), rebasedChargeableGain,
-            brRemaining, rebasedPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, true)
+          val taxOwed = calculationService.calculationResult(data, negativeToZero(rebasedChargeableGain), rebasedChargeableGain,
+            brRemaining, rebasedPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, isProperty = true)
 
           val totalDeductions = rebasedPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
 
@@ -395,8 +387,8 @@ trait CalculatorController extends BaseController {
             round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
             broughtForwardLoss)
           val broughtForwardLossUsed = broughtForwardLoss - broughtForwardLossRemaining
-          val taxOwed = calculationService.calculationResult(customerType, data, negativeToZero(timeApportionedChargeableGain), timeApportionedChargeableGain,
-            brRemaining, timeApportionedPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, true)
+          val taxOwed = calculationService.calculationResult(data, negativeToZero(timeApportionedChargeableGain), timeApportionedChargeableGain,
+            brRemaining, timeApportionedPRR, if (privateResidenceReliefModel.claimingPRR) "Yes" else "No", aeaUsed, aeaRemaining, calcTaxYear, isProperty = true)
 
           val reliefsRemaining = (timeApportionedPRR + round("up", otherReliefsModel.timeApportionedReliefs)) - (timeApportionedPRR + otherReliefsUsed)
 

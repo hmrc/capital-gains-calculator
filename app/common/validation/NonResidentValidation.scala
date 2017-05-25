@@ -24,12 +24,10 @@ object NonResidentValidation {
 
   def validateNonResidentProperty(model: CalculationRequestModel): Either[String, CalculationRequestModel] = {
 
-    val customerType = validateCustomerType(model.customerType, keys.customerType)
     val priorDisposal = validateYesNo(model.priorDisposal, keys.priorDisposal)
     val annualExemptAmount = validateOptionDouble(model.annualExemptAmount, keys.annualExemptAmount)
     val otherPropertiesAmount = validateOptionDouble(model.otherPropertiesAmount, keys.otherPropertiesAmount)
-    val isVulnerable = validateOptionYesNo(model.isVulnerable, keys.vulnerable)
-    val currentIncome = validateOptionDouble(model.currentIncome, keys.currentIncome)
+    val currentIncome = validateDouble(model.currentIncome, keys.currentIncome)
     val personalAllowanceAmount = validateOptionDouble(model.personalAllowanceAmount, keys.personalAllowanceAmount)
     val disposalValue = validateDouble(model.disposalValue, keys.disposalValue)
     val disposalCosts = validateDouble(model.disposalCosts, keys.disposalCosts)
@@ -43,13 +41,13 @@ object NonResidentValidation {
     val isClaimingPRR = validateOptionYesNo(model.isClaimingPRR, keys.isClaimingPRR)
     val daysClaimed = validateOptionDouble(model.daysClaimed, keys.daysClaimed)
 
-    (customerType, priorDisposal, annualExemptAmount, otherPropertiesAmount, isVulnerable, currentIncome,
+    (priorDisposal, annualExemptAmount, otherPropertiesAmount, currentIncome,
       personalAllowanceAmount, disposalValue, disposalCosts, initialValue, initialCosts, improvementsAmount,
       reliefsAmount, allowableLosses, acquisitionDate, disposalDate, isClaimingPRR, daysClaimed) match {
-      case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_),
+      case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_),
       Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_)) =>
         Right(model)
-      case _ => Left(getFirstErrorMessage(Seq(customerType, priorDisposal, annualExemptAmount, otherPropertiesAmount, isVulnerable, currentIncome,
+      case _ => Left(getFirstErrorMessage(Seq(priorDisposal, annualExemptAmount, otherPropertiesAmount, currentIncome,
         personalAllowanceAmount, disposalValue, disposalCosts, initialValue, initialCosts, improvementsAmount,
         reliefsAmount, allowableLosses, acquisitionDate, disposalDate, isClaimingPRR, daysClaimed)))
     }
@@ -57,12 +55,10 @@ object NonResidentValidation {
 
   def validateNonResidentTimeApportioned(model: TimeApportionmentCalculationRequestModel): Either[String, TimeApportionmentCalculationRequestModel] = {
 
-    val customerType = validateCustomerType(model.customerType, keys.customerType)
     val priorDisposal = validateYesNo(model.priorDisposal, keys.priorDisposal)
     val annualExemptAmount = validateOptionDouble(model.annualExemptAmount, keys.annualExemptAmount)
     val otherPropertiesAmount = validateOptionDouble(model.otherPropertiesAmount, keys.otherPropertiesAmount)
-    val isVulnerable = validateOptionYesNo(model.isVulnerable, keys.vulnerable)
-    val currentIncome = validateOptionDouble(model.currentIncome, keys.currentIncome)
+    val currentIncome = validateDouble(model.currentIncome, keys.currentIncome)
     val personalAllowanceAmount = validateOptionDouble(model.personalAllowanceAmount, keys.personalAllowanceAmount)
     val disposalValue = validateDouble(model.disposalValue, keys.disposalValue)
     val disposalCosts = validateDouble(model.disposalCosts, keys.disposalCosts)
@@ -76,13 +72,13 @@ object NonResidentValidation {
     val isClaimingPRR = validateOptionYesNo(model.isClaimingPRR, keys.isClaimingPRR)
     val daysClaimed = validateOptionDouble(model.daysClaimed, keys.daysClaimed)
 
-    (customerType, priorDisposal, annualExemptAmount, otherPropertiesAmount, isVulnerable, currentIncome,
+    (priorDisposal, annualExemptAmount, otherPropertiesAmount, currentIncome,
       personalAllowanceAmount, disposalValue, disposalCosts, initialValue, initialCosts, improvementsAmount,
       reliefsAmount, allowableLosses, acquisitionDate, disposalDate, isClaimingPRR, daysClaimed) match {
-      case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_),
+      case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_),
       Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_)) =>
         Right(model)
-      case _ => Left(getFirstErrorMessage(Seq(customerType, priorDisposal, annualExemptAmount, otherPropertiesAmount, isVulnerable, currentIncome,
+      case _ => Left(getFirstErrorMessage(Seq(priorDisposal, annualExemptAmount, otherPropertiesAmount, currentIncome,
         personalAllowanceAmount, disposalValue, disposalCosts, initialValue, initialCosts, improvementsAmount,
         reliefsAmount, allowableLosses, acquisitionDate, disposalDate, isClaimingPRR, daysClaimed)))
     }

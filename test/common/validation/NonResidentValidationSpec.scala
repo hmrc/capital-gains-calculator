@@ -22,15 +22,12 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class NonResidentValidationSpec extends UnitSpec {
 
-  val validModel = CalculationRequestModel(
-    "individual", "No", None, None, None, None, None, 200000.0, 800.0, 100000.0,
-    200.0, 12000.0, 0, 0, None, DateTime.parse("2016-12-12"), None, None, isProperty = true
-  )
+  val validModel = CalculationRequestModel("No", None, None, 0, None, 200000.0, 800.0, 100000.0,
+    200.0, 12000.0, 0, 0, None, DateTime.parse("2016-12-12"), None, None)
 
   val validTimeModel = TimeApportionmentCalculationRequestModel(
-    "individual", "No", None, None, None, None, None, 200000.0, 800.0, 100000.0,
-    200.0, 12000.0, 0, 0, DateTime.parse("2010-12-12"), DateTime.parse("2016-12-12"), None, None, isProperty = true
-  )
+    "No", None, None, 0, None, 200000.0, 800.0, 100000.0,
+    200.0, 12000.0, 0, 0, DateTime.parse("2010-12-12"), DateTime.parse("2016-12-12"), None, None)
 
   "Calling validateNonResidentProperty with a valid model" should {
     "return a Right with all validation passing" in {
@@ -40,148 +37,117 @@ class NonResidentValidationSpec extends UnitSpec {
   }
 
   "Calling validateNonResidentProperty with an invalid model" should {
-    "When the first error is the customer type" in {
-      NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "sdfdwq", "frew", Some(-1239.00), Some(1.00123), Some("adeuwif"), Some(9123182324127123.0), Some(-12314.0),
-        -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("customerType must be either individual, trustee or personalRep")
-    }
 
     "When the first error is the priorDisposal" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "frew", Some(-1239.00), Some(1.00123), Some("adeuwif"), Some(9123182324127123.0), Some(-12314.0),
+        "frew", Some(-1239.00), Some(1.00123), 9123182324127123.0, Some(-12314.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("priorDisposal must be either Yes or No")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("priorDisposal must be either Yes or No")
     }
 
     "When the first error is the annualExemptAmount" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(-1239.00), Some(1.00123), Some("adeuwif"), Some(9123182324127123.0), Some(-12314.0),
+        "Yes", Some(-1239.00), Some(1.00123), 9123182324127123.0, Some(-12314.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("annualExemptAmount cannot be negative.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("annualExemptAmount cannot be negative.")
     }
 
     "When the first error is the otherPropertiesAmount" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00123), Some("adeuwif"), Some(9123182324127123.0), Some(-12314.0),
+        "Yes", Some(1239.00), Some(1.00123), 9123182324127123.0, Some(-12314.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("otherPropertiesAmt has too many decimal places.")
-    }
-
-    "When the first error is the isVulnerable" in {
-      NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("adeuwif"), Some(9123182324127123.0), Some(-12314.0),
-        -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("isVulnerable must be either Yes or No")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("otherPropertiesAmt has too many decimal places.")
     }
 
     "When the first error is the currentIncome" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(9123182324127123.0), Some(-12314.0),
+        "Yes", Some(1239.00), Some(1.00), 91231823241123123.0, Some(-12314.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("currentIncome cannot be larger than 1,000,000,000.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("currentIncome cannot be larger than 1,000,000,000.")
     }
 
     "When the first error is the personalAllowanceAmount" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(-12314.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(-12314.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("personalAllowanceAmt cannot be negative.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("personalAllowanceAmt cannot be negative.")
     }
 
     "When the first error is the disposalValue" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         -200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("disposalValue cannot be negative.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("disposalValue cannot be negative.")
     }
 
     "When the first error is the disposalCosts" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.01234123, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("disposalCosts has too many decimal places.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("disposalCosts has too many decimal places.")
     }
 
     "When the first error is the initialValue" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 1000000000000000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("initialValueAmt cannot be larger than 1,000,000,000.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("initialValueAmt cannot be larger than 1,000,000,000.")
     }
 
     "When the first error is the initialCosts" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, -200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("initialCostsAmt cannot be negative.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("initialCostsAmt cannot be negative.")
     }
 
     "When the first error is the improvementsAmount" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0813, 0.2138924, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("improvementsAmt has too many decimal places.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("improvementsAmt has too many decimal places.")
     }
 
     "When the first error is the reliefsAmount" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2134, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("reliefs has too many decimal places.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("reliefs has too many decimal places.")
     }
 
     "When the first error is the allowableLosses" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 0.123893, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("allowableLossesAmt has too many decimal places.")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("allowableLossesAmt has too many decimal places.")
     }
 
     "When the first error is the acquisitionDate" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, Some(DateTime.parse("2016-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("The acquisitionDate must be before the disposalDate")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("The acquisitionDate must be before the disposalDate")
     }
 
     "When the first error is the disposalDate" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, Some(DateTime.parse("2010-12-24")),
-        DateTime.parse("2014-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("disposalDate cannot be before 2015-04-06")
+        DateTime.parse("2014-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("disposalDate cannot be before 2015-04-06")
     }
 
     "When the first error is the isClaimingPRR" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, Some(DateTime.parse("2010-12-24")),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("isClaimingPRR must be either Yes or No")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("isClaimingPRR must be either Yes or No")
     }
 
     "When the first error is the daysClaimed" in {
       NonResidentValidation.validateNonResidentProperty(CalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, Some(DateTime.parse("2010-12-24")),
-        DateTime.parse("2016-12-12"), Some("Yes"), Some(10231289.129), isProperty = true
-      )) shouldBe Left("daysClaimed has too many decimal places.")
+        DateTime.parse("2016-12-12"), Some("Yes"), Some(10231289.129))) shouldBe Left("daysClaimed has too many decimal places.")
     }
   }
 
@@ -195,18 +161,16 @@ class NonResidentValidationSpec extends UnitSpec {
   "Calling validateNonResidentTimeApportioned with an invalid model" should {
     "When the first error is the acquisitionDate" in {
       NonResidentValidation.validateNonResidentTimeApportioned(TimeApportionmentCalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, DateTime.parse("2016-12-24"),
-        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("The acquisitionDate must be before the disposalDate")
+        DateTime.parse("2016-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("The acquisitionDate must be before the disposalDate")
     }
 
     "When the first error is the disposalDate" in {
       NonResidentValidation.validateNonResidentTimeApportioned(TimeApportionmentCalculationRequestModel(
-        "individual", "Yes", Some(1239.00), Some(1.00), Some("No"), Some(5000.0), Some(1000.0),
+        "Yes", Some(1239.00), Some(1.00), 5000.0, Some(1000.0),
         200000.0, 800.0, 100000.0, 200.0, 12000.0, 0.2, 1000.0, DateTime.parse("2010-12-24"),
-        DateTime.parse("2014-12-12"), Some("suihur"), Some(10231289.129312), isProperty = true
-      )) shouldBe Left("disposalDate cannot be before 2015-04-06")
+        DateTime.parse("2014-12-12"), Some("suihur"), Some(10231289.129312))) shouldBe Left("disposalDate cannot be before 2015-04-06")
     }
   }
 

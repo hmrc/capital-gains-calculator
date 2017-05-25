@@ -30,11 +30,9 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
   // the values to bind to a valid request
   val validRequest: Map[String, Seq[String]] = Map(
-    keys.customerType -> Seq("individual"),
     keys.priorDisposal -> Seq("Yes"),
     keys.annualExemptAmount -> Seq("111.11"),
     keys.otherPropertiesAmount -> Seq("222.22"),
-    keys.vulnerable -> Seq("Yes"),
     keys.currentIncome -> Seq("333.33"),
     keys.personalAllowanceAmount -> Seq("444.44"),
     keys.disposalValue -> Seq("555.55"),
@@ -52,12 +50,10 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
   // the expected result of binding valid requests
   val expectedRequest = CalculationRequestModel(
-    "individual",
     "Yes",
     Some(111.11),
     Some(222.22),
-    Some("Yes"),
-    Some(333.33),
+    333.33,
     Some(444.44),
     555.55,
     666.66,
@@ -73,18 +69,13 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = CalculationRequestModel("", "", None, None, None, None, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
+  val emptyCalculationRequest = CalculationRequestModel("", None, None, 0.00, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, None, DateTime.parse("0000-01-01"), None, None)
 
   "Binding a valid non resident calculation request" when {
 
     val result = target.bind("", validRequest) match {
       case Some(Right(data)) => data
       case _ => emptyCalculationRequest
-    }
-    "a customer type is defined" should {
-      "return a CalculationRequest with the customer type populated" in {
-        result.customerType shouldBe expectedRequest.customerType
-      }
     }
 
     "a prior disposal is defined" should {
@@ -133,29 +124,9 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       }
     }
 
-    "a vulnerable flag is defined" should {
-      "return a CalculationRequest with the vulnerable flag populated" in {
-        result.isVulnerable shouldBe expectedRequest.isVulnerable
-      }
-    }
-
     "a current income is defined" should {
       "return a CalculationRequest with the current income populated" in {
         result.currentIncome shouldBe expectedRequest.currentIncome
-      }
-    }
-
-    "a current income is not defined" should {
-      val request = validRequest.filterKeys(key => key != keys.currentIncome)
-      val result = target.bind("", request) match {
-        case Some(Right(data)) => data
-        case _ => emptyCalculationRequest
-      }
-      "return a CalculationRequest with the current income not populated" in {
-        result.currentIncome shouldBe None
-      }
-      "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
       }
     }
 
@@ -298,14 +269,6 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
     def doubleParseError(param: String, value: String): String = s"""Cannot parse parameter $param as Double: For input string: "$value""""
 
     def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""
-
-    "a customer type is not supplied" should {
-      "return an error message" in {
-        val request = badRequest(keys.customerType, None)
-        val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.customerType} is required."))
-      }
-    }
 
     "a prior disposal is not supplied" should {
       "return an error message" in {
@@ -513,12 +476,8 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       val request = expectedRequest
       val result = target.unbind("", request)
 
-      "output the customer type key and value" in {
-        result should include(s"${keys.customerType}=ind")
-      }
-
       "output the prior disposal key and value" in {
-        result should include(s"&${keys.priorDisposal}=Yes")
+        result should include(s"${keys.priorDisposal}=Yes")
       }
 
       "output the annual exempt amount key and value" in {
@@ -527,10 +486,6 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "output the other properties amount key and value" in {
         result should include(s"&${keys.otherPropertiesAmount}=222.22")
-      }
-
-      "output the vulnerable flag key and value" in {
-        result should include(s"&${keys.vulnerable}=Yes")
       }
 
       "output the current income key and value" in {
@@ -597,14 +552,6 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
       "not output the other properties amount key and value" in {
         result should not include s"&${keys.otherPropertiesAmount}"
-      }
-
-      "not output the vulnerable flag key and value" in {
-        result should not include s"&${keys.vulnerable}"
-      }
-
-      "not output the current income key and value" in {
-        result should not include s"&${keys.currentIncome}"
       }
 
       "not output the personal allowance key and value" in {

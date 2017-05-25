@@ -141,7 +141,7 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
   "The route for calculate tax owed for non-resident properties" should {
     val testDate = Some(new DateTime("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1,1,1,1,1,Some(1),1,testDate.get, testDate,
-      1, PrivateResidenceReliefModel(true, Some(1), Some(1)),"test",Some("test"),1,1,1,1,1,1, OtherReliefsModel(1, 1, 1)).url
+      1, PrivateResidenceReliefModel(claimingPRR = true, Some(1), Some(1)),1,1,1,1,1,1, OtherReliefsModel(1, 1, 1)).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -198,14 +198,6 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
     "include the days claimed after the tax started query string parameter" in {
       queryStringParameters should include("daysClaimedAfter=1.0")
-    }
-
-    "include the customer type query string parameter" in {
-      queryStringParameters should include("customerType=test")
-    }
-
-    "include the is vulnerable query string parameter" in {
-      queryStringParameters should include("isVulnerable=test")
     }
 
     "include the current income query string parameter" in {
