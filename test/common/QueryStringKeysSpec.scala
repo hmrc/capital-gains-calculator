@@ -24,10 +24,6 @@ class QueryStringKeysSpec extends UnitSpec {
 
   "NonResidentCalculationKeys" should {
 
-    s"have a customer type key with the value ${target.customerType}" in {
-      target.customerType shouldBe "customerType"
-    }
-
     s"have a prior disposal key with the value ${target.priorDisposal}" in {
       target.priorDisposal shouldBe "priorDisposal"
     }
@@ -38,10 +34,6 @@ class QueryStringKeysSpec extends UnitSpec {
 
     s"have an other properties amount key with the value ${target.otherPropertiesAmount}" in {
       target.otherPropertiesAmount shouldBe "otherPropertiesAmt"
-    }
-
-    s"have a vulnerable key with the value ${target.vulnerable}" in {
-      target.vulnerable shouldBe "isVulnerable"
     }
 
     s"have a current income key with the value ${target.currentIncome}" in {

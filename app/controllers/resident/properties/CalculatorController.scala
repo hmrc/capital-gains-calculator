@@ -34,7 +34,7 @@ trait CalculatorController extends BaseController {
 
   val calculationService: CalculationService
 
-  def calculateTotalGain (propertyGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalGain(propertyGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async { implicit request =>
 
     val result = calculationService.calculateGainFlat(propertyGainModel.totalGainModel.disposalValue,
       propertyGainModel.totalGainModel.disposalCosts,
@@ -45,7 +45,7 @@ trait CalculatorController extends BaseController {
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateChargeableGain (propertyChargeableGainModel: PropertyChargeableGainModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateChargeableGain(propertyChargeableGainModel: PropertyChargeableGainModel): Action[AnyContent] = Action.async { implicit request =>
 
     val taxYear = getTaxYear(propertyChargeableGainModel.disposalDate)
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
@@ -58,7 +58,7 @@ trait CalculatorController extends BaseController {
 
     val prrUsed = CalculationService.determineReliefsUsed(gain, propertyChargeableGainModel.prrValue)
     val lettingReliefsUsed = CalculationService.determineLettingsReliefsUsed(gain, prrUsed,
-      propertyChargeableGainModel.lettingReliefs,calcTaxYear)
+      propertyChargeableGainModel.lettingReliefs, calcTaxYear)
     val chargeableGain = calculationService.calculateChargeableGain(
       gain, lettingReliefsUsed + prrUsed, propertyChargeableGainModel.allowableLosses.getOrElse(0),
       propertyChargeableGainModel.annualExemptAmount, propertyChargeableGainModel.broughtForwardLosses.getOrElse(0)
@@ -113,11 +113,11 @@ trait CalculatorController extends BaseController {
     )
     val deductions = prrUsed + lettingReliefsUsed + propertyCalculateTaxOwedModel.propertyChargeableGainModel.allowableLosses.getOrElse(0.0) +
       aeaUsed + propertyCalculateTaxOwedModel.propertyChargeableGainModel.broughtForwardLosses.getOrElse(0.0)
-    val calculationResult: CalculationResultModel  = calculationService.calculationResult ("individual", gain, chargeableGain,
+    val calculationResult: CalculationResultModel = calculationService.calculationResult(gain, chargeableGain,
       negativeToZero(chargeableGain), calculationService.brRemaining(propertyCalculateTaxOwedModel.previousIncome,
         propertyCalculateTaxOwedModel.personalAllowance, propertyCalculateTaxOwedModel.previousTaxableGain.getOrElse(0.0),
         Date.getTaxYear(propertyCalculateTaxOwedModel.propertyChargeableGainModel.disposalDate)),
-      0.0, "No", aeaUsed, 0.0, calcTaxYear, true)
+      0.0, "No", aeaUsed, 0.0, calcTaxYear, isProperty = true)
     val result: TaxOwedResultModel = TaxOwedResultModel(
       gain,
       chargeableGain,

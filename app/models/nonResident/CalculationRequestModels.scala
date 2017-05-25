@@ -19,12 +19,10 @@ package models.nonResident
 import common.binders.{NonResidentCalculationRequestBinder, NonResidentTimeApportionmentCalculationRequestBinder}
 import org.joda.time.DateTime
 
-case class CalculationRequestModel(customerType: String,
-                                   priorDisposal: String,
+case class CalculationRequestModel(priorDisposal: String,
                                    annualExemptAmount: Option[Double],
                                    otherPropertiesAmount: Option[Double],
-                                   isVulnerable: Option[String],
-                                   currentIncome: Option[Double],
+                                   currentIncome: Double,
                                    personalAllowanceAmount: Option[Double],
                                    disposalValue: Double,
                                    disposalCosts: Double,
@@ -41,12 +39,10 @@ case class CalculationRequestModel(customerType: String,
 
 object CalculationRequestModel extends NonResidentCalculationRequestBinder
 
-case class TimeApportionmentCalculationRequestModel(customerType: String,
-                                                    priorDisposal: String,
+case class TimeApportionmentCalculationRequestModel(priorDisposal: String,
                                                     annualExemptAmount: Option[Double],
                                                     otherPropertiesAmount: Option[Double],
-                                                    isVulnerable: Option[String],
-                                                    currentIncome: Option[Double],
+                                                    currentIncome: Double,
                                                     personalAllowanceAmount: Option[Double],
                                                     disposalValue: Double,
                                                     disposalCosts: Double,

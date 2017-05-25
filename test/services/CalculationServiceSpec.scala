@@ -16,55 +16,22 @@
 
 package services
 
-import config.TaxRatesAndBands
-import models.resident.properties.PropertyTotalGainModel
-import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
-import uk.gov.hmrc.play.test.UnitSpec
 import services.CalculationService._
+import uk.gov.hmrc.play.test.UnitSpec
 
 class CalculationServiceSpec extends UnitSpec {
 
   "Calling CalculationService.annualExemptAmount" should {
 
-    "return a value of 11100 when Person is Individual and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("individual", "No", disposalDate = DateTime.parse("2015-10-10"))
+    "return a value of 11100 when no prior disposal for the year has happened" in {
+      val result = CalculationService.calculateAEA("No", disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 11100
     }
 
-    "return a value of 2000 (remaining AEA input) when Person is Individual and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("individual", "Yes", Some(2000), disposalDate = DateTime.parse("2015-10-10"))
+    "return a value of 2000 (remaining AEA input) a prior disposal for year has resulted in gain" in {
+      val result = CalculationService.calculateAEA("Yes", Some(2000), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 2000
-    }
-
-    "return a value of 11100 when Person is PR and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("personalRep", "No", disposalDate = DateTime.parse("2015-10-10"))
-      result shouldEqual 11100
-    }
-
-    "return a value of 1500 (remaining AEA input) when Person is PR and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("personalRep", "Yes", Some(1500), disposalDate = DateTime.parse("2015-10-10"))
-      result shouldEqual 1500
-    }
-
-    "return a value of 11100 when Person is Trustee for Vulnerable Person and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "No", None, Some("Yes"), disposalDate = DateTime.parse("2015-10-10"))
-      result shouldEqual 11100
-    }
-
-    "return a value of 5550 when Person is other Trustee and has no prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "No", disposalDate = DateTime.parse("2015-10-10"))
-      result shouldEqual 5550
-    }
-
-    "return a value of 1000 (remaining AEA input) when Person is Trustee for Vulnerable Person and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "Yes", Some(1000), Some("Yes"), disposalDate = DateTime.parse("2015-10-10"))
-      result shouldEqual 1000
-    }
-
-    "return a value of 500 (remaining AEA input) when Person is other Trustee and has a prior disposal for year" in {
-      val result = CalculationService.calculateAEA("trustee", "Yes", Some(500), Some("No"), disposalDate = DateTime.parse("2015-10-10"))
-      result shouldEqual 500
     }
   }
 
@@ -202,10 +169,9 @@ class CalculationServiceSpec extends UnitSpec {
         "at 28%" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
-          customerType = "individual",
           priorDisposal = "Yes",
           annualExemptAmount = Some(5000),
-          currentIncome = Some(50000),
+          currentIncome = 50000,
           personalAllowanceAmt = Some(11000.00),
           disposalValue = 124000.68,
           disposalCosts = 1241.22,
@@ -250,12 +216,10 @@ class CalculationServiceSpec extends UnitSpec {
         "PRR of £2015" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
-          customerType = "individual",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
           otherPropertiesAmt = Some(0),
-          isVulnerable = Some("No"),
-          currentIncome = Some(0),
+          currentIncome = 0,
           personalAllowanceAmt = Some(0),
           disposalValue = 2000,
           disposalCosts = 0,
@@ -290,12 +254,10 @@ class CalculationServiceSpec extends UnitSpec {
         "PRR of £43,548" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
-          customerType = "individual",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
           otherPropertiesAmt = Some(0),
-          isVulnerable = Some("No"),
-          currentIncome = Some(0),
+          currentIncome = 0,
           personalAllowanceAmt = Some(0),
           disposalValue = 100000,
           disposalCosts = 0,
@@ -346,10 +308,9 @@ class CalculationServiceSpec extends UnitSpec {
         "and a PRR total of £19535" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "flat",
-          customerType = "individual",
           priorDisposal = "Yes",
           annualExemptAmount = Some(4999.23),
-          currentIncome = Some(49999.34),
+          currentIncome = 49999.34,
           personalAllowanceAmt = Some(10999.45),
           disposalValue = 124000.68,
           disposalCosts = 1241.22,
@@ -400,10 +361,9 @@ class CalculationServiceSpec extends UnitSpec {
         "at 28%" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "rebased",
-          customerType = "individual",
           priorDisposal = "Yes",
           annualExemptAmount = Some(5000),
-          currentIncome = Some(50000),
+          currentIncome = 50000,
           personalAllowanceAmt = Some(11000),
           disposalValue = 124000.68,
           disposalCosts = 1241.22,
@@ -448,12 +408,10 @@ class CalculationServiceSpec extends UnitSpec {
       "return £0 tax owed for an Individual claiming PRR, with a total gain of £100,000 and PRR of £100,000" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "rebased",
-          customerType = "individual",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
           otherPropertiesAmt = Some(0),
-          isVulnerable = Some("No"),
-          currentIncome = Some(0),
+          currentIncome = 0,
           personalAllowanceAmt = Some(0),
           disposalValue = 110000,
           disposalCosts = 0,
@@ -499,111 +457,10 @@ class CalculationServiceSpec extends UnitSpec {
           result.simplePRR shouldEqual Some(100000)
         }
       }
-
-      "return £17206.28 tax owed for a Trustee not for Vulnerable person claiming PRR, with a total gain of £288400 and " +
-        "PRR of £220,707" should {
-        val result = CalculationService.calculateCapitalGainsTax(
-          calculationType = "rebased",
-          customerType = "trustee",
-          priorDisposal = "No",
-          annualExemptAmount = Some(0),
-          otherPropertiesAmt = Some(0),
-          isVulnerable = Some("No"),
-          currentIncome = Some(0),
-          personalAllowanceAmt = Some(0),
-          disposalValue = 323456.78,
-          disposalCosts = 1001.34,
-          acquisitionValueAmt = 455.67,
-          acquisitionCostsAmt = 100.45,
-          revaluedAmount = 34000.78,
-          revaluationCost = 12.99,
-          improvementsAmt = 39.99,
-          reliefs = 300.99,
-          allowableLossesAmt = 390.45,
-          acquisitionDate = Some(DateTime.parse("2015-04-06")),
-          disposalDate = DateTime.parse("2017-03-25"),
-          isClaimingPRR = Some("Yes"),
-          daysClaimedAfter = Some(3),
-          isProperty = true
-        )
-
-        "have tax owed of £17,206.28" in {
-          result.taxOwed shouldEqual 17206.28
-        }
-
-        "have the total gain £288,400" in {
-          result.totalGain shouldEqual 288400
-        }
-
-        "have the base tax gain of 0.0" in {
-          result.baseTaxGain shouldEqual 0
-        }
-
-        "have the base tax rate of 0%" in {
-          result.baseTaxRate shouldEqual 0
-        }
-
-        "have the upper tax gain of £61,451" in {
-          result.upperTaxGain shouldEqual Some(61451)
-        }
-
-        "have the upper tax rate of 28%" in {
-          result.upperTaxRate shouldEqual Some(28)
-        }
-
-        "have total PRR of £220,707" in {
-          result.simplePRR shouldEqual Some(220707)
-        }
-      }
     }
 
     //########### Time Apportioned Tests ##########################
     "when using the Time apportioned calculation method" should {
-
-      "for a Trust disposing on 01/01/2016, acquired=01/04/2014 and net disposal proceeds of 31,100 not claiming ER" should {
-        val result = CalculationService.calculateCapitalGainsTax(
-          calculationType = "time",
-          customerType = "trustee",
-          priorDisposal = "No",
-          isVulnerable = Some("No"),
-          disposalValue = 31100,
-          disposalCosts = 0,
-          revaluedAmount = 0,
-          revaluationCost = 0,
-          acquisitionValueAmt = 0,
-          acquisitionCostsAmt = 0,
-          improvementsAmt = 0,
-          reliefs = 0,
-          allowableLossesAmt = 0,
-          acquisitionDate = Some(DateTime.parse("2014-04-01")),
-          disposalDate = DateTime.parse("2016-01-01"),
-          isProperty = true
-        )
-
-        "have tax owed of £2127.44" in {
-          result.taxOwed shouldEqual 2127.44
-        }
-
-        "have the total gain £13148" in {
-          result.totalGain shouldEqual 13148
-        }
-
-        "have the base tax gain of £0.00" in {
-          result.baseTaxGain shouldEqual 0.00
-        }
-
-        "have the base tax rate of 0%" in {
-          result.baseTaxRate shouldEqual 0
-        }
-
-        "have the upper tax gain of £7598" in {
-          result.upperTaxGain shouldEqual Some(7598)
-        }
-
-        "have the upper tax rate of 28%" in {
-          result.upperTaxRate shouldEqual Some(28)
-        }
-      }
 
       //############### Time Apportioned PRR ######################
 
@@ -611,12 +468,10 @@ class CalculationServiceSpec extends UnitSpec {
         "disposal date of 06-10-2016 and days claimed of 3" should {
         val result = CalculationService.calculateCapitalGainsTax(
           calculationType = "time",
-          customerType = "individual",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
           otherPropertiesAmt = Some(0),
-          isVulnerable = Some("No"),
-          currentIncome = Some(0),
+          currentIncome = 0,
           personalAllowanceAmt = Some(0),
           disposalValue = 110000,
           disposalCosts = 0,
@@ -660,62 +515,6 @@ class CalculationServiceSpec extends UnitSpec {
 
         "have total PRR of £109,800" in {
           result.simplePRR shouldEqual Some(109800)
-        }
-      }
-
-      "return £19,405.12 tax owed for a Trustee not for Vulnerable person claiming PRR, with a total gain of £321,857 and " +
-        "PRR of £246,311" should {
-        val result = CalculationService.calculateCapitalGainsTax(
-          calculationType = "time",
-          customerType = "trustee",
-          priorDisposal = "No",
-          annualExemptAmount = Some(0),
-          otherPropertiesAmt = Some(0),
-          isVulnerable = Some("No"),
-          currentIncome = Some(0),
-          personalAllowanceAmt = Some(0),
-          disposalValue = 323456.78,
-          disposalCosts = 1001.34,
-          acquisitionValueAmt = 455.67,
-          acquisitionCostsAmt = 100.45,
-          revaluedAmount = 34000.78,
-          revaluationCost = 12.99,
-          improvementsAmt = 39.99,
-          reliefs = 300.99,
-          allowableLossesAmt = 390.45,
-          acquisitionDate = Some(DateTime.parse("2015-04-06")),
-          disposalDate = DateTime.parse("2017-03-25"),
-          isClaimingPRR = Some("Yes"),
-          daysClaimedAfter = Some(3),
-          isProperty = true
-        )
-
-        "have tax owed of £19,405.12" in {
-          result.taxOwed shouldEqual 19405.12
-        }
-
-        "have the total gain £321,857" in {
-          result.totalGain shouldEqual 321857
-        }
-
-        "have the base tax gain of 0.0" in {
-          result.baseTaxGain shouldEqual 0
-        }
-
-        "have the base tax rate of 0%" in {
-          result.baseTaxRate shouldEqual 0
-        }
-
-        "have the upper tax gain of £61,451" in {
-          result.upperTaxGain shouldEqual Some(69304)
-        }
-
-        "have the upper tax rate of 28%" in {
-          result.upperTaxRate shouldEqual Some(28)
-        }
-
-        "have total PRR of £246,311" in {
-          result.simplePRR shouldEqual Some(246311)
         }
       }
     }
@@ -871,7 +670,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       }
 
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.taxOwed shouldEqual 0.0
       result.totalGain shouldEqual 0.0
@@ -885,11 +684,10 @@ class CalculationServiceSpec extends UnitSpec {
     val testService = new CalculationService {
       override def calculateGainFlat(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
                                      acquisitionCostsAmt: Double, improvementsAmt: Double) = -200.00
-
     }
 
     "for an individual performing flat who is not claiming ER resulting in a £200 loss" should {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
 
       "return -200 for total gain" in {
@@ -902,8 +700,8 @@ class CalculationServiceSpec extends UnitSpec {
     }
 
     "for an individual performing flat who is claiming ER resulting in a £200 loss" should {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = DateTime.parse("2016-10-10"),isProperty = true)
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
+        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
 
       "return -200 for total gain" in {
         result.totalGain shouldEqual -200.0
@@ -924,35 +722,35 @@ class CalculationServiceSpec extends UnitSpec {
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain beyond zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the allowable losses reduce the gain to zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
     }
 
     "return a calculation result model with -200.00 taxable gain if the allowable losses reduce the gain beyond zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.0
       result.baseTaxGain shouldEqual -200.0
     }
 
     "return a calculation result model with 0 taxable gain if the AEA can reduce the gain too or beyond zero" in {
-      val result = testService.calculateCapitalGainsTax("flat", "individual", "No", Some(0), Some(0), Some("No"), Some(0), Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
         disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
       result.totalGain shouldEqual 200.00
       result.baseTaxGain shouldEqual 0.0
@@ -1064,22 +862,22 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determineLossLeft method" should {
 
     "return loss remaining equal to £90 when Gain is £10 and £100 loss" in {
-      val result = CalculationService.determineLossLeft(10,100)
+      val result = CalculationService.determineLossLeft(10, 100)
       result shouldEqual 90
     }
 
     "return loss remaining equal to £1 when Gain is £0 and £0.01 loss" in {
-      val result = CalculationService.determineLossLeft(0,0.01)
+      val result = CalculationService.determineLossLeft(0, 0.01)
       result shouldEqual 1
     }
 
     "return loss remaining equal to £0 when Gain is £50 and £0.00 loss " in {
-      val result = CalculationService.determineLossLeft(50,0)
+      val result = CalculationService.determineLossLeft(50, 0)
       result shouldEqual 0
     }
 
     "return loss remaining equal to £0 when Gain is £0 and £0 loss " in {
-      val result = CalculationService.determineLossLeft(0,0)
+      val result = CalculationService.determineLossLeft(0, 0)
       result shouldEqual 0
     }
 
@@ -1150,15 +948,15 @@ class CalculationServiceSpec extends UnitSpec {
 
   "Calling the calculateAmountUsed method" should {
     "return 0 when supplied with 10 and 10" in {
-      calculateAmountUsed(10,10) shouldEqual 0
+      calculateAmountUsed(10, 10) shouldEqual 0
     }
 
     "return 1 when supplied with 10 and 9" in {
-      calculateAmountUsed(10,9) shouldEqual 1
+      calculateAmountUsed(10, 9) shouldEqual 1
     }
 
     "return 0 when supplied with 9 and 10" in {
-      calculateAmountUsed(9,10) shouldEqual 0
+      calculateAmountUsed(9, 10) shouldEqual 0
     }
   }
 
@@ -1189,7 +987,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "when taxable gain is lower than basic rate remaining" should {
 
-        val result = CalculationService.calculationResult(customerType = "individual",
+        val result = CalculationService.calculationResult(
           gain = 10000,
           taxableGain = 10000,
           chargeableGain = 10000,
@@ -1212,7 +1010,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "when taxable gain is higher than basic rate remaining" should {
 
-        val result = CalculationService.calculationResult(customerType = "individual",
+        val result = CalculationService.calculationResult(
           gain = 10000,
           taxableGain = 20000,
           chargeableGain = 20000,
@@ -1235,7 +1033,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "when a decimal result is produced" should {
 
-        val result = CalculationService.calculationResult(customerType = "individual",
+        val result = CalculationService.calculationResult(
           gain = 10000,
           taxableGain = 56789,
           chargeableGain = 56789,
