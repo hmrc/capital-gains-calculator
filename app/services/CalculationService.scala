@@ -159,11 +159,8 @@ trait CalculationService {
 
   def calculateAEA(priorDisposal: String, annualExemptAmount: Option[Double] = None, disposalDate: DateTime): Double = {
 
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(disposalDate.getYear)
-    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
-
     priorDisposal match {
-      case "No" => taxRatesAndBands.maxAnnualExemptAmount
+      case "No" => TaxRatesAndBands.getRates(TaxRatesAndBands.getClosestTaxYear(disposalDate.getYear)).maxAnnualExemptAmount
       case _ => annualExemptAmount.getOrElse(0)
     }
   }
