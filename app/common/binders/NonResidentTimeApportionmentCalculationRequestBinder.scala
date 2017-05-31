@@ -24,7 +24,6 @@ import play.api.mvc.QueryStringBindable
 trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders {
 
   val requiredParams = Seq(
-    keys.currentIncome,
     keys.priorDisposal,
     keys.disposalValue,
     keys.disposalCosts,

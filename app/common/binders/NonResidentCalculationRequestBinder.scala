@@ -24,7 +24,6 @@ import common.validation.{CommonValidation, NonResidentValidation}
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
   val requiredParams = Seq(
-    keys.currentIncome,
     keys.priorDisposal,
     keys.disposalValue,
     keys.disposalCosts,
