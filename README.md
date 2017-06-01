@@ -479,6 +479,28 @@ Calculates the tax owed for a non-resident capital gains user
 }
 ```
 
+## GET /capital-gains-calculator/non-resident/calculate-total-costs
+
+Calculates the total amount of costs in the total gain calculation for a non-resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalCosts":55.0,
+    "acquisitionCosts":50.0,
+    "improvements":2.0
+}
+```
+
+**Response**
+
+
+107
+
+
 ## GET /capital-gains-calculator/calculate-total-gain 
 
 Calculates the basic amount of gain for a resident capital gains user
@@ -563,7 +585,7 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "annualExemptAmount": 0,
     "disposalDate": 2016-12-12,
     "previousIncome": 28000.0,
-    "personalAllowance:11000.0
+    "personalAllowance":11000.0
 }
 ```
 
@@ -584,6 +606,28 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "allowableLossesUsed":0.0
 }
 ```
+
+## GET /capital-gains-calculator/calculate-total-costs 
+
+Calculates the total amount of costs in the total gain calculation for a resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "improvements": 25000.0
+}
+```
+
+**Response**
+
+25700
 
 ## GET /capital-gains-calculator/shares/calculate-total-gain
 
@@ -681,6 +725,27 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "allowableLossesUsed":2000.0
 }
 ```
+
+## GET /capital-gains-calculator/shares/calculate-total-costs
+
+Calculates the total amount of costs in the total gain calculation for a shares capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0
+}
+```
+
+**Reponse**
+
+700
 
 ## GET /capital-gains-calculator/tax-rates-and-bands/max-full-aea
 
