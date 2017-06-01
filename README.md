@@ -327,8 +327,8 @@ Calculates the basic amount of gain for a non-resident capital gains user
     "improvements":2.0,
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
-    "disposalDate":"2017-01-02"
-    "acquisitionDate":"2005-10-16"
+    "disposalDate":"2017-01-02",
+    "acquisitionDate":"2005-10-16",
     "improvementsAfterTaxStarted":4.0
 }
 ```
@@ -360,11 +360,11 @@ Calculates the basic amount of gain for a non-resident capital gains user includ
     "improvements":2.0,
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
-    "disposalDate":"2017-01-02"
-    "acquisitionDate":"2005-10-16"
-    "improvementsAfterTaxStarted":4.0
-    "claimingPRR":true
-    "daysClaimed":2847
+    "disposalDate":"2017-01-02",
+    "acquisitionDate":"2005-10-16",
+    "improvementsAfterTaxStarted":4.0,
+    "claimingPRR":true,
+    "daysClaimed":2847,
     "daysClaimedAfter":1
 }
 ```
@@ -408,13 +408,13 @@ Calculates the tax owed for a non-resident capital gains user
     "improvements":2.0,
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
-    "disposalDate":"2017-01-02"
-    "acquisitionDate":"2005-10-16"
-    "improvementsAfterTaxStarted":4.0
-    "claimingPRR":true
-    "daysClaimed":2847
-    "daysClaimedAfter":1
-    "customerType":individual,
+    "disposalDate":"2017-01-02",
+    "acquisitionDate":"2005-10-16",
+    "improvementsAfterTaxStarted":4.0,
+    "claimingPRR":true,
+    "daysClaimed":2847,
+    "daysClaimedAfter":1,
+    "customerType":"individual",
     "currentIncome":25000,
     "personalAllowanceAmt":11000,
     "allowableLoss":50000,
@@ -515,7 +515,7 @@ Calculates the basic amount of gain for a resident capital gains user
     "disposalCosts": 500.0,
     "acquisitionValue": 500000.0,
     "acquisitionCosts": 200.0,
-    "improvements": 25000.0,
+    "improvements": 25000.0
 }
 ```
 
@@ -542,7 +542,7 @@ Calculates the basic amount of gain minus deductions for a resident capital gain
     "allowableLosses": 2000.0,
     "broughtForwardLosses": 2000.0,
     "annualExemptAmount": 0,
-    "disposalDate": 2016-12-12
+    "disposalDate": "2016-12-12"
 }
 ```
 
@@ -583,7 +583,7 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "allowableLosses": 2000.0,
     "broughtForwardLosses": 2000.0,
     "annualExemptAmount": 0,
-    "disposalDate": 2016-12-12,
+    "disposalDate": "2016-12-12",
     "previousIncome": 28000.0,
     "personalAllowance":11000.0
 }
@@ -706,7 +706,7 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "previousTaxableGain" : 0,
     "previousIncome": 28000.0,
     "personalAllowance":11000.0,
-    "disposalDate":2016-12-12
+    "disposalDate":"2016-12-12"
 }
 ```
 
@@ -805,7 +805,7 @@ Returns the tax year for a given date
 
 ```json
 {
-    "disposalDate":2016-12-12
+    "disposalDate":"2016-12-12"
 }
 ```
 
