@@ -89,6 +89,12 @@ These are the available end points for the service. The table below gives detail
             personalAllowanceAmt: Option[Double], allowableLoss: Option[Double], previousGain: Option[Double], annualExemptAmount: Double, broughtForwardLoss: Option[Double]</td>
     </tr>
     <tr>
+        <td><code>/non-resident/calculate-total-costs</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the total costs for a given total gain calculation. This requires the following parameters:
+            disposalCosts: Double, acquisitionCosts: Double, improvements: Double</td>
+    </tr>
+    <tr>
         <td><code>/capital-gains-calculator/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with the results from the property total gain calculation. This requires a propertyTotalGainModel which is made of
@@ -114,6 +120,13 @@ These are the available end points for the service. The table below gives detail
             otherReliefsRebased: Option[Double], otherReliefsTimeApportioned: Option[Double]</td>
     </tr>
     <tr>
+        <td><code>/capital-gains-calculator/calculate-total-costs</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the total costs for a given property total gain calculation. This requires a propertyTotalGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            improvements: Double</td>
+    </tr>
+    <tr>
         <td><code>/capital-gains-calculator/shares/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with the results from the shares total gain calculation. This requires a totalGainModel which is made of
@@ -133,6 +146,12 @@ These are the available end points for the service. The table below gives detail
             the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
             allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
             previousIncome: Double, personalAllowance: Double, disposalDate: DateTime</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/shares/calculate-total-costs</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the total costs for a given shares total gain calculation. This requires a totalGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double</td>
     </tr>
     <tr>
         <td><code>/capital-gains-calculator/tax-rates-and-bands/max-full-aea</code></td>
