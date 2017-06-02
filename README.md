@@ -646,7 +646,7 @@ Calculates the basic amount of gain for a shares capital gains user
 }
 ```
 
-**Reponse**
+**Response**
 
 -50700.0
 
@@ -670,7 +670,7 @@ Calculates the basic amount of gain minus deductions for a shares capital gains 
 }
 ```
 
-**Reponse**
+**Response**
 
 ```json
 {
@@ -743,7 +743,7 @@ Calculates the total amount of costs in the total gain calculation for a shares 
 }
 ```
 
-**Reponse**
+**Response**
 
 700
 
