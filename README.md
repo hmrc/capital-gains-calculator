@@ -89,6 +89,12 @@ These are the available end points for the service. The table below gives detail
             personalAllowanceAmt: Option[Double], allowableLoss: Option[Double], previousGain: Option[Double], annualExemptAmount: Double, broughtForwardLoss: Option[Double]</td>
     </tr>
     <tr>
+        <td><code>/non-resident/calculate-total-costs</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the total costs for a given total gain calculation. This requires the following parameters:
+            disposalCosts: Double, acquisitionCosts: Double, improvements: Double</td>
+    </tr>
+    <tr>
         <td><code>/capital-gains-calculator/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with the results from the property total gain calculation. This requires a propertyTotalGainModel which is made of
@@ -114,6 +120,13 @@ These are the available end points for the service. The table below gives detail
             otherReliefsRebased: Option[Double], otherReliefsTimeApportioned: Option[Double]</td>
     </tr>
     <tr>
+        <td><code>/capital-gains-calculator/calculate-total-costs</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the total costs for a given property total gain calculation. This requires a propertyTotalGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
+            improvements: Double</td>
+    </tr>
+    <tr>
         <td><code>/capital-gains-calculator/shares/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with the results from the shares total gain calculation. This requires a totalGainModel which is made of
@@ -133,6 +146,12 @@ These are the available end points for the service. The table below gives detail
             the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double,
             allowableLosses: Option[Double], broughtForwardLosses: Option[Double], annualExemptAmount: Double, previousTaxableGain: Option[Double],
             previousIncome: Double, personalAllowance: Double, disposalDate: DateTime</td>
+    </tr>
+    <tr>
+        <td><code>/capital-gains-calculator/shares/calculate-total-costs</code></td>
+        <td>GET</td>
+        <td>Returns a JSON object which contains the total costs for a given shares total gain calculation. This requires a totalGainModel which is made of
+            the following variables: disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double</td>
     </tr>
     <tr>
         <td><code>/capital-gains-calculator/tax-rates-and-bands/max-full-aea</code></td>
@@ -308,8 +327,8 @@ Calculates the basic amount of gain for a non-resident capital gains user
     "improvements":2.0,
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
-    "disposalDate":"2017-01-02"
-    "acquisitionDate":"2005-10-16"
+    "disposalDate":"2017-01-02",
+    "acquisitionDate":"2005-10-16",
     "improvementsAfterTaxStarted":4.0
 }
 ```
@@ -341,11 +360,11 @@ Calculates the basic amount of gain for a non-resident capital gains user includ
     "improvements":2.0,
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
-    "disposalDate":"2017-01-02"
-    "acquisitionDate":"2005-10-16"
-    "improvementsAfterTaxStarted":4.0
-    "claimingPRR":true
-    "daysClaimed":2847
+    "disposalDate":"2017-01-02",
+    "acquisitionDate":"2005-10-16",
+    "improvementsAfterTaxStarted":4.0,
+    "claimingPRR":true,
+    "daysClaimed":2847,
     "daysClaimedAfter":1
 }
 ```
@@ -389,13 +408,13 @@ Calculates the tax owed for a non-resident capital gains user
     "improvements":2.0,
     "rebasedValue":150.0,
     "rebasedCosts":5.0,
-    "disposalDate":"2017-01-02"
-    "acquisitionDate":"2005-10-16"
-    "improvementsAfterTaxStarted":4.0
-    "claimingPRR":true
-    "daysClaimed":2847
-    "daysClaimedAfter":1
-    "customerType":individual,
+    "disposalDate":"2017-01-02",
+    "acquisitionDate":"2005-10-16",
+    "improvementsAfterTaxStarted":4.0,
+    "claimingPRR":true,
+    "daysClaimed":2847,
+    "daysClaimedAfter":1,
+    "customerType":"individual",
     "currentIncome":25000,
     "personalAllowanceAmt":11000,
     "allowableLoss":50000,
@@ -460,6 +479,28 @@ Calculates the tax owed for a non-resident capital gains user
 }
 ```
 
+## GET /capital-gains-calculator/non-resident/calculate-total-costs
+
+Calculates the total amount of costs in the total gain calculation for a non-resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalCosts":55.0,
+    "acquisitionCosts":50.0,
+    "improvements":2.0
+}
+```
+
+**Response**
+
+
+107
+
+
 ## GET /capital-gains-calculator/calculate-total-gain 
 
 Calculates the basic amount of gain for a resident capital gains user
@@ -474,7 +515,7 @@ Calculates the basic amount of gain for a resident capital gains user
     "disposalCosts": 500.0,
     "acquisitionValue": 500000.0,
     "acquisitionCosts": 200.0,
-    "improvements": 25000.0,
+    "improvements": 25000.0
 }
 ```
 
@@ -501,7 +542,7 @@ Calculates the basic amount of gain minus deductions for a resident capital gain
     "allowableLosses": 2000.0,
     "broughtForwardLosses": 2000.0,
     "annualExemptAmount": 0,
-    "disposalDate": 2016-12-12
+    "disposalDate": "2016-12-12"
 }
 ```
 
@@ -542,9 +583,9 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "allowableLosses": 2000.0,
     "broughtForwardLosses": 2000.0,
     "annualExemptAmount": 0,
-    "disposalDate": 2016-12-12,
+    "disposalDate": "2016-12-12",
     "previousIncome": 28000.0,
-    "personalAllowance:11000.0
+    "personalAllowance":11000.0
 }
 ```
 
@@ -566,6 +607,28 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
 }
 ```
 
+## GET /capital-gains-calculator/calculate-total-costs 
+
+Calculates the total amount of costs in the total gain calculation for a resident capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0,
+    "improvements": 25000.0
+}
+```
+
+**Response**
+
+25700
+
 ## GET /capital-gains-calculator/shares/calculate-total-gain
 
 Calculates the basic amount of gain for a shares capital gains user
@@ -583,7 +646,7 @@ Calculates the basic amount of gain for a shares capital gains user
 }
 ```
 
-**Reponse**
+**Response**
 
 -50700.0
 
@@ -607,7 +670,7 @@ Calculates the basic amount of gain minus deductions for a shares capital gains 
 }
 ```
 
-**Reponse**
+**Response**
 
 ```json
 {
@@ -643,7 +706,7 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "previousTaxableGain" : 0,
     "previousIncome": 28000.0,
     "personalAllowance":11000.0,
-    "disposalDate":2016-12-12
+    "disposalDate":"2016-12-12"
 }
 ```
 
@@ -662,6 +725,27 @@ Calculates the amount of tax owed and the tax bands for a resident capital gains
     "allowableLossesUsed":2000.0
 }
 ```
+
+## GET /capital-gains-calculator/shares/calculate-total-costs
+
+Calculates the total amount of costs in the total gain calculation for a shares capital gains user
+
+### Example of usage
+
+**Request Body**
+
+```json
+{
+    "disposalValue": 450000.0,
+    "disposalCosts": 500.0,
+    "acquisitionValue": 500000.0,
+    "acquisitionCosts": 200.0
+}
+```
+
+**Response**
+
+700
 
 ## GET /capital-gains-calculator/tax-rates-and-bands/max-full-aea
 
@@ -721,7 +805,7 @@ Returns the tax year for a given date
 
 ```json
 {
-    "disposalDate":2016-12-12
+    "disposalDate":"2016-12-12"
 }
 ```
 
