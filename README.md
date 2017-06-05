@@ -35,36 +35,6 @@ These are the available end points for the service. The table below gives detail
         <th>Description</th>
     </tr>
     <tr>
-        <td><code>/capital-gains-calculator/calculate-flat</code></td>
-        <td>GET</td>
-        <td>Returns a JSON object with the results from the flat calculation. This requires a CalculationRequestModel which is made
-            of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
-            otherPropertiesAmount: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
-            disposalValue: Double, disposalCosts: Double, initialValueAmt: Double, initialCostsAmt: Double, improvementsAmt: Double, reliefs: Double,
-            allowableLossesAmt: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRR: Option[String],
-            daysClaimed: Option[Double]</td>
-    </tr>
-    <tr>
-        <td><code>/capital-gains-calculator/calculate-rebased</code></td>
-        <td>GET</td>
-        <td>Returns a JSON object with the results from the flat calculation. This requires a CalculationRequestModel which is made
-            of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
-            otherProperties: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
-            disposalValue: Double, disposalCost: Double, initialValue: Double, initialCost: Double, improvements: Double, reliefs: Double,
-            allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime, isClaimingPRR: Option[String],
-            daysClaimed: Option[Double]</td>
-    </tr>
-    <tr>
-        <td><code>/capital-gains-calculator/calculate-time-apportioned</code></td>
-        <td>GET</td>
-        <td>Returns a JSON object with the results from the time apportionment calculation. This requires a TimeApportionmentCalculationRequestModel
-            which is made of the following variables: customerType: String,  priorDisposal: String, annualExemptAmount: Option[Double],
-            otherProperties: Option[Double], vulnerable: Option[String], currentIncome: Option[Double], personalAllowance: Option[Double],
-            disposalValue: Double, disposalCost: Double, initialValue: Double, initialCost: Double, revaluedAmount: Double, revaluationCost: Double,
-            improvements: Double, reliefs: Double, allowableLosses: Double, acquisitionDate: Option[Double], disposalDate: DateTime,
-            isClaimingPRR: Option[String], daysClaimed: Option[Double], daysClaimedAfter: Option[Double], isProperty: Boolean</td>
-    </tr>
-    <tr>
         <td><code>/non-resident/calculate-total-gain</code></td>
         <td>GET</td>
         <td>Returns a JSON object with a constructed total gains model. This requires the following parameters:
@@ -176,139 +146,6 @@ These are the available end points for the service. The table below gives detail
         <td>Returns a JSON object with the results from the get tax year method. This method has one argument which is: dateString: String</td>
     </tr>
 </table>
-
-## GET /capital-gains-calculator/calculate-flat
-
-Calculates the amount of capital gains tax owed for a non resident user.
-
-### Example of usage
-
-GET /capital-gains-calculator/calculate-flat
-
-**Request Body**
-
-```json
-{
-    "customerType": "Individual", 
-    "priorDisposal": "Yes",
-    "annualExemptAmount": 0,
-    "otherPropertiesAmount": 20000.0,
-    "currentIncome": 28000.0, 
-    "personalAllowance": 11000.0,
-    "disposalValue": 250000.0, 
-    "disposalCosts": 500.0,
-    "initialValueAmt": 100000.0, 
-    "initialCostsAmt": 1000.0,
-    "improvementsAmt": 20000.0, 
-    "reliefs": 0.0,
-    "allowableLossesAmt": 30000.0, 
-    "acquisitionDate": "2005-12-12",
-    "disposalDate": "2016-12-12", 
-    "isClaimingPRR": "No"
-}
-```
-
-**Response**
-```json
-{
-    "taxOwed":27580.0,
-    "totalGain":128500.0,
-    "baseTaxGain":0.0,
-    "baseTaxRate":0,
-    "usedAnnualExemptAmount":0.0,
-    "aeaRemaining":0.0,
-    "upperTaxGain":98500.0,
-    "upperTaxRate":28
-}
-```
-
-## GET /capital-gains-calculator/calculate-rebased
-
-Calculates the amount of capital gains tax owed using the value of the property on the 5/4/2015 for a non resident user.
-
-### Example of usage
-
-**Request Body**
-
-```json
-{
-    "customerType": "Individual", 
-    "priorDisposal": "Yes",
-    "annualExemptAmount": 0,
-    "otherPropertiesAmount": 20000.0,
-    "currentIncome": 28000.0, 
-    "personalAllowance": 11000.0,
-    "disposalValue": 250000.0, 
-    "disposalCosts": 500.0,
-    "initialValueAmt": 100000.0, 
-    "initialCostsAmt": 1000.0,
-    "improvementsAmt": 20000.0, 
-    "reliefs": 0.0,
-    "allowableLossesAmt": 30000.0, 
-    "acquisitionDate": "2005-12-12",
-    "disposalDate": "2016-12-12", 
-    "isClaimingPRR": "No"
-}
-```
-
-**Response**
-
-```json
-{
-    "taxOwed":27580.0,
-    "totalGain":128500.0,
-    "baseTaxGain":0.0,
-    "baseTaxRate":0,
-    "usedAnnualExemptAmount":0.0,
-    "aeaRemaining":0.0,
-    "upperTaxGain":98500.0,
-    "upperTaxRate":28
-}
-```
-
-## GET /capital-gains-calculator/calculate-time-apportioned
-
-Calculates the amount of capital gains tax owed based on the percentage of time the property has been owned after the 5/4/2015
-
-### Example of usage
-
-**Request Body**
-
-```json
-{
-    "customerType": "Individual", 
-    "priorDisposal": "Yes",
-    "annualExemptAmount": 0,
-    "otherPropertiesAmount": 20000.0,
-    "currentIncome": 28000.0, 
-    "personalAllowance": 11000.0,
-    "disposalValue": 250000.0, 
-    "disposalCosts": 500.0,
-    "initialValueAmt": 100000.0, 
-    "initialCostsAmt": 1000.0,
-    "improvementsAmt": 20000.0, 
-    "reliefs": 0.0,
-    "allowableLossesAmt": 30000.0, 
-    "acquisitionDate": "2005-12-12",
-    "disposalDate": "2016-12-12", 
-    "isClaimingPRR": "No"
-}
-```
-
-**Response**
-
-```json
-{
-    "taxOwed":0.0,
-    "totalGain":19727.0,
-    "baseTaxGain":0.0,
-    "baseTaxRate":0,
-    "usedAnnualExemptAmount":0.0,
-    "aeaRemaining":0.0,
-    "upperTaxGain":-10273.0,
-    "upperTaxRate":28
-}
-```
 
 ## GET /capital-gains-calculator/non-resident/calculate-total-gain
 
@@ -765,22 +602,6 @@ Returns the max Annual Exempt Amount an individual can claim for a tax year
 
 11100
 
-## GET /capital-gains-calculator/tax-rates-and-bands/max-partial-aea
-
-Returns the maximum a trustee can claim on behalf of an individual for a tax year
-
-**Request Body**
-
-```json
-{
-    "taxYear":2016
-}
-```
-
-**Response**
-
-5550
- 
 ## GET /capital-gains-calculator/tax-rates-and-bands/max-pa
 
 Returns the maximum personal allowance an individual can claim for a tax year

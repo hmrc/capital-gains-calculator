@@ -99,68 +99,6 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
-  "validating the getMaxNonVulnerableAEA method" when {
-
-    "calling with the year 2017" should {
-
-      val result = getMaxNonVulnerableAEA(2017)(fakeRequest)
-
-      "return status 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 5550 as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[Int] shouldBe 5550
-
-      }
-    }
-
-    "calling with the year 2015 (boundary check)" should {
-
-      val result = getMaxNonVulnerableAEA(2015)(fakeRequest)
-
-      "return status 200" in {
-        status(result) shouldBe 400
-      }
-    }
-
-    "calling with the year 2014" should {
-
-      val result = getMaxNonVulnerableAEA(2014)(fakeRequest)
-
-      "return status 400" in {
-        status(result) shouldBe 400
-      }
-
-    }
-
-    "calling with the year after the valid tax year" should {
-
-      val result = getMaxNonVulnerableAEA(DateTime.now().getYear + 2)(fakeRequest)
-
-      "return status 400" in {
-        status(result) shouldBe 400
-      }
-
-      "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
-      }
-
-      "return 'This tax year is not valid' as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[String] shouldBe "This tax year is not valid"
-
-      }
-    }
-  }
-
   "validating the getMaxPersonalAllowance method" when {
 
     "calling with the year 2018 and with no BPA" should {
