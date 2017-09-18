@@ -97,13 +97,13 @@ trait CalculationService {
       taxOwed = round("result", min(basicRateRemaining, taxableGain) * basicRate + negativeToZero(taxableGain - basicRateRemaining) *
         higherRate),
       totalGain = gain,
-      baseTaxGain = gain match {
-        case x if x > 0 => min(basicRateRemaining, chargeableGain)
-        case _ => 0
+      baseTaxGain = {
+        if(gain <= 0) 0
+        else min(basicRateRemaining, chargeableGain)
       },
-      baseTaxRate = min(basicRateRemaining, chargeableGain) match {
-        case x if x > 0 => basicRatePercentage
-        case _ => 0
+      baseTaxRate = {
+        if(min(basicRateRemaining, chargeableGain) <= 0) 0
+        else basicRatePercentage
       },
       usedAnnualExemptAmount = usedAEA,
       aeaRemaining = aeaLeft,
@@ -172,19 +172,18 @@ trait CalculationService {
     allowableLossesAmt: Double,
     annualExemptAmount: Double,
     broughtForwardLosses: Double = 0
-  ): Double =
-    gain match {
-      case a if a <= 0 => a //gain less than 0, no need to deduct reliefs, losses or aea
-      case b => b - round("up", reliefs) match {
-        //gain greater than 0 so deduct the reliefs
-        case c if c <= 0 => 0 //Reliefs cannot turn gain into a loss, hence return 0
-        case d => d - round("up", allowableLossesAmt) match {
-          //Gain greater than 0 still so deduct allowable loses
-          case e if e <= 0 => e - round("up", broughtForwardLosses) //Allowable losses turns gain into a loss so return the loss and finally, subtract any brought forward losses.
-          case f => negativeToZero(f - round("up", annualExemptAmount)) - round("up", broughtForwardLosses) //deduct AEA, if amount less than 0 return 0 else return amount and finally, subtract any brought forward losses.
-        }
+  ): Double = {
+    if(gain <= 0) gain
+    else gain - round("up", reliefs) match {
+      //gain greater than 0 so deduct the reliefs
+      case gainMinusReliefs if gainMinusReliefs <= 0 => 0 //Reliefs cannot turn gain into a loss, hence return 0
+      case gainMinusReliefs => gainMinusReliefs - round("up", allowableLossesAmt) match {
+        //Gain greater than 0 still so deduct allowable loses
+        case gainMinusLosses if gainMinusLosses <= 0 => gainMinusLosses - round("up", broughtForwardLosses) //Allowable losses turns gain into a loss so return the loss and finally, subtract any brought forward losses.
+        case gainMinusLosses => negativeToZero(gainMinusLosses - round("up", annualExemptAmount)) - round("up", broughtForwardLosses) //deduct AEA, if amount less than 0 return 0 else return amount and finally, subtract any brought forward losses.
       }
     }
+  }
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int): Double = {
     negativeToZero(TaxRatesAndBands.getRates(taxYear).basicRateBand - negativeToZero(round("down", currentIncome) - round("up", personalAllowanceAmt)) - round("down", otherPropertiesAmt))
@@ -232,18 +231,16 @@ trait CalculationService {
 
   }
 
-  def determineReliefsUsed(gain: Double, prrValue: Option[Double]): Double = {
-    prrValue match {
-      case (Some(a)) if a < gain => round("up", a)
-      case (Some(a)) => gain
-      case _ => 0
-    }
+  def determineReliefsUsed(gain: Double, prrValueOpt: Option[Double]): Double = {
+    prrValueOpt.map {
+      prrValue => if (prrValue < gain) round("up", prrValue) else gain
+    }.getOrElse(0)
   }
 
   def annualExemptAmountUsed(available: Double, totalGain: Double, reliefs: Double, allowableLossesAmt: Double): Double = {
     totalGain - reliefs - allowableLossesAmt match {
-      case a if a <= 0 => 0.toDouble
-      case b if b >= available => round("down", available)
+      case finalGain if finalGain <= 0 => 0.toDouble
+      case finalGain if finalGain >= available => round("down", available)
       case _ => partialAEAUsed(totalGain, reliefs, allowableLossesAmt)
     }
   }
@@ -258,9 +255,9 @@ trait CalculationService {
 
   def determineLossLeft(gain: Double, loss: Double): Double = {
     round("down", round("up", loss) match {
-      case a if gain > a => 0.toDouble
-      case b if gain < 0 => b
-      case c => c - gain
+      case roundedLoss if gain > roundedLoss => 0.toDouble
+      case roundedLoss if gain < 0 => roundedLoss
+      case roundedLoss => roundedLoss - gain
     })
   }
 
