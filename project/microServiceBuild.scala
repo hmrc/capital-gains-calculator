@@ -35,16 +35,16 @@ private object AppDependencies {
   import play.sbt.PlayImport._
   import play.core.PlayVersion
 
-  private val hmrcTestVersion = "2.4.0"
+  private val hmrcTestVersion = "3.0.0"
   private val jsoupVersion = "1.10.2"
   private val pegDownVersion = "1.6.0"
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "microservice-bootstrap" % "6.10.0",
+    "uk.gov.hmrc" %% "microservice-bootstrap" % "6.11.0",
     "uk.gov.hmrc" %% "play-url-binders" % "2.1.0",
-    "uk.gov.hmrc" %% "domain" % "4.1.0",
-    "joda-time" % "joda-time" % "2.9.6"
+    "uk.gov.hmrc" %% "domain" % "5.0.0",
+    "joda-time" % "joda-time" % "2.9.7"
   )
 
   trait TestDependencies {
@@ -57,7 +57,7 @@ private object AppDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
-        "org.mockito" % "mockito-core" % "2.6.2" % scope,
+        "org.mockito" % "mockito-core" % "2.9.0" % scope,
         "org.pegdown" % "pegdown" % pegDownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.jsoup" % "jsoup" % jsoupVersion % scope
