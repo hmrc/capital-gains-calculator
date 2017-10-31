@@ -297,8 +297,8 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
   "The route for the earliest tax year" should {
 
-    "be equal to /capital-gains-calculator/earliest-tax-year" in {
-      controllers.routes.TaxRatesAndBandsController.getMinimumYear().url shouldBe "/capital-gains-calculator/earliest-tax-year"
+    "be equal to /capital-gains-calculator/minimum-date" in {
+      controllers.routes.TaxRatesAndBandsController.getMinimumDate().url shouldBe "/capital-gains-calculator/minimum-date"
     }
   }
 }

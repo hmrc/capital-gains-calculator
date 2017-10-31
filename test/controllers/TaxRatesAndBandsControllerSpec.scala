@@ -285,7 +285,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
   }
 
   "Calling the .getMinimumYear method" should {
-    lazy val result = TaxRatesAndBandsController.getMinimumYear(fakeRequest)
+    lazy val result = TaxRatesAndBandsController.getMinimumDate(fakeRequest)
 
     "return a status of 200" in {
       status(result) shouldBe 200

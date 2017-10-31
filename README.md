@@ -638,3 +638,14 @@ Returns the tax year for a given date
     "isValidYear":true,
     "calculationTaxYear":"2016/17"
 }
+```
+
+## GET /capital-gains-calculator/minimum-date
+
+Returns the start date for the earliest valid tax year
+
+**Response**
+
+    1428278400000
+
+
