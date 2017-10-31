@@ -23,6 +23,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.play.microservice.controller.BaseController
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc.{Action, AnyContent}
 import config.TaxRatesAndBands._
 import models._
@@ -71,6 +72,13 @@ trait TaxRatesAndBandsController extends BaseController {
       case Left(errorMessage) =>
         Future.successful(BadRequest(Json.toJson(errorMessage)))
 
+    }
+  }
+
+  val getMinimumYear: Action[AnyContent] = Action.async { implicit request =>
+    Future {
+      val date = Date.taxYearStartDate(TaxRatesAndBands.getEarliestTaxYear.taxYear)
+      Ok(Json.toJson(date))
     }
   }
 }

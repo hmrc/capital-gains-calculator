@@ -51,4 +51,8 @@ object Date {
   def afterTaxStarted(date: DateTime): Boolean = {
     date.isAfter(taxStartDate)
   }
+
+  def taxYearStartDate(input: Int): DateTime = DateTime.parse(
+    s"${input -1}-$taxYearStart"
+  )
 }
