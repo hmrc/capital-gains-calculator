@@ -220,4 +220,11 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
       TaxRatesAndBands.getClosestTaxYear(2015) shouldBe 2016
     }
   }
+
+  "Calling .getEarliestTaxYear" should {
+
+    "return the earliest tax year in the list" in {
+      TaxRatesAndBands.getEarliestTaxYear shouldBe TaxRatesAndBands20152016
+    }
+  }
 }

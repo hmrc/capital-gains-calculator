@@ -55,6 +55,8 @@ object TaxRatesAndBands {
     val validYears = rates.map(_.taxYear)
     validYears.minBy(year => math.abs(year - taxYear))
   }
+
+  def getEarliestTaxYear: TaxRatesAndBands = rates.minBy(_.taxYear)
 }
 
 object TaxRatesAndBands20172018 extends TaxRatesAndBands {

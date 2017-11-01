@@ -16,6 +16,8 @@
 
 package controllers
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import controllers.TaxRatesAndBandsController._
 import org.joda.time.DateTime
 import play.api.libs.json.Json
@@ -26,6 +28,8 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
   val fakeRequest = FakeRequest()
+  implicit val system = ActorSystem("QuickStart")
+  implicit val materializer = ActorMaterializer()
 
   "validating the getMaxAEA method" when {
 
@@ -277,6 +281,22 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
       s"return a message with the text ${assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")}" in {
         json.as[String] shouldBe assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")
       }
+    }
+  }
+
+  "Calling the .getMinimumYear method" should {
+    lazy val result = TaxRatesAndBandsController.getMinimumDate(fakeRequest)
+
+    "return a status of 200" in {
+      status(result) shouldBe 200
+    }
+
+    "return a JSON result" in {
+      contentType(result) shouldBe Some("application/json")
+    }
+
+    "should contain a body with the earliest date" in {
+      await(bodyOf(result)) shouldBe Json.toJson(DateTime.parse("2015-04-06")).toString()
     }
   }
 }
