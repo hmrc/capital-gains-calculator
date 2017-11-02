@@ -77,7 +77,7 @@ trait TaxRatesAndBandsController extends BaseController {
 
   val getMinimumDate: Action[AnyContent] = Action.async { implicit request =>
     Future {
-      val date = Date.taxYearStartDate(TaxRatesAndBands.getEarliestTaxYear.taxYear)
+      val date = Date.taxYearEndDate(TaxRatesAndBands.getEarliestTaxYear.taxYear)
       Ok(Json.toJson(date))
     }
   }

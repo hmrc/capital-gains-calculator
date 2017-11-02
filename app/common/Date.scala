@@ -52,7 +52,7 @@ object Date {
     date.isAfter(taxStartDate)
   }
 
-  def taxYearStartDate(input: Int): DateTime = DateTime.parse(
+  def taxYearEndDate(input: Int): DateTime = DateTime.parse(
     s"${input -1}-$taxYearEnd"
   )
 }
