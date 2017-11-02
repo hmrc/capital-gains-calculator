@@ -53,6 +53,6 @@ object Date {
   }
 
   def taxYearStartDate(input: Int): DateTime = DateTime.parse(
-    s"${input -1}-$taxYearStart"
+    s"${input -1}-$taxYearEnd"
   )
 }

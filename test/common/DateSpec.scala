@@ -127,22 +127,22 @@ class DateSpec extends UnitSpec {
 
   "Calling .taxYearStartDate" should {
 
-    "return a value of 2015-04-06 from 2016" in {
+    "return a value of 2015-04-05 from 2016" in {
       val result = Date.taxYearStartDate(2016)
 
-      result shouldBe DateTime.parse("2015-04-06")
+      result shouldBe DateTime.parse("2015-04-05")
     }
 
-    "return a value of 2016-04-06 from 2017" in {
+    "return a value of 2016-04-05 from 2017" in {
       val result = Date.taxYearStartDate(2017)
 
-      result shouldBe DateTime.parse("2016-04-06")
+      result shouldBe DateTime.parse("2016-04-05")
     }
 
-    "return a value of 2014-04-06 from 2015" in {
+    "return a value of 2014-04-05 from 2015" in {
       val result = Date.taxYearStartDate(2015)
 
-      result shouldBe DateTime.parse("2014-04-06")
+      result shouldBe DateTime.parse("2014-04-05")
     }
   }
 }

@@ -296,7 +296,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "should contain a body with the earliest date" in {
-      await(bodyOf(result)) shouldBe Json.toJson(DateTime.parse("2015-04-06")).toString()
+      await(bodyOf(result)) shouldBe Json.toJson(DateTime.parse("2015-04-05")).toString()
     }
   }
 }
