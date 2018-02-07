@@ -53,19 +53,19 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
       TaxRatesAndBands20182019.higherRatePercentage shouldBe 28
     }
 
-    "return 11100 as the maximum Annual Excempt Amount" in {
+    "return 11700 as the maximum Annual Excempt Amount" in {
       TaxRatesAndBands20182019.maxAnnualExemptAmount shouldBe 11700
     }
 
-    "return 5550 as the non-vulnerable trustee Annual Exempt Amount" in {
+    "return 5850 as the non-vulnerable trustee Annual Exempt Amount" in {
       TaxRatesAndBands20182019.notVulnerableMaxAnnualExemptAmount shouldBe 5850
     }
 
-    "return 32000 as the basic rate band" in {
+    "return 33500 as the basic rate band" in {
       TaxRatesAndBands20182019.basicRateBand shouldBe 33500
     }
 
-    "return 11000 as the maximum Personal Allowance" in {
+    "return 11500 as the maximum Personal Allowance" in {
       TaxRatesAndBands20182019.maxPersonalAllowance shouldBe 11500
     }
 
