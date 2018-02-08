@@ -37,6 +37,40 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
 
   }
 
+  "validating 2018/2019 parameters" should {
+
+    "return 2019 for the tax year" in {
+      TaxRatesAndBands20182019.taxYear shouldBe 2019
+    }
+
+    "return 18 as the basic percentage rate for the tax year" in {
+      TaxRatesAndBands20182019.basicRate shouldBe 0.18
+      TaxRatesAndBands20182019.basicRatePercentage shouldBe 18
+    }
+
+    "return 28 as the higher percentage rate for the tax year" in {
+      TaxRatesAndBands20182019.higherRate shouldBe 0.28
+      TaxRatesAndBands20182019.higherRatePercentage shouldBe 28
+    }
+
+    "return 11700 as the maximum Annual Excempt Amount" in {
+      TaxRatesAndBands20182019.maxAnnualExemptAmount shouldBe 11700
+    }
+
+    "return 5850 as the non-vulnerable trustee Annual Exempt Amount" in {
+      TaxRatesAndBands20182019.notVulnerableMaxAnnualExemptAmount shouldBe 5850
+    }
+
+    "return 33500 as the basic rate band" in {
+      TaxRatesAndBands20182019.basicRateBand shouldBe 33500
+    }
+
+    "return 11500 as the maximum Personal Allowance" in {
+      TaxRatesAndBands20182019.maxPersonalAllowance shouldBe 11500
+    }
+
+  }
+
   "validating 2016/2017 parameters" should {
 
     "return 2017 for the tax year" in {

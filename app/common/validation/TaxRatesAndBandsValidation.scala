@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package common.validation
 
 import java.time.{ZoneId, ZonedDateTime}
