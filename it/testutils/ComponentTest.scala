@@ -1,0 +1,5 @@
+package testutils
+
+trait ComponentTest {
+
+}

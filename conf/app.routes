@@ -6,6 +6,9 @@ GET        /non-resident/calculate-gain-after-prr           controllers.nonresid
 GET        /non-resident/calculate-tax-owed                 controllers.nonresident.CalculatorController.calculateTaxOwed(disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double ?= 0, rebasedValue: Option[Double], rebasedCosts: Double ?= 0, disposalDate: org.joda.time.DateTime, acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double ?= 0, privateResidenceReliefModel: models.nonResident.PrivateResidenceReliefModel, currentIncome: Double ?= 0, personalAllowanceAmt: Double ?=0, allowableLoss: Double ?=0, previousGain: Double ?=0, annualExemptAmount: Double, broughtForwardLoss: Double ?=0, otherReliefsModel: models.nonResident.OtherReliefsModel)
 GET        /non-resident/calculate-total-costs              controllers.nonresident.CalculatorController.calculateTotalCosts(disposalCosts: Double, acquisitionCosts: Double, improvements: Double)
 
+## Non-Resident Calculation Routes
+##POST        /non-resident/calculate-total-gain               controllers.nonresident.CalculatorController.
+
 ## Resident Property Calculation Routes
 GET        /calculate-total-gain                            controllers.resident.properties.CalculatorController.calculateTotalGain(totalGainModel: models.resident.properties.PropertyTotalGainModel)
 GET        /calculate-chargeable-gain                       controllers.resident.properties.CalculatorController.calculateChargeableGain(chargeableGainModel: models.resident.properties.PropertyChargeableGainModel)
