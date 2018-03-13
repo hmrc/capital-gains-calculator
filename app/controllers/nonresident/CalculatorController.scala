@@ -102,15 +102,16 @@ trait CalculatorController extends BaseController {
   }
 
   def calculateTotalGain(gainModel: NonPropertyGainModel): Action[AnyContent] = Action.async { implicit request =>
-    val result = (gainModel.disposalCosts,
-    gainModel.acquisitionValue,
-    gainModel.acquisitionCosts,
-    gainModel.improvements,
-    gainModel.rebasedValue,
-    gainModel.rebasedCosts,
-    gainModel.disposalDate,
-    gainModel.acquisitionDate,
-    gainModel.improvementsAfterTaxStarted)
+    val result = buildTotalGainsModel(gainModel.disposalValue,
+      gainModel.disposalCosts,
+      gainModel.acquisitionValue,
+      gainModel.acquisitionCosts,
+      gainModel.improvements,
+      gainModel.rebasedValue,
+      gainModel.rebasedCosts,
+      gainModel.disposalDate,
+      gainModel.acquisitionDate,
+      gainModel.improvementsAfterTaxStarted)
 
     Future.successful(Ok(Json.toJson(result)))
   }
