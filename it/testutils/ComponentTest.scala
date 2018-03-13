@@ -1,5 +1,0 @@
-package testutils
-
-trait ComponentTest {
-
-}
