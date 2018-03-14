@@ -25,7 +25,16 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
             Json.parse(
               """
                 |{
-                |
+                |"disposalValue":"",
+                |"disposalCosts":"",
+                |"acquisitionValue":"",
+                |"acquisitionCosts":"",
+                |"improvements":"",
+                |"rebasedValue":"",
+                |"rebasedCosts":"",
+                |"disposalDate":"",
+                |"acquisitionDate":"",
+                |"improvementsAfterTaxStarted":"",
                 |}
               """.
                 stripMargin)
