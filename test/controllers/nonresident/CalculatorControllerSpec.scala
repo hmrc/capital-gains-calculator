@@ -21,7 +21,7 @@ import models.nonResident._
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -254,7 +254,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val improvementsAfter = improvementsBefore + 2
       val totalImprovements = improvementsBefore + improvementsAfter
 
-      val result = target.calculateTotalGain(1, 1, 1, 1, improvementsBefore, None, 0, None, None, improvementsAfter)(fakeRequest)
+      val result = target.calculateTotalGain(NonPropertyGainModel(1, 1, 1, 1, improvementsBefore, None, 0, None, None, improvementsAfter))(fakeRequest)
 
       "return a status of 200" in {
         status(result) shouldBe 200
