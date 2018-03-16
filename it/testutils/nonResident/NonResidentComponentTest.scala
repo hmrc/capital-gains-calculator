@@ -25,22 +25,25 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
             Json.parse(
               """
                 |{
-                |"disposalValue":"",
-                |"disposalCosts":"",
-                |"acquisitionValue":"",
-                |"acquisitionCosts":"",
-                |"improvements":"",
-                |"rebasedValue":"",
-                |"rebasedCosts":"",
-                |"disposalDate":"",
-                |"acquisitionDate":"",
-                |"improvementsAfterTaxStarted":"",
+                |"disposalValue":"500000",
+                |"disposalCosts":"200000",
+                |"acquisitionValue":"350000",
+                |"acquisitionCosts":"200000",
+                |"improvements":"9000",
+                |"rebasedValue":"450000",
+                |"rebasedCosts":"20000",
+                |"disposalDate":"2017-05-12",
+                |"acquisitionDate":"2014-08-14",
+                |"improvementsAfterTaxStarted":"250000"
                 |}
               """.
                 stripMargin)
           )
 
         val responseJson = Json.parse(
+
+          //TODO : This is the response you'd get on the frontend
+
           """
             |{
             |
@@ -54,13 +57,21 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
 
     s"return a $BAD_REQUEST" when {
       "Data is missing" in {
-        //bad request / data is missing / 400
         def request: WSResponse = ws.url(calculateUrl)
           .post(
             Json.parse(
               """
                 |{
-                |
+                |"disposalValue":"500000",
+                |"disposalCosts":"200000",
+                |"acquisitionValue":"350000",
+                |"acquisitionCosts":"200000",
+                |"improvements":"9000",
+                |"rebasedValue":"450000",
+                |"rebasedCosts":"20000",
+                |"disposalDate":"2017-05-12",
+                |"acquisitionDate":"2014-08-14",
+                |"improvementsAfterTaxStarted":"250000"
                 |}
               """.
                 stripMargin)
@@ -80,13 +91,21 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
 
     "return a 500 status" when {
       "an unexpected error occurs" in {
-        //unexpected / server side / 500
         def request: WSResponse = ws.url(calculateUrl)
           .post(
             Json.parse(
               """
                 |{
-                |
+                |"disposalValue":"500000",
+                |"disposalCosts":"200000",
+                |"acquisitionValue":"350000",
+                |"acquisitionCosts":"200000",
+                |"improvements":"9000",
+                |"rebasedValue":"450000",
+                |"rebasedCosts":"20000",
+                |"disposalDate":"2017-05-12",
+                |"acquisitionDate":"2014-08-14",
+                |"improvementsAfterTaxStarted":"250000"
                 |}
               """.
                 stripMargin)

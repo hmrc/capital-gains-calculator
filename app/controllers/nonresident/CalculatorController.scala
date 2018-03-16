@@ -23,7 +23,7 @@ import config.TaxRatesAndBands
 import models.CalculationResultModel
 import models.nonResident._
 import org.joda.time.DateTime
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.CalculationService
 import uk.gov.hmrc.play.microservice.controller.BaseController
@@ -98,22 +98,29 @@ trait CalculatorController extends BaseController {
       acquisitionDate,
       improvementsAfterTaxStarted)
 
-    Future.successful(Ok(Json.toJson(result)))
+  Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTotalGain(gainModel: NonPropertyGainModel): Action[AnyContent] = Action.async { implicit request =>
-    val result = buildTotalGainsModel(gainModel.disposalValue,
-      gainModel.disposalCosts,
-      gainModel.acquisitionValue,
-      gainModel.acquisitionCosts,
-      gainModel.improvements,
-      gainModel.rebasedValue,
-      gainModel.rebasedCosts,
-      gainModel.disposalDate,
-      gainModel.acquisitionDate,
-      gainModel.improvementsAfterTaxStarted)
+  def calculateTotalGainFromJson: Action[AnyContent] = Action { implicit request =>
+    request.body.asJson match {
+      case Some(json) => json.validate[NonPropertyGainModel] match {
+        case JsSuccess(gainModel, _) =>
+          val result = buildTotalGainsModel(gainModel.disposalValue,
+            gainModel.disposalCosts,
+            gainModel.acquisitionValue,
+            gainModel.acquisitionCosts,
+            gainModel.improvements,
+            gainModel.rebasedValue,
+            gainModel.rebasedCosts,
+            gainModel.disposalDate,
+            gainModel.acquisitionDate,
+            gainModel.improvementsAfterTaxStarted)
 
-    Future.successful(Ok(Json.toJson(result)))
+          Ok(Json.toJson(result))
+        case JsError(error) => BadRequest(s"Validation failed with errors: $error")
+      }
+      case None => BadRequest("No Json provided")
+    }
   }
 
   def calculateTaxableGainAfterPRR(disposalValue: Double,

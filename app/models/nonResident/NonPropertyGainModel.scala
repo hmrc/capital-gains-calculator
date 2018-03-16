@@ -17,6 +17,7 @@
 package models.nonResident
 
 import org.joda.time.DateTime
+import play.api.libs.json.Json
 
 case class NonPropertyGainModel(disposalValue: Double,
                                 disposalCosts: Double,
@@ -28,3 +29,7 @@ case class NonPropertyGainModel(disposalValue: Double,
                                 disposalDate: Option[DateTime],
                                 acquisitionDate: Option[DateTime],
                                 improvementsAfterTaxStarted: Double)
+
+object NonPropertyGainModel {
+  implicit val format = Json.format[NonPropertyGainModel]
+}
