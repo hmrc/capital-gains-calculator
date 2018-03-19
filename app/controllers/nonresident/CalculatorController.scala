@@ -103,21 +103,23 @@ trait CalculatorController extends BaseController {
 
   def calculateTotalGainFromJson: Action[AnyContent] = Action { implicit request =>
     request.body.asJson match {
-      case Some(json) => json.validate[NonPropertyGainModel] match {
-        case JsSuccess(gainModel, _) =>
-          val result = buildTotalGainsModel(gainModel.disposalValue,
-            gainModel.disposalCosts,
-            gainModel.acquisitionValue,
-            gainModel.acquisitionCosts,
-            gainModel.improvements,
-            gainModel.rebasedValue,
-            gainModel.rebasedCosts,
-            gainModel.disposalDate,
-            gainModel.acquisitionDate,
-            gainModel.improvementsAfterTaxStarted)
+      case Some(json) => {
+        json.validate[NonResidentTotalGainRequestModel] match {
+          case JsSuccess(gainModel, _) =>
+            val result = buildTotalGainsModel(gainModel.disposalValue,
+              gainModel.disposalCosts,
+              gainModel.acquisitionValue,
+              gainModel.acquisitionCosts,
+              gainModel.improvements,
+              gainModel.rebasedValue,
+              gainModel.rebasedCosts,
+              gainModel.disposalDate,
+              gainModel.acquisitionDate,
+              gainModel.improvementsAfterTaxStarted)
 
-          Ok(Json.toJson(result))
-        case JsError(error) => BadRequest(s"Validation failed with errors: $error")
+            Ok(Json.toJson(result))
+          case JsError(error) => BadRequest(s"Validation failed with errors: $error")
+        }
       }
       case None => BadRequest("No Json provided")
     }
