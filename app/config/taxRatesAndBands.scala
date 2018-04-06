@@ -67,13 +67,13 @@ object TaxRatesAndBands20182019 extends TaxRatesAndBands {
   override val higherRatePercentage = 28
   override val shareBasicRatePercentage = 10
   override val shareHigherRatePercentage = 20
-  override val maxPersonalAllowance = 11500
+  override val maxPersonalAllowance = 11850
   override val basicRate = basicRatePercentage / 100.toDouble
   override val higherRate = higherRatePercentage / 100.toDouble
   override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
   override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
-  override val basicRateBand = 33500
-  override val blindPersonsAllowance = 2320
+  override val basicRateBand = 34500
+  override val blindPersonsAllowance = 2390
   override val maxLettingsRelief = 40000.0
 }
 
