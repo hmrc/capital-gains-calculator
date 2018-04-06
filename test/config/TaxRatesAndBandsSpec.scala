@@ -238,8 +238,12 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
 
   "calling .getClosestTaxYear" should {
 
-    "return 2018 for a tax year input of 2019" in {
-      TaxRatesAndBands.getClosestTaxYear(2019) shouldBe 2018
+    "return 2019 for a tax year input of 2020" in {
+      TaxRatesAndBands.getClosestTaxYear(2020) shouldBe 2019
+    }
+
+    "return 2019 for a tax year input of 2019" in {
+      TaxRatesAndBands.getClosestTaxYear(2019) shouldBe 2019
     }
 
     "return 2018 for a tax year input of 2018" in {
