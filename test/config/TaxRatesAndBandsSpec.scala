@@ -62,11 +62,11 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
     }
 
     "return 33500 as the basic rate band" in {
-      TaxRatesAndBands20182019.basicRateBand shouldBe 33500
+      TaxRatesAndBands20182019.basicRateBand shouldBe 34500
     }
 
     "return 11500 as the maximum Personal Allowance" in {
-      TaxRatesAndBands20182019.maxPersonalAllowance shouldBe 11500
+      TaxRatesAndBands20182019.maxPersonalAllowance shouldBe 11850
     }
 
   }
