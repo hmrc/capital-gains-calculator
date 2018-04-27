@@ -20,7 +20,6 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-import models.CalculationResultModel
 import models.nonResident._
 import org.joda.time.DateTime
 import play.api.libs.json.{JsError, JsSuccess, Json}
@@ -76,32 +75,7 @@ trait CalculatorController extends BaseController {
     TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
   }
 
-  def calculateTotalGain(disposalValue: Double,
-                         disposalCosts: Double,
-                         acquisitionValue: Double,
-                         acquisitionCosts: Double,
-                         improvements: Double,
-                         rebasedValue: Option[Double],
-                         rebasedCosts: Double,
-                         disposalDate: Option[DateTime],
-                         acquisitionDate: Option[DateTime],
-                         improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
-
-    val result = buildTotalGainsModel(disposalValue,
-      disposalCosts,
-      acquisitionValue,
-      acquisitionCosts,
-      improvements,
-      rebasedValue,
-      rebasedCosts,
-      disposalDate,
-      acquisitionDate,
-      improvementsAfterTaxStarted)
-
-  Future.successful(Ok(Json.toJson(result)))
-  }
-
-  def calculateTotalGainFromJson: Action[AnyContent] = Action { implicit request =>
+  def calculateTotalGain: Action[AnyContent] = Action { implicit request =>
     request.body.asJson match {
       case Some(json) => {
         json.validate[NonResidentTotalGainRequestModel] match {

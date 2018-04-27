@@ -24,57 +24,6 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class RouteSpec extends UnitSpec with WithFakeApplication {
 
-  "The route for calculating total gain for non-resident properties" should {
-
-    val testDate = Some(new DateTime("2001-01-01"))
-    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTotalGain(1, 1, 1, 1, 1, Some(1), 1, testDate, testDate, 1).url
-    lazy val queryStringParameters = url.substring(url.indexOf('?'))
-
-    "have the path /non-resident/calculate-total-gain" in {
-      url should startWith("/capital-gains-calculator/non-resident/calculate-total-gain")
-    }
-
-    "have query string parameters" in {
-      queryStringParameters should not be empty
-    }
-
-    "include the disposal value query string parameter" in {
-      url should include("disposalValue=1.0")
-    }
-
-    "include the disposal costs query string parameter" in {
-      queryStringParameters should include("disposalCosts=1.0")
-    }
-
-    "include the acquisition value query string parameter" in {
-      queryStringParameters should include("acquisitionValue=1.0")
-    }
-
-    "include the acquisition costs query string parameter" in {
-      queryStringParameters should include("acquisitionCosts=1.0")
-    }
-
-    "include the improvements query string parameter" in {
-      queryStringParameters should include("improvements=1.0")
-    }
-
-    "include the rebased value query string parameter" in {
-      queryStringParameters should include("rebasedValue=1.0")
-    }
-
-    "include the disposal date query string parameter" in {
-      queryStringParameters should include("disposalDate=2001-1-1")
-    }
-
-    "include the acquisition date query string parameter" in {
-      queryStringParameters should include("acquisitionDate=2001-1-1")
-    }
-
-    "include the improvements after the tax started query string parameter" in {
-      queryStringParameters should include("improvementsAfterTaxStarted=1.0")
-    }
-  }
-
   "The route for calculate gain after prr for non-resident properties" should {
     val testDate = Some(new DateTime("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.
