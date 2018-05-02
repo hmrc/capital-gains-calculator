@@ -239,7 +239,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     }
   }
 
-  "Calling .calculateTotalGainWithJson" when {
+  "Calling .calculateTotalGainFromJson" when {
     def fakePostRequest(json: JsValue): FakeRequest[AnyContentAsJson] = {
       FakeRequest("POST", "").withJsonBody(json)
     }
@@ -258,7 +258,18 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val improvementsAfter = improvementsBefore + 2
       val totalImprovements = improvementsBefore + improvementsAfter
       val result = target.calculateTotalGainFromJson()(fakePostRequest(
-        Json.toJson(NonResidentTotalGainRequestModel(1, 1, 1, 1, improvementsBefore, None, 0, None, None, improvementsAfter))
+        Json.toJson(NonResidentTotalGainRequestModel(
+          disposalValue = 1,
+          disposalCosts = 1,
+          acquisitionValue = 1,
+          acquisitionCosts = 1,
+          improvementsBefore,
+          rebasedValue = None,
+          rebasedCosts = 0,
+          disposalDate = None,
+          acquisitionDate = None,
+          improvementsAfter
+        ))
       ))
 
       "return a status of 200" in {
@@ -319,7 +330,18 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val improvementsBefore = 2.0
       val improvementsAfter = improvementsBefore + 2
       val result = target.calculateTotalGainFromJson()(fakePostRequest(
-        Json.toJson(NonResidentTotalGainRequestModel(1, 1, 1, 1, improvementsBefore, Some(1), 1, None, None, improvementsAfter))
+        Json.toJson(NonResidentTotalGainRequestModel(
+          disposalValue = 1,
+          disposalCosts = 1,
+          acquisitionValue = 1,
+          acquisitionCosts = 1,
+          improvementsBefore,
+          rebasedValue = Some(1),
+          rebasedCosts = 1,
+          disposalDate = None,
+          acquisitionDate = None,
+          improvementsAfter
+        ))
       ))
 
       "return a valid result" which {
@@ -376,7 +398,18 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val improvementsAfter = improvementsBefore + 2
       val totalImprovements = improvementsBefore + improvementsAfter
       val result = target.calculateTotalGainFromJson()(fakePostRequest(
-        Json.toJson(NonResidentTotalGainRequestModel(1, 1, 1, 1, improvementsBefore, None, 0, Some(disposalDate), Some(acquisitionDate), improvementsAfter))
+        Json.toJson(NonResidentTotalGainRequestModel(
+          disposalValue = 1,
+          disposalCosts = 1,
+          acquisitionValue = 1,
+          acquisitionCosts = 1,
+          improvementsBefore,
+          rebasedValue = None,
+          rebasedCosts = 0,
+          disposalDate = Some(disposalDate),
+          acquisitionDate = Some(acquisitionDate),
+          improvementsAfter
+        ))
       ))
 
       "return a valid result" which {
@@ -415,7 +448,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
     }
   }
-
 
   "Calling .calculateTaxableGainAfterPRR" when {
 
