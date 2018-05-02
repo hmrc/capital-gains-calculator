@@ -39,7 +39,7 @@ object NonResidentTotalGainRequestModel {
     (__ \ "disposalValue").read[Double] and
       (__ \ "disposalCosts").read[Double] and
       (__ \ "acquisitionValue").read[Double] and
-      (__ \ "acquisitionCosts").read[Double] and
+      (__ \ "acquisitionCosts").read[Double].or(Reads.pure[Double](0)) and
       (__ \ "improvements").read[Double].or(Reads.pure[Double](0)) and
       (__ \ "rebasedValue").readNullable[Double] and
       (__ \ "rebasedCosts").read[Double].or(Reads.pure[Double](0)) and
