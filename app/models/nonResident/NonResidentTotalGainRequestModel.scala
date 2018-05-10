@@ -17,7 +17,9 @@
 package models.nonResident
 
 import org.joda.time.DateTime
-import play.api.libs.json.Json
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json.{__, _}
 
 case class NonResidentTotalGainRequestModel(disposalValue: Double,
                                             disposalCosts: Double,
@@ -31,5 +33,19 @@ case class NonResidentTotalGainRequestModel(disposalValue: Double,
                                             improvementsAfterTaxStarted: Double)
 
 object NonResidentTotalGainRequestModel {
-  implicit val format = Json.format[NonResidentTotalGainRequestModel]
+  implicit val writes =  Json.writes[NonResidentTotalGainRequestModel]
+
+  implicit val reads: Reads[NonResidentTotalGainRequestModel] = (
+    (__ \ "disposalValue").read[Double] and
+      (__ \ "disposalCosts").read[Double] and
+      (__ \ "acquisitionValue").read[Double] and
+      (__ \ "acquisitionCosts").read[Double].or(Reads.pure[Double](0)) and
+      (__ \ "improvements").read[Double].or(Reads.pure[Double](0)) and
+      (__ \ "rebasedValue").readNullable[Double] and
+      (__ \ "rebasedCosts").read[Double].or(Reads.pure[Double](0)) and
+      (__ \ "disposalDate").readNullable[DateTime] and
+      (__ \ "acquisitionDate").readNullable[DateTime] and
+      (__ \ "improvementsAfterTaxStarted").read[Double].or(Reads.pure[Double](0))
+    ) (NonResidentTotalGainRequestModel.apply _)
+
 }

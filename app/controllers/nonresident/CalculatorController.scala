@@ -20,7 +20,6 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-import models.CalculationResultModel
 import models.nonResident._
 import org.joda.time.DateTime
 import play.api.libs.json.{JsError, JsSuccess, Json}
@@ -56,9 +55,11 @@ trait CalculatorController extends BaseController {
 
     val flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, totalImprovements)
 
-    val rebasedGain = rebasedValue collect { case value =>
-      calculationService.calculateGainRebased(disposalValue, disposalCosts, value, rebasedCosts, improvementsAfterTaxStarted)
-    }
+    val rebasedGain = if (timeApportionedCalculationApplicable(disposalDate, acquisitionDate)) {
+      rebasedValue collect { case value =>
+        calculationService.calculateGainRebased(disposalValue, disposalCosts, value, rebasedCosts, improvementsAfterTaxStarted)
+      }
+    } else None
 
     val timeApportionedGain = {
       if (timeApportionedCalculationApplicable(disposalDate, acquisitionDate))
@@ -98,7 +99,7 @@ trait CalculatorController extends BaseController {
       acquisitionDate,
       improvementsAfterTaxStarted)
 
-  Future.successful(Ok(Json.toJson(result)))
+    Future.successful(Ok(Json.toJson(result)))
   }
 
   def calculateTotalGainFromJson: Action[AnyContent] = Action { implicit request =>
@@ -106,7 +107,8 @@ trait CalculatorController extends BaseController {
       case Some(json) => {
         json.validate[NonResidentTotalGainRequestModel] match {
           case JsSuccess(gainModel, _) =>
-            val result = buildTotalGainsModel(gainModel.disposalValue,
+            val result = buildTotalGainsModel(
+              gainModel.disposalValue,
               gainModel.disposalCosts,
               gainModel.acquisitionValue,
               gainModel.acquisitionCosts,
@@ -116,8 +118,8 @@ trait CalculatorController extends BaseController {
               gainModel.disposalDate,
               gainModel.acquisitionDate,
               gainModel.improvementsAfterTaxStarted)
-
             Ok(Json.toJson(result))
+
           case JsError(error) => BadRequest(s"Validation failed with errors: $error")
         }
       }
