@@ -19,7 +19,7 @@ package models.nonResident
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
-import play.api.libs.json.{Json, __, _}
+import play.api.libs.json.{__, _}
 
 case class NonResidentTotalGainRequestModel(disposalValue: Double,
                                             disposalCosts: Double,
@@ -49,4 +49,3 @@ object NonResidentTotalGainRequestModel {
     ) (NonResidentTotalGainRequestModel.apply _)
 
 }
-

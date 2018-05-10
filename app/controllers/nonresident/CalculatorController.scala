@@ -55,9 +55,11 @@ trait CalculatorController extends BaseController {
 
     val flatGain = calculationService.calculateGainFlat(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts, totalImprovements)
 
-    val rebasedGain = rebasedValue collect { case value =>
-      calculationService.calculateGainRebased(disposalValue, disposalCosts, value, rebasedCosts, improvementsAfterTaxStarted)
-    }
+    val rebasedGain = if (timeApportionedCalculationApplicable(disposalDate, acquisitionDate)) {
+      rebasedValue collect { case value =>
+        calculationService.calculateGainRebased(disposalValue, disposalCosts, value, rebasedCosts, improvementsAfterTaxStarted)
+      }
+    } else None
 
     val timeApportionedGain = {
       if (timeApportionedCalculationApplicable(disposalDate, acquisitionDate))
@@ -75,12 +77,38 @@ trait CalculatorController extends BaseController {
     TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
   }
 
-  def calculateTotalGain: Action[AnyContent] = Action { implicit request =>
+  def calculateTotalGain(disposalValue: Double,
+                         disposalCosts: Double,
+                         acquisitionValue: Double,
+                         acquisitionCosts: Double,
+                         improvements: Double,
+                         rebasedValue: Option[Double],
+                         rebasedCosts: Double,
+                         disposalDate: Option[DateTime],
+                         acquisitionDate: Option[DateTime],
+                         improvementsAfterTaxStarted: Double): Action[AnyContent] = Action.async { implicit request =>
+
+    val result = buildTotalGainsModel(disposalValue,
+      disposalCosts,
+      acquisitionValue,
+      acquisitionCosts,
+      improvements,
+      rebasedValue,
+      rebasedCosts,
+      disposalDate,
+      acquisitionDate,
+      improvementsAfterTaxStarted)
+
+    Future.successful(Ok(Json.toJson(result)))
+  }
+
+  def calculateTotalGainFromJson: Action[AnyContent] = Action { implicit request =>
     request.body.asJson match {
       case Some(json) => {
         json.validate[NonResidentTotalGainRequestModel] match {
           case JsSuccess(gainModel, _) =>
-            val result = buildTotalGainsModel(gainModel.disposalValue,
+            val result = buildTotalGainsModel(
+              gainModel.disposalValue,
               gainModel.disposalCosts,
               gainModel.acquisitionValue,
               gainModel.acquisitionCosts,
@@ -90,8 +118,8 @@ trait CalculatorController extends BaseController {
               gainModel.disposalDate,
               gainModel.acquisitionDate,
               gainModel.improvementsAfterTaxStarted)
-
             Ok(Json.toJson(result))
+
           case JsError(error) => BadRequest(s"Validation failed with errors: $error")
         }
       }
