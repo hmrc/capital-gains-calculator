@@ -43,7 +43,7 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "microservice-bootstrap" % "6.18.0",
     "uk.gov.hmrc" %% "play-url-binders" % "2.1.0",
-    "uk.gov.hmrc" %% "domain" % "5.0.0",
+    "uk.gov.hmrc" %% "domain" % "5.1.0",
     "joda-time" % "joda-time" % "2.9.7"
   )
 
@@ -57,7 +57,7 @@ private object AppDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
-        "org.mockito" % "mockito-core" % "2.9.0" % scope,
+        "org.mockito" % "mockito-core" % "2.13.0" % scope,
         "org.pegdown" % "pegdown" % pegDownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.jsoup" % "jsoup" % jsoupVersion % scope
