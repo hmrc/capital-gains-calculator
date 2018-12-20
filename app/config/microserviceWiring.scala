@@ -16,15 +16,23 @@
 
 package config
 
+import com.typesafe.config.Config
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.http.hooks.HttpHooks
 import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
+import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.auth.microservice.connectors.AuthConnector
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
 import uk.gov.hmrc.play.http.ws._
-import uk.gov.hmrc.http.hooks.{HttpHooks}
-import uk.gov.hmrc.play.audit.http.HttpAuditing
-
 import uk.gov.hmrc.play.microservice.config.LoadAuditingConfig
+
+trait WiringConfig {
+  def appNameConfiguration: Configuration = Play.current.configuration
+  def runModeConfiguration: Configuration = Play.current.configuration
+  def mode: Mode = Play.current.mode
+}
 
 trait Hooks extends HttpHooks with HttpAuditing {
   override val hooks = Seq(AuditingHook)
@@ -32,12 +40,15 @@ trait Hooks extends HttpHooks with HttpAuditing {
 }
 
 trait WSHttp extends HttpGet with WSGet with HttpPut with WSPut with HttpPost with WSPost with HttpDelete with WSDelete with Hooks with AppName
-object WSHttp extends WSHttp
+object WSHttp extends WSHttp with WiringConfig {
+  override val configuration: Option[Config] = Some(runModeConfiguration.underlying)
+}
 
-object MicroserviceAuditConnector extends AuditConnector with RunMode {
+object MicroserviceAuditConnector extends AuditConnector with RunMode with WiringConfig {
   override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
 
-object MicroserviceAuthConnector extends AuthConnector with ServicesConfig with WSHttp {
+object MicroserviceAuthConnector extends AuthConnector with ServicesConfig with WSHttp with WiringConfig {
   override val authBaseUrl = baseUrl("auth")
+  override val configuration: Option[Config] = Some(runModeConfiguration.underlying)
 }
