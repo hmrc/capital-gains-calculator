@@ -41,8 +41,8 @@ private object AppDependencies {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "microservice-bootstrap" % "9.1.0",
-    "uk.gov.hmrc" %% "domain" % "5.2.0",
+    "uk.gov.hmrc" %% "microservice-bootstrap" % "10.0.0",
+    "uk.gov.hmrc" %% "domain" % "5.3.0",
     "joda-time" % "joda-time" % "2.9.7"
   )
 

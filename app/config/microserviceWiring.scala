@@ -16,6 +16,7 @@
 
 package config
 
+import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import play.api.Mode.Mode
 import play.api.{Configuration, Play}
@@ -42,6 +43,8 @@ trait Hooks extends HttpHooks with HttpAuditing {
 trait WSHttp extends HttpGet with WSGet with HttpPut with WSPut with HttpPost with WSPost with HttpDelete with WSDelete with Hooks with AppName
 object WSHttp extends WSHttp with WiringConfig {
   override val configuration: Option[Config] = Some(runModeConfiguration.underlying)
+
+  override protected def actorSystem: ActorSystem = Play.current.actorSystem
 }
 
 object MicroserviceAuditConnector extends AuditConnector with RunMode with WiringConfig {
@@ -51,4 +54,5 @@ object MicroserviceAuditConnector extends AuditConnector with RunMode with Wirin
 object MicroserviceAuthConnector extends AuthConnector with ServicesConfig with WSHttp with WiringConfig {
   override val authBaseUrl = baseUrl("auth")
   override val configuration: Option[Config] = Some(runModeConfiguration.underlying)
+  override protected def actorSystem: ActorSystem = Play.current.actorSystem
 }
