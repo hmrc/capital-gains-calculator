@@ -25,7 +25,7 @@ import org.joda.time.DateTime
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.CalculationService
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.Future
 
