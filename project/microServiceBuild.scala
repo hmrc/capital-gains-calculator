@@ -41,9 +41,9 @@ private object AppDependencies {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "microservice-bootstrap" % "10.0.0",
+    "uk.gov.hmrc" %% "bootstrap-play-25" % "4.6.0",
     "uk.gov.hmrc" %% "domain" % "5.3.0",
-    "joda-time" % "joda-time" % "2.9.7"
+    "joda-time" % "joda-time" % "2.9.9"
   )
 
   trait TestDependencies {

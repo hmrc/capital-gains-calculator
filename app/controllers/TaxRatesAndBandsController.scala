@@ -19,16 +19,15 @@ package controllers
 import common._
 import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
-import play.api.libs.json.Json
-import uk.gov.hmrc.play.microservice.controller.BaseController
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.mvc.{Action, AnyContent}
 import config.TaxRatesAndBands._
 import models._
 import org.joda.time.DateTime
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Success, Try}
 
 object TaxRatesAndBandsController extends TaxRatesAndBandsController {
