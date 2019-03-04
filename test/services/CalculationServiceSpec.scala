@@ -104,6 +104,22 @@ class CalculationServiceSpec extends UnitSpec {
 
   "Calling CalculationService.brRemaining" should {
 
+
+    "return a value of 1 when Individual has income of 49999, PA of 12500" in {
+      val result = CalculationService.brRemaining(49999, 12500, 0, 2020)
+      result shouldEqual 1
+    }
+
+    "return a value of 0 when Individual has income of 50000, PA of 12500" in {
+      val result = CalculationService.brRemaining(50000, 12500, 0, 2020)
+      result shouldEqual 0
+    }
+
+    "return a value of 37500 when Individual has income of 50000, PA of 12500" in {
+      val result = CalculationService.brRemaining(0, 12500, 0, 2020)
+      result shouldEqual 37500
+    }
+
     "return a value of 32000 when Individual has Income of 8000 and a PA of 11000" in {
       val result = CalculationService.brRemaining(8000, 11000, 0, 2017)
       result shouldEqual 32000
@@ -114,7 +130,7 @@ class CalculationServiceSpec extends UnitSpec {
       result shouldEqual 0
     }
 
-    "return a value of 3000 when Individual has Income of 50000 and a PA of 11000" in {
+    "return a value of 3000 when Individual has Income of 40000 and a PA of 11000" in {
       val result = CalculationService.brRemaining(40000, 11000, 0, 2017)
       result shouldEqual 3000
     }
@@ -158,6 +174,7 @@ class CalculationServiceSpec extends UnitSpec {
       val result = CalculationService.brRemaining(31000.01, 10999.01, 10000.01, 2017)
       result shouldEqual 2000
     }
+
   }
 
   "calling CalculationService.calculateCapitalGainsTax" should {
