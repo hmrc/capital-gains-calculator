@@ -30,7 +30,7 @@ class TaxRatesAndBandsValidationSpec extends UnitSpec{
       result shouldBe true
     }
 
-    "return true with a year 2015" in {
+    "return false with a year 2015" in {
       val result = checkValidTaxYear(2015)
 
       result shouldBe false
