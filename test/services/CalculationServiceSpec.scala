@@ -17,20 +17,20 @@
 package services
 
 import org.joda.time.DateTime
-import services.CalculationService._
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CalculationServiceSpec extends UnitSpec {
-
+class CalculationServiceSpec extends UnitSpec with MockitoSugar {
+ val calculationService = new CalculationService
   "Calling CalculationService.annualExemptAmount" should {
 
     "return a value of 11100 when no prior disposal for the year has happened" in {
-      val result = CalculationService.calculateAEA("No", disposalDate = DateTime.parse("2015-10-10"))
+      val result = calculationService.calculateAEA("No", disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 11100
     }
 
     "return a value of 2000 (remaining AEA input) a prior disposal for year has resulted in gain" in {
-      val result = CalculationService.calculateAEA("Yes", Some(2000), disposalDate = DateTime.parse("2015-10-10"))
+      val result = calculationService.calculateAEA("Yes", Some(2000), disposalDate = DateTime.parse("2015-10-10"))
       result shouldEqual 2000
     }
   }
@@ -39,7 +39,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return the total Gain value of 4700 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000, " +
       "Incidental Acquisition Costs = 300, Enhancement Costs = 2000" in {
-      val result = CalculationService.calculateGainFlat(10000, 2000, 1000, 300, 2000)
+      val result = calculationService.calculateGainFlat(10000, 2000, 1000, 300, 2000)
       result shouldEqual 4700
     }
   }
@@ -48,13 +48,13 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return 2500 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000," +
       "Incidental Acquisition Costs = 0, Enhancement Costs = 2000, Acquisition Date 05/04/2015, Disposal Date 06/04/2015" in {
-      val result = CalculationService.calculateGainTA(10000.0, 2000.0, 1000.0, 0.0, 2000.0, Some(DateTime.parse("2015-04-05")), DateTime.parse("2015-04-06"))
+      val result = calculationService.calculateGainTA(10000.0, 2000.0, 1000.0, 0.0, 2000.0, Some(DateTime.parse("2015-04-05")), DateTime.parse("2015-04-06"))
       result shouldEqual 2500
     }
 
     "return 206 where Disposal Proceeds = 12,645.77, Incidental Disposal Costs = 1954.66, Acquisition Cost = 1000.04," +
       "Incidental Acquisition Costs = 0.99, Enhancement Costs = 2000.65, Acquisition Date 05/04/1967, Disposal Date 31/07/2016" in {
-      val result = CalculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, Some(DateTime.parse("1967-04-05")),
+      val result = calculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, Some(DateTime.parse("1967-04-05")),
         DateTime.parse("2016-07-31"))
       result shouldEqual 206
     }
@@ -64,7 +64,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return the total Gain value of 4700 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Rebased Value = 1000, " +
       "Revaluation Costs = 300, Enhancement Costs = 2000" in {
-      val result = CalculationService.calculateGainRebased(10000, 2000, 1000, 300, 2000)
+      val result = calculationService.calculateGainRebased(10000, 2000, 1000, 300, 2000)
       result shouldEqual 4700
     }
   }
@@ -72,32 +72,32 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.calculateChargeableGain" should {
 
     "the total Chargeable Gain value of 4550 where total Gain = 5000, Relief = 200, In Year Losses = 150, AEA = 100" in {
-      val result = CalculationService.calculateChargeableGain(5000, 200, 150, 100)
+      val result = calculationService.calculateChargeableGain(5000, 200, 150, 100)
       result shouldEqual 4550
     }
 
     "the total Chargeable Gain Value should be 270 where total gain = 500, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
-      val result = calculateChargeableGain(500, 10, 20, 30, 170)
+      val result = calculationService.calculateChargeableGain(500, 10, 20, 30, 170)
       result shouldEqual 270
     }
 
     "the total Chargeable Gain Value should be 0 where total gain = 230, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
-      val result = calculateChargeableGain(230, 10, 20, 30, 170)
+      val result = calculationService.calculateChargeableGain(230, 10, 20, 30, 170)
       result shouldEqual 0
     }
 
     "the total Chargeable Gain Value should be -5 where total gain = 225, Relief = 10, In Year Losses = 20, AEA = 30, Brought Forward Losses = 170" in {
-      val result = calculateChargeableGain(225, 10, 20, 30, 170)
+      val result = calculationService.calculateChargeableGain(225, 10, 20, 30, 170)
       result shouldEqual -5
     }
 
     "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 75" in {
-      val result = calculateChargeableGain(200, 0, 0, 150, 75)
+      val result = calculationService.calculateChargeableGain(200, 0, 0, 150, 75)
       result shouldEqual -25
     }
 
     "the total Chargeable Gain Value should be -50 where total gain = 200, Relief = 0, In Year Losses = 0, AEA = 150, Brought Forward Losses = 74.01" in {
-      val result = calculateChargeableGain(200, 0, 0, 150, 74.01)
+      val result = calculationService.calculateChargeableGain(200, 0, 0, 150, 74.01)
       result shouldEqual -25
     }
   }
@@ -106,72 +106,72 @@ class CalculationServiceSpec extends UnitSpec {
 
 
     "return a value of 1 when Individual has income of 49999, PA of 12500" in {
-      val result = CalculationService.brRemaining(49999, 12500, 0, 2020)
+      val result = calculationService.brRemaining(49999, 12500, 0, 2020)
       result shouldEqual 1
     }
 
     "return a value of 0 when Individual has income of 50000, PA of 12500" in {
-      val result = CalculationService.brRemaining(50000, 12500, 0, 2020)
+      val result = calculationService.brRemaining(50000, 12500, 0, 2020)
       result shouldEqual 0
     }
 
     "return a value of 37500 when Individual has income of 50000, PA of 12500" in {
-      val result = CalculationService.brRemaining(0, 12500, 0, 2020)
+      val result = calculationService.brRemaining(0, 12500, 0, 2020)
       result shouldEqual 37500
     }
 
     "return a value of 32000 when Individual has Income of 8000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(8000, 11000, 0, 2017)
+      val result = calculationService.brRemaining(8000, 11000, 0, 2017)
       result shouldEqual 32000
     }
 
     "return a value of 0 when Individual has Income of 50000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(50000, 11000, 0, 2017)
+      val result = calculationService.brRemaining(50000, 11000, 0, 2017)
       result shouldEqual 0
     }
 
     "return a value of 3000 when Individual has Income of 40000 and a PA of 11000" in {
-      val result = CalculationService.brRemaining(40000, 11000, 0, 2017)
+      val result = calculationService.brRemaining(40000, 11000, 0, 2017)
       result shouldEqual 3000
     }
 
     "return a value of 0 when Individual has Income of 33000 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(33000, 1000, 0, 2017)
+      val result = calculationService.brRemaining(33000, 1000, 0, 2017)
       result shouldEqual 0
     }
 
     "return a value of 0 when Individual has Income of 33001 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(33001, 1000, 0, 2017)
+      val result = calculationService.brRemaining(33001, 1000, 0, 2017)
       result shouldEqual 0
     }
 
     "return a value of 1 when Individual has Income of 32999 and a PA of 1000" in {
-      val result = CalculationService.brRemaining(32999, 1000, 0, 2017)
+      val result = calculationService.brRemaining(32999, 1000, 0, 2017)
       result shouldEqual 1
     }
 
     "return a value of 16000 when Individual has income of 8000, PA of 11000 and previous gain of 16000" in {
-      val result = CalculationService.brRemaining(8000, 11000, 16000, 2017)
+      val result = calculationService.brRemaining(8000, 11000, 16000, 2017)
       result shouldEqual 16000
     }
 
     "return a value of 0 when Individual has Income of 50000, PA of 11000 and previous gain of 16000" in {
-      val result = CalculationService.brRemaining(50000, 11000, 16000, 2017)
+      val result = calculationService.brRemaining(50000, 11000, 16000, 2017)
       result shouldEqual 0
     }
 
     "return a value of 0 when Individual has income of 8000, PA of 11000 and previous gain of 32000" in {
-      val result = CalculationService.brRemaining(8000, 11000, 32000, 2017)
+      val result = calculationService.brRemaining(8000, 11000, 32000, 2017)
       result shouldEqual 0
     }
 
     "return a value of 2000 when Individual has income of 31000.99, PA of 10999.99 and previous gain of 10000.99" in {
-      val result = CalculationService.brRemaining(31000.99, 10999.99, 10000.99, 2017)
+      val result = calculationService.brRemaining(31000.99, 10999.99, 10000.99, 2017)
       result shouldEqual 2000
     }
 
     "return a value of 2000 when Individual has income of 31000.01, PA of 10999.01 and previous gain of 10000.01" in {
-      val result = CalculationService.brRemaining(31000.01, 10999.01, 10000.01, 2017)
+      val result = calculationService.brRemaining(31000.01, 10999.01, 10000.01, 2017)
       result shouldEqual 2000
     }
 
@@ -184,7 +184,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "return £6,331.64 for an Individual not claiming ER, with a higher rate income and taxable gain of £44,615 charged " +
         "at 28%" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "flat",
           priorDisposal = "Yes",
           annualExemptAmount = Some(5000),
@@ -231,7 +231,7 @@ class CalculationServiceSpec extends UnitSpec {
       //############ Flat Rate PRR Tests ########################
       "return £0 tax owed for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of 5, Gain of £2000 and " +
         "PRR of £2015" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "flat",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
@@ -269,7 +269,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "return £9498.56 tax owed for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, Days Eligible of 0, Gain of £100,000 and " +
         "PRR of £43,548" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "flat",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
@@ -323,7 +323,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "return £861.84 tax owed for an Individual claiming PRR, with a taxable gain of £44,615, chargeable gain of £3078 " +
         "and a PRR total of £19535" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "flat",
           priorDisposal = "Yes",
           annualExemptAmount = Some(4999.23),
@@ -376,7 +376,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "return £6,331.64 for an Individual not claiming ER, with a higher rate income and taxable gain of £44,615 charged " +
         "at 28%" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "rebased",
           priorDisposal = "Yes",
           annualExemptAmount = Some(5000),
@@ -423,7 +423,7 @@ class CalculationServiceSpec extends UnitSpec {
       //############### Rebased PRR Tests #####################
 
       "return £0 tax owed for an Individual claiming PRR, with a total gain of £100,000 and PRR of £100,000" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "rebased",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
@@ -483,7 +483,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "return £0 tax owed for an Individual claiming PRR, with a total gain of £109,800, PRR of £109,800, acquisition date of 05-04-2015, " +
         "disposal date of 06-10-2016 and days claimed of 3" should {
-        val result = CalculationService.calculateCapitalGainsTax(
+        val result = calculationService.calculateCapitalGainsTax(
           calculationType = "time",
           priorDisposal = "No",
           annualExemptAmount = Some(0),
@@ -541,55 +541,55 @@ class CalculationServiceSpec extends UnitSpec {
 
     "return £2000 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "5 and Gain of £2000 " in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-05"), 5, 2000)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-05"), 5, 2000)
       result shouldEqual 2000
     }
 
     "return £4501 (capped at the Gain) for a Disposal Date of 20-01-2016, Acquisition Date of 01-04-2015, Days Eligible of " +
       "20 and Gain of £4501" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-01-20"), DateTime.parse("2015-04-01"), 20, 4501)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-01-20"), DateTime.parse("2015-04-01"), 20, 4501)
       result shouldEqual 4501
     }
 
     "return £2001 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
       "5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-06"), 5, 2001)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-06"), 5, 2001)
       result shouldEqual 2001
     }
 
     "return £4502 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 01-04-2016, Days Eligible of " +
       "0 and Gain of £4502" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2016-04-01"), 0, 4502)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2016-04-01"), 0, 4502)
       result shouldEqual 4502
     }
 
     "return £2002 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "5 and Gain of £2000" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-05"), 5, 2002)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-05"), 5, 2002)
       result shouldEqual 2002
     }
 
     "return £4503 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "20 and Gain of £4503" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-05"), 20, 4503)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-05"), 20, 4503)
       result shouldEqual 4503
     }
 
     "return £2003 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
       "5 and Gain of £2003" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-06"), 5, 2003)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-06"), 5, 2003)
       result shouldEqual 2003
     }
 
     "return £4504 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 20-04-2015, Days Eligible of " +
       "20 and Gain of £4504" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-20"), 20, 4504)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-20"), 20, 4504)
       result shouldEqual 4504
     }
 
     "return a rounded up amount of £43,548 for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, " +
       "Days Eligible of 0 and Gain of £100,000 which results in a PRR of £43,547.11005[...]" in {
-      val result = CalculationService.calculateFlatPRR(DateTime.parse("2016-10-03"), DateTime.parse("2013-04-20"), 0, 100000)
+      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-03"), DateTime.parse("2013-04-20"), 0, 100000)
       result shouldEqual 43548
     }
   }
@@ -597,36 +597,36 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.calculateRebasedPRR" should {
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £100,000" in {
-      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 100000)
+      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 100000)
       result shouldEqual 100000
     }
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 20 and gain of £100,000 resulting PRR of " +
       "£103,637 that is capped" in {
-      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 20, 100000)
+      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 20, 100000)
       result shouldEqual 100000
     }
 
     "return £75,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £75,000" in {
-      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 75000)
+      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 75000)
       result shouldEqual 75000
     }
 
     "return a rounded up amount of £30,899 for a Disposal date of 25-12-2016, days claimed after of 0 and gain of £56,000 " +
       "which results in a PRR of £30898.492[...]" in {
-      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2017-12-25"), 0, 56000)
+      val result = calculationService.calculateRebasedPRR(DateTime.parse("2017-12-25"), 0, 56000)
       result shouldEqual 30899
     }
 
     "return £45,000 for a Disposal date of 05-10-2016, days claimed after of 0 (the question was not asked) and gain of £45,000 " +
       "resulting in a PRR of £45082 that is capped" in {
-      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2016-10-05"), 0, 45000)
+      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-05"), 0, 45000)
       result shouldEqual 45000
     }
 
     "return £35000 for a Disposal date of 25-12-2015, days claimed after of 0 (the question was not asked) and gain of £35,000 " +
       "resulting in a PRR of £72785 that is capped" in {
-      val result = CalculationService.calculateRebasedPRR(DateTime.parse("2015-12-25"), 0, 35000)
+      val result = calculationService.calculateRebasedPRR(DateTime.parse("2015-12-25"), 0, 35000)
       result shouldEqual 35000
     }
 
@@ -635,36 +635,36 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling CalculationService.calculateTimeApportionmentPRR" should {
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £100,000" in {
-      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 100000)
+      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 100000)
       result shouldEqual 100000
     }
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 20 and gain of £100,000 resulting PRR of " +
       "£103,637 that is capped" in {
-      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 20, 100000)
+      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 20, 100000)
       result shouldEqual 100000
     }
 
     "return £75,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £75,000" in {
-      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 75000)
+      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 75000)
       result shouldEqual 75000
     }
 
     "return a rounded up amount of £30,899 for a Disposal date of 25-12-2016, days claimed after of 0 and gain of £56,000 " +
       "which results in a PRR of £30898.492[...]" in {
-      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2017-12-25"), 0, 56000)
+      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2017-12-25"), 0, 56000)
       result shouldEqual 30899
     }
 
     "return £45,000 for a Disposal date of 05-10-2016, days claimed after of 0 (the question was not asked) and gain of £45,000 " +
       "resulting in a PRR of £45082 that is capped" in {
-      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-05"), 0, 45000)
+      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-05"), 0, 45000)
       result shouldEqual 45000
     }
 
     "return £35000 for a Disposal date of 25-12-2015, days claimed after of 0 (the question was not asked) and gain of £35,000 " +
       "resulting in a PRR of £72785 that is capped" in {
-      val result = CalculationService.calculateTimeApportionmentPRR(DateTime.parse("2015-12-25"), 0, 35000)
+      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2015-12-25"), 0, 35000)
       result shouldEqual 35000
     }
   }
@@ -778,54 +778,54 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the partialAEAUsed method" should {
 
     "return an AEA of £6000 used with no losses or reliefs" in {
-      val result = CalculationService.partialAEAUsed(6000, 0, 0)
+      val result = calculationService.partialAEAUsed(6000, 0, 0)
       result shouldEqual 6000
     }
 
     "return an AEA of £2000 used with losses and reliefs used" in {
-      val result = CalculationService.partialAEAUsed(6000, 2000, 2000)
+      val result = calculationService.partialAEAUsed(6000, 2000, 2000)
       result shouldEqual 2000
     }
 
     "return an AEA of £0 used when losses and reliefs eliminate the gain" in {
-      val result = CalculationService.partialAEAUsed(6000, 3000, 3000)
+      val result = calculationService.partialAEAUsed(6000, 3000, 3000)
       result shouldEqual 0
     }
 
     "return an AEA of £0 when losses and reliefs eliminate the gain through rounding" in {
-      val result = CalculationService.partialAEAUsed(6000, 2999.01, 2999.01)
+      val result = calculationService.partialAEAUsed(6000, 2999.01, 2999.01)
     }
   }
 
   "Calling the determinePRRUsed method" should {
 
     "return a value of PRR claimed when less than total gain" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(500))
+      val result = calculationService.determineReliefsUsed(1000, Some(500))
       result shouldEqual 500
     }
 
     "return a value of PRR claimed when equal to total gain" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(1000))
+      val result = calculationService.determineReliefsUsed(1000, Some(1000))
       result shouldEqual 1000
     }
 
     "return a value equal to the total gain when PRR claimed is greater" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(1200))
+      val result = calculationService.determineReliefsUsed(1000, Some(1200))
       result shouldEqual 1000
     }
 
     "return a value of PRR claimed with correct rounding when less than total gain" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(500.01))
+      val result = calculationService.determineReliefsUsed(1000, Some(500.01))
       result shouldEqual 501
     }
 
     "return a value equal to the total gain when PRR claimed is greater with correct rounding" in {
-      val result = CalculationService.determineReliefsUsed(1000, Some(1000.01))
+      val result = calculationService.determineReliefsUsed(1000, Some(1000.01))
       result shouldEqual 1000
     }
 
     "return a value of 0 when PRR is not claimed" in {
-      val result = CalculationService.determineReliefsUsed(1000, None)
+      val result = calculationService.determineReliefsUsed(1000, None)
       result shouldEqual 0
     }
   }
@@ -833,45 +833,45 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the annualExemptAmountUsed method" should {
 
     "return an AEA used of 0 when reliefs and in year losses equal the gain" in {
-      CalculationService.annualExemptAmountUsed(10000, 100, 50, 50) shouldBe 0
+      calculationService.annualExemptAmountUsed(10000, 100, 50, 50) shouldBe 0
     }
 
     "return an AEA used of 0 when reliefs and in year losses are greater than the gain" in {
-      CalculationService.annualExemptAmountUsed(10000, 100, 100, 100) shouldBe 0
+      calculationService.annualExemptAmountUsed(10000, 100, 100, 100) shouldBe 0
     }
 
     "return an AEA used equal to the available amount when the gain minus losses and reliefs is greater than the available amount" in {
-      CalculationService.annualExemptAmountUsed(10000, 150000, 5000, 5000) shouldBe 10000
+      calculationService.annualExemptAmountUsed(10000, 150000, 5000, 5000) shouldBe 10000
     }
 
     "return an AEA used equal to the available amount when the gain minus losses and reliefs is equal to the available amount" in {
-      CalculationService.annualExemptAmountUsed(5000, 10000, 2500, 2500) shouldBe 5000
+      calculationService.annualExemptAmountUsed(5000, 10000, 2500, 2500) shouldBe 5000
     }
 
     "return the result of the partial AEA used when the available AEA is greater than the remaining gain" in {
-      CalculationService.annualExemptAmountUsed(5000, 7500, 2500, 2500) shouldBe 2500
+      calculationService.annualExemptAmountUsed(5000, 7500, 2500, 2500) shouldBe 2500
     }
   }
 
   "Calling the annualExemptAmountLeft method" should {
 
     "return an AEA remaining equal to £5,100 when calculated AEA is £11,100 and £6,000 is used" in {
-      val result = CalculationService.annualExemptAmountLeft(11100, 6000)
+      val result = calculationService.annualExemptAmountLeft(11100, 6000)
       result shouldEqual 5100
     }
 
     "return an AEA remaining equal to £5,101 when calculated AEA is £11,100.99 rounded up and £6,000 is used" in {
-      val result = CalculationService.annualExemptAmountLeft(11100.99, 6000)
+      val result = calculationService.annualExemptAmountLeft(11100.99, 6000)
       result shouldEqual 5101
     }
 
     "return an AEA remaining equal to £0 when calculated AEA is £11,100 and £11,100 is used" in {
-      val result = CalculationService.annualExemptAmountLeft(11100, 11100)
+      val result = calculationService.annualExemptAmountLeft(11100, 11100)
       result shouldEqual 0
     }
 
     "return an AEA remaining equal to £0 when calculated AEA is £0 and £0 is used" in {
-      val result = CalculationService.annualExemptAmountLeft(0, 0)
+      val result = calculationService.annualExemptAmountLeft(0, 0)
       result shouldEqual 0
     }
   }
@@ -879,22 +879,22 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determineLossLeft method" should {
 
     "return loss remaining equal to £90 when Gain is £10 and £100 loss" in {
-      val result = CalculationService.determineLossLeft(10, 100)
+      val result = calculationService.determineLossLeft(10, 100)
       result shouldEqual 90
     }
 
     "return loss remaining equal to £1 when Gain is £0 and £0.01 loss" in {
-      val result = CalculationService.determineLossLeft(0, 0.01)
+      val result = calculationService.determineLossLeft(0, 0.01)
       result shouldEqual 1
     }
 
     "return loss remaining equal to £0 when Gain is £50 and £0.00 loss " in {
-      val result = CalculationService.determineLossLeft(50, 0)
+      val result = calculationService.determineLossLeft(50, 0)
       result shouldEqual 0
     }
 
     "return loss remaining equal to £0 when Gain is £0 and £0 loss " in {
-      val result = CalculationService.determineLossLeft(0, 0)
+      val result = calculationService.determineLossLeft(0, 0)
       result shouldEqual 0
     }
 
@@ -903,77 +903,77 @@ class CalculationServiceSpec extends UnitSpec {
   "Calling the determineReliefsUsed method" should {
 
     "return the a value limited to the prr of letting relief submitted when less than the gain - prr" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 20000, Some(30000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 20000, Some(30000), 2015)
       result shouldEqual 20000
     }
 
     "return a value of 40000 letting relief submitted when prr and lettings greater than 40000" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(50000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 50000, Some(50000), 2015)
       result shouldEqual 40000
     }
 
     "return a value of 40000 letting relief submitted when prr and lettings greater than 40000 again" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000), 2015)
       result shouldEqual 40000
     }
 
     "return the value of the gain when reliefs submitted greater than the gain" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(30000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 50000, Some(30000), 2015)
       result shouldEqual 30000
     }
 
     "return a value of gain-prr when the letting relief submitted exceeds this" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 70000, Some(40000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 70000, Some(40000), 2015)
       result shouldEqual 30000
     }
 
     "return a value of letting relief when the letting relief submitted is less than 40000 and gain-prr" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 80000, Some(18000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 80000, Some(18000), 2015)
       result shouldEqual 18000
     }
 
     "return the value of 0 if there is no prr claimed" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 0, Some(30000), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 0, Some(30000), 2015)
       result shouldEqual 0
     }
 
     "return a result of 0 if no reliefs are submitted" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, None, 2015)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 50000, None, 2015)
       result shouldEqual 0
     }
 
     "return a result rounded up if reliefs is a fractional value" in {
-      val result = CalculationService.determineLettingsReliefsUsed(2000, 1000, Some(499.01), 2013)
+      val result = calculationService.determineLettingsReliefsUsed(2000, 1000, Some(499.01), 2013)
       result shouldEqual 500
     }
 
     "return a result equal to the gain when reliefs is fractionally above the gain" in {
-      val result = CalculationService.determineLettingsReliefsUsed(800, 400, Some(800.01), 2014)
+      val result = calculationService.determineLettingsReliefsUsed(800, 400, Some(800.01), 2014)
       result shouldEqual 400
     }
 
     "return a result equal to the gain when reliefs is fractionally below the gain" in {
-      val result = CalculationService.determineLettingsReliefsUsed(800, 400, Some(799.01), 2015)
+      val result = calculationService.determineLettingsReliefsUsed(800, 400, Some(799.01), 2015)
       result shouldEqual 400
     }
 
     "return a result equal to the max reliefs for the latest year when provided with a date in the future" in {
-      val result = CalculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000), 2020)
+      val result = calculationService.determineLettingsReliefsUsed(100000, 50000, Some(45000), 2020)
       result shouldEqual 40000
     }
   }
 
   "Calling the calculateAmountUsed method" should {
     "return 0 when supplied with 10 and 10" in {
-      calculateAmountUsed(10, 10) shouldEqual 0
+      calculationService.calculateAmountUsed(10, 10) shouldEqual 0
     }
 
     "return 1 when supplied with 10 and 9" in {
-      calculateAmountUsed(10, 9) shouldEqual 1
+      calculationService.calculateAmountUsed(10, 9) shouldEqual 1
     }
 
     "return 0 when supplied with 9 and 10" in {
-      calculateAmountUsed(9, 10) shouldEqual 0
+      calculationService.calculateAmountUsed(9, 10) shouldEqual 0
     }
   }
 
@@ -981,7 +981,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "disposal costs are £999.99, acquisition costs are £299.50 and improvements are £5,000.01" should {
 
-      val result = CalculationService.calculateTotalCosts(999.99, 299.50, 5000.01)
+      val result = calculationService.calculateTotalCosts(999.99, 299.50, 5000.01)
 
       "return 6301" in {
         result shouldEqual 6301.00
@@ -990,7 +990,7 @@ class CalculationServiceSpec extends UnitSpec {
 
     "disposal costs are £999, acquisition costs are £299 and improvements are £5,000" should {
 
-      val result = CalculationService.calculateTotalCosts(999.00, 299.00, 5000.00)
+      val result = calculationService.calculateTotalCosts(999.00, 299.00, 5000.00)
 
       "return 6298" in {
         result shouldEqual 6298.00
@@ -1004,7 +1004,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "when taxable gain is lower than basic rate remaining" should {
 
-        val result = CalculationService.calculationResult(
+        val result = calculationService.calculationResult(
           gain = 10000,
           taxableGain = 10000,
           chargeableGain = 10000,
@@ -1027,7 +1027,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "when taxable gain is higher than basic rate remaining" should {
 
-        val result = CalculationService.calculationResult(
+        val result = calculationService.calculationResult(
           gain = 10000,
           taxableGain = 20000,
           chargeableGain = 20000,
@@ -1050,7 +1050,7 @@ class CalculationServiceSpec extends UnitSpec {
 
       "when a decimal result is produced" should {
 
-        val result = CalculationService.calculationResult(
+        val result = calculationService.calculationResult(
           gain = 10000,
           taxableGain = 56789,
           chargeableGain = 56789,

@@ -20,18 +20,23 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
+import controllers.resident.properties.CalculatorController
+import javax.inject.{Inject, Singleton}
 import models.nonResident._
 import org.joda.time.DateTime
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.CalculationService
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.{BackendController, BaseController}
 
 import scala.concurrent.Future
 
-trait CalculatorController extends BaseController {
+@Singleton
+class CalculatorController @Inject()(
+                                          val calculationService: CalculationService,
+                                          val cc: ControllerComponents
+                                        ) extends BackendController(cc) {
 
-  val calculationService: CalculationService
 
   def timeApportionedCalculationApplicable(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
     (disposalDate, acquisitionDate) match {
@@ -332,8 +337,4 @@ trait CalculatorController extends BaseController {
     val result = calculationService.calculateTotalCosts(disposalCosts, acquisitionCosts, improvements)
     Future.successful(Ok(Json.toJson(result)))
   }
-}
-
-object CalculatorController extends CalculatorController {
-  override val calculationService = CalculationService
 }

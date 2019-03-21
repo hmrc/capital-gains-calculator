@@ -38,12 +38,14 @@ private object AppDependencies {
   private val hmrcTestVersion = "3.6.0-play-25"
   private val jsoupVersion = "1.10.2"
   private val pegDownVersion = "1.6.0"
+  private val bootstrapVersion = "0.37.0"
 
-  val compile = Seq(
+  val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-play-25" % "4.9.0",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % bootstrapVersion,
     "uk.gov.hmrc" %% "domain" % "5.3.0",
-    "joda-time" % "joda-time" % "2.9.9"
+    "joda-time" % "joda-time" % "2.9.9",
+    "com.typesafe.play" %% "play-json-joda" % "2.7.2"
   )
 
   trait TestDependencies {

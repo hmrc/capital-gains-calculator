@@ -20,24 +20,26 @@ import common._
 import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
 import config.TaxRatesAndBands._
+import javax.inject.{Inject, Singleton}
 import models._
 import org.joda.time.DateTime
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
-
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Success, Try}
 
-object TaxRatesAndBandsController extends TaxRatesAndBandsController {
-}
-
-trait TaxRatesAndBandsController extends BaseController {
+@Singleton
+class TaxRatesAndBandsController @Inject()(
+                                            val cc: ControllerComponents
+                                          ) extends BackendController(cc) {
 
   def getMaxAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
-   if(TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
-   else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
+    if(TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
+    else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
   def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>

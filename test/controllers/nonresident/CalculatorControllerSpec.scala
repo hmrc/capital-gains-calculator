@@ -20,24 +20,36 @@ import models.CalculationResultModel
 import models.nonResident._
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.AnyContentAsJson
+import play.api.mvc.{AnyContentAsJson, ControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CalculationService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar with BeforeAndAfterEach {
+
+  val mockService: CalculationService = mock[CalculationService]
+  val injectedComponents: ControllerComponents = fakeApplication.injector.instanceOf[ControllerComponents]
+
+  val controller = new CalculatorController(mockService, injectedComponents)
+
+  override def beforeEach(): Unit = {
+    reset(mockService)
+    super.beforeEach()
+  }
 
   "Calling timeApportionedCalculationApplied" should {
 
     "return a true when provided with valid dates" in {
       val acquisitionDate = DateTime.parse("2013-03-10")
       val disposalDate = DateTime.parse("2016-01-14")
-      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
+      val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
       result shouldBe true
     }
@@ -45,7 +57,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     "return a false when provided with an acquisition date after the tax start date" in {
       val acquisitionDate = DateTime.parse("2015-07-10")
       val disposalDate = DateTime.parse("2016-01-14")
-      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
+      val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
       result shouldBe false
     }
@@ -53,21 +65,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     "return a false when provided a disposal date before the tax start date" in {
       val acquisitionDate = DateTime.parse("2013-07-10")
       val disposalDate = DateTime.parse("2013-01-14")
-      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
+      val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
       result shouldBe false
     }
 
     "return a false when not provided with an acquisition date" in {
       val disposalDate = DateTime.parse("2016-01-14")
-      val result = CalculatorController.timeApportionedCalculationApplicable(Some(disposalDate), None)
+      val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), None)
 
       result shouldBe false
     }
 
     "return a false when not provided with a disposal date" in {
       val acquisitionDate = DateTime.parse("2013-07-10")
-      val result = CalculatorController.timeApportionedCalculationApplicable(None, Some(acquisitionDate))
+      val result = controller.timeApportionedCalculationApplicable(None, Some(acquisitionDate))
 
       result shouldBe false
     }
@@ -79,20 +91,13 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     }
 
     "only provided with mandatory values" should {
-      val mockService = mock[CalculationService]
-
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(1.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
+      when(mockService.calculateGainFlat(any(), any(), any(),
+        any(), any())).thenReturn(1.0)
 
       val improvementsBefore = 2.0
       val improvementsAfter = improvementsBefore + 2
-      val totalImprovements = improvementsBefore + improvementsAfter
 
-      val result = target.calculateTotalGain()(fakePostRequest(
+      val result = controller.calculateTotalGain()(fakePostRequest(
         Json.toJson(NonResidentTotalGainRequestModel(
           disposalValue = 1,
           disposalCosts = 1,
@@ -131,42 +136,20 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           (json \ "timeApportionedGain").asOpt[Double] shouldBe None
         }
       }
-
-      "call the flat gain function on the calculator service once" in {
-        verify(mockService, times(1)).calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
-
-      "pass the flat gain function on the calculator service the total of the improvements" in {
-        verify(mockService).calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(totalImprovements))
-      }
-
-      "not call the rebased gain function on the calculator service" in {
-        verify(mockService, times(0)).calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
-
-      "not call the time apportioned gain function on the calculator service" in {
-        verify(mockService, times(0))
-          .calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
     }
 
     "provided with the values for the rebased calculation" should {
-      val mockService = mock[CalculationService]
+      when(mockService.calculateGainFlat(any(), any(), any(),
+        any(), any())).thenReturn(1.0)
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(1.0)
+      when(mockService.calculateGainRebased(any(), any(), any(),
+        any(), any())).thenReturn(2.0)
 
-      when(mockService.calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(2.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
 
       val improvementsBefore = 2.0
       val improvementsAfter = improvementsBefore + 2
 
-      val result = target.calculateTotalGain()(fakePostRequest(
+      val result = controller.calculateTotalGain()(fakePostRequest(
         Json.toJson(NonResidentTotalGainRequestModel(
           disposalValue = 1,
           disposalCosts = 1,
@@ -181,6 +164,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         ))
       ))
 
+      verify(mockService, times(0)).calculateGainTA(any(), any(), any(), any(), any(), any(), any())
 
       "return a valid result" which {
         val data = contentAsString(result)
@@ -200,35 +184,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
 
       "call the flat gain function on the calculator service once" in {
-        verify(mockService, times(1)).calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
-
-      "not call the time apportioned gain function on the calculator service" in {
-        verify(mockService, times(0))
-          .calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
     "provided with the values for the time apportioned calculation" should {
-      val mockService = mock[CalculationService]
       val disposalDate = DateTime.parse("2016-05-08")
       val acquisitionDate = DateTime.parse("2012-04-09")
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(1.0)
+      when(mockService.calculateGainFlat(any(), any(), any(),
+        any(), any())).thenReturn(1.0)
 
-      when(mockService.calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainTA(any(), any(), any(),
+        any(), any(), any(), any()))
         .thenReturn(3.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
 
       val improvementsBefore = 2.0
       val improvementsAfter = improvementsBefore + 2
       val totalImprovements = improvementsBefore + improvementsAfter
-      val result = target.calculateTotalGain()(fakePostRequest(
+      val result = controller.calculateTotalGain()(fakePostRequest(
         Json.toJson(NonResidentTotalGainRequestModel(
           disposalValue = 1,
           disposalCosts = 1,
@@ -242,6 +215,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           improvementsAfter
         ))
       ))
+
+      verify(mockService, times(3)).calculateGainFlat(any(), any(), any(), any(), any())
+      verify(mockService, times(0)).calculateGainRebased(any(), any(), any(), any(), any())
+      verify(mockService, times(1)).calculateGainTA(any(), any(), any(), any(), any(), any(), any())
+      verify(mockService).calculateGainTA(any(), any(), any(), any(), ArgumentMatchers.eq(totalImprovements), any(), any())
 
       "return a valid result" which {
         val data = contentAsString(result)
@@ -259,24 +237,6 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           (json \ "timeApportionedGain").asOpt[Double] shouldBe Some(3.0)
         }
       }
-
-      "call the flat gain function on the calculator service once" in {
-        verify(mockService, times(1)).calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
-
-      "not call the rebased gain function on the calculator service" in {
-        verify(mockService, times(0)).calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
-
-      "call the time apportioned gain function on the calculator service once" in {
-        verify(mockService, times(1))
-          .calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
-
-      "pass the time apportioned gain function on the calculator service the total of the improvements" in {
-        verify(mockService)
-          .calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(totalImprovements), ArgumentMatchers.any(), ArgumentMatchers.any())
-      }
     }
   }
 
@@ -284,22 +244,17 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "provided with a flat calculation with no acquisition date" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
       val disposalDate = DateTime.parse("2016-05-08")
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
 
       val claimingPRR = false
       val daysClaimed = 0
       val daysClaimedAfter = 0
 
-      val result = target.calculateTaxableGainAfterPRR(10.0, 1, 1, 1, 1, None, 0, Some(disposalDate), None,
+      val result = controller.calculateTaxableGainAfterPRR(10.0, 1, 1, 1, 1, None, 0, Some(disposalDate), None,
         0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
@@ -343,19 +298,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "only provided with values for the flat calculation with an acquisition date" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-      when(mockService.calculateFlatPRR(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateFlatPRR(any(), any(), any(), any()))
         .thenReturn(5.0)
-      when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.determineReliefsUsed(any(), any()))
         .thenReturn(100.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
 
       val claimingPRR = false
       val daysClaimed = 0
@@ -363,7 +313,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val disposalDate = DateTime.parse("2016-05-08")
       val acquisitionDate = DateTime.parse("2012-04-09")
 
-      val result = target.calculateTaxableGainAfterPRR(1, 1, 1, 1, 2.0, None, 0, Some(disposalDate), Some(acquisitionDate),
+      val result = controller.calculateTaxableGainAfterPRR(1, 1, 1, 1, 2.0, None, 0, Some(disposalDate), Some(acquisitionDate),
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
@@ -407,29 +357,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "only provided with values for the flat and rebased calculation without an acquisition date" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(100.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
+      when(mockService.calculateGainRebased(any(), any(), any(), any(), any())).thenReturn(100.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-      when(mockService.calculateFlatPRR(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateFlatPRR(any(), any(), any(), any()))
         .thenReturn(5.0)
-      when(mockService.calculateRebasedPRR(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateRebasedPRR(any(), any(), any()))
         .thenReturn(87.0)
-      when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.determineReliefsUsed(any(), any()))
         .thenReturn(100.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
 
       val claimingPRR = true
       val daysClaimed = 2847
       val daysClaimedAfter = 1
       val disposalDate = DateTime.parse("2017-01-02")
 
-      val result = target.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), None,
+      val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), None,
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
@@ -473,26 +418,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "provided with values for the flat, rebased and time apportioned calculations" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(100.0)
-      when(mockService.calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(50.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
+      when(mockService.calculateGainRebased(any(), any(), any(), any(), any())).thenReturn(100.0)
+      when(mockService.calculateGainTA(any(), any(), any(), any(),
+        any(), any(), any())).thenReturn(50.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-      when(mockService.calculateFlatPRR(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateFlatPRR(any(), any(), any(), any()))
         .thenReturn(5.0)
-      when(mockService.calculateRebasedPRR(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateRebasedPRR(any(), any(), any()))
         .thenReturn(87.0)
-      when(mockService.calculateTimeApportionmentPRR(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateTimeApportionmentPRR(any(), any(), any()))
         .thenReturn(44.0)
-      when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.determineReliefsUsed(any(), any()))
         .thenReturn(100.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
 
       val claimingPRR = true
       val daysClaimed = 2847
@@ -500,7 +440,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val disposalDate = DateTime.parse("2017-01-02")
       val acquisitionDate = DateTime.parse("2005-10-16")
 
-      val result = target.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
+      val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
@@ -570,18 +510,12 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "provided with values for the flat, rebased and time apportioned calculations but no disposal date" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(100.0)
-      when(mockService.calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(50.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(6.0)
-
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
+      when(mockService.calculateGainRebased(any(), any(), any(), any(), any())).thenReturn(100.0)
+      when(mockService.calculateGainTA(any(), any(), any(), any(), any(), any(), any())).thenReturn(50.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any())).thenReturn(6.0)
+      when(mockService.determineReliefsUsed(any(), any())).thenReturn(0.0)
 
       val claimingPRR = true
       val daysClaimed = 2847
@@ -589,7 +523,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val acquisitionDate = DateTime.parse("2005-10-16")
       val disposalDate = DateTime.parse("2017-10-16")
 
-      val result = target.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
+      val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
@@ -606,6 +540,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
         "should have a flat result" which {
           val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
+          println(flatResultJson.toString)
 
           "should have a totalGain of 6.0" in {
             flatResultJson.totalGain shouldEqual 6.0
@@ -635,26 +570,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "only a flat calculation result is available" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
       val returnModel = CalculationResultModel(8.0, 9.0, 10.0, 20, 0.0, 0.0)
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(15.0)
-      when(mockService.brRemaining(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(1.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(2.0)
-      when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(3.0)
-      when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(4.0)
-      when(mockService.annualExemptAmountUsed(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(5.0)
-      when(mockService.annualExemptAmountLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(7.0)
-      when(mockService.calculationResult(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(15.0)
+      when(mockService.brRemaining(any(), any(), any(), any())).thenReturn(1.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any())).thenReturn(2.0)
+      when(mockService.determineReliefsUsed(any(), any())).thenReturn(3.0)
+      when(mockService.determineLossLeft(any(), any())).thenReturn(4.0)
+      when(mockService.annualExemptAmountUsed(any(), any(), any(), any())).thenReturn(5.0)
+      when(mockService.annualExemptAmountLeft(any(), any())).thenReturn(6.0)
+      when(mockService.determineLossLeft(any(), any())).thenReturn(7.0)
+      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(),
+        any(), any(), any(), any()))
         .thenReturn(returnModel)
 
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
-
-      val result = target.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0,
+      val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0,
         PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
@@ -706,29 +636,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
     "all calculation methods are available" should {
       val fakeRequest = FakeRequest("GET", "")
-      val mockService = mock[CalculationService]
       val returnModel = CalculationResultModel(8.0, 9.0, 10.0, 20, 0.0, 0.0)
 
-      when(mockService.calculateGainFlat(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(15.0)
-      when(mockService.calculateGainRebased(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(16.0)
-      when(mockService.calculateGainTA(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(15.0)
+      when(mockService.calculateGainRebased(any(), any(), any(), any(), any())).thenReturn(16.0)
+      when(mockService.calculateGainTA(any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(17.0)
-      when(mockService.brRemaining(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(1.0)
-      when(mockService.calculateChargeableGain(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(2.0)
-      when(mockService.determineReliefsUsed(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(3.0)
-      when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(4.0)
-      when(mockService.annualExemptAmountUsed(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(5.0)
-      when(mockService.annualExemptAmountLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(6.0)
-      when(mockService.determineLossLeft(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(7.0)
-      when(mockService.calculationResult(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockService.brRemaining(any(), any(), any(), any())).thenReturn(1.0)
+      when(mockService.calculateChargeableGain(any(), any(), any(), any(), any())).thenReturn(2.0)
+      when(mockService.determineReliefsUsed(any(), any())).thenReturn(3.0)
+      when(mockService.determineLossLeft(any(), any())).thenReturn(4.0)
+      when(mockService.annualExemptAmountUsed(any(), any(), any(), any())).thenReturn(5.0)
+      when(mockService.annualExemptAmountLeft(any(), any())).thenReturn(6.0)
+      when(mockService.determineLossLeft(any(), any())).thenReturn(7.0)
+      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(),
+        any(), any(), any(), any()))
         .thenReturn(returnModel)
 
-      val target = new CalculatorController {
-        override val calculationService: CalculationService = mockService
-      }
-
-      val result = target.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, DateTime.parse("2017-10-10"), Some(DateTime.parse("2011-01-05")),
+      val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, DateTime.parse("2017-10-10"), Some(DateTime.parse("2011-01-05")),
         0, PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
@@ -823,19 +748,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   "Calling calculateTotalCosts" when {
 
-    val mockCalculationService = mock[CalculationService]
-    when(mockCalculationService.calculateTotalCosts(
-      ArgumentMatchers.anyDouble,
-      ArgumentMatchers.anyDouble,
-      ArgumentMatchers.anyDouble
+    when(mockService.calculateTotalCosts(
+      anyDouble,
+      anyDouble,
+      anyDouble
     )).thenReturn(5000.00)
 
-    val target: CalculatorController = new CalculatorController {
-      override val calculationService: CalculationService = mockCalculationService
-    }
-
     val fakeRequest = FakeRequest("GET", "/capital-gains-calculator/calculate-total-costs")
-    val result = target.calculateTotalCosts(
+    val result = controller.calculateTotalCosts(
       disposalCosts = 3000.00,
       improvements = 1000.00,
       acquisitionCosts = 1000.00)(fakeRequest)
