@@ -18,24 +18,29 @@ package controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import controllers.TaxRatesAndBandsController._
 import org.joda.time.DateTime
+import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
+import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
+class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication with  MockitoSugar {
 
   val fakeRequest = FakeRequest()
   implicit val system = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
+  val components = fakeApplication.injector.instanceOf[ControllerComponents]
+  val controller = new TaxRatesAndBandsController(components)
 
   "validating the getMaxAEA method" when {
 
     "calling with the year 2017" should {
 
-      val result = getMaxAEA(2017)(fakeRequest)
+      val result = controller.getMaxAEA(2017)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -55,7 +60,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2015 (boundary check)" should {
 
-      val result = getMaxAEA(2015)(fakeRequest)
+      val result = controller.getMaxAEA(2015)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 400
@@ -64,7 +69,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2014" should {
 
-      val result = getMaxAEA(2014)(fakeRequest)
+      val result = controller.getMaxAEA(2014)(fakeRequest)
 
       "return status 400" in {
         status(result) shouldBe 400
@@ -84,7 +89,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year after the valid tax year" should {
 
-      val result = getMaxAEA(DateTime.now().getYear + 2)(fakeRequest)
+      val result = controller.getMaxAEA(DateTime.now().getYear + 2)(fakeRequest)
 
       "return status 400" in {
         status(result) shouldBe 400
@@ -106,7 +111,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
   "validating the getMaxPersonalAllowance method" when {
 
     "calling with the year 2020 and with no BPA" should {
-      val result = getMaxPersonalAllowance(2020, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2020, None)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -125,7 +130,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "calling with the year 2018 and with no BPA" should {
-      val result = getMaxPersonalAllowance(2018, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2018, None)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -145,7 +150,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2017 and no BPA" should {
 
-      val result = getMaxPersonalAllowance(2017, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2017, None)(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -165,7 +170,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2016 and with BPA" should {
 
-      val result = getMaxPersonalAllowance(2016, Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2016, Some(true))(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 200
@@ -184,7 +189,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2015 and with BPA" should {
 
-      val result = getMaxPersonalAllowance(2015, Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2015, Some(true))(fakeRequest)
 
       "return status 200" in {
         status(result) shouldBe 400
@@ -193,7 +198,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2014 and no BPA" should {
 
-      val result = getMaxPersonalAllowance(2014, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2014, None)(fakeRequest)
 
       "return status 400" in {
         status(result) shouldBe 400
@@ -203,7 +208,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with the year 2014 and with BPA" should {
 
-      val result = getMaxPersonalAllowance(2014, Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2014, Some(true))(fakeRequest)
 
       "return status 400" in {
         status(result) shouldBe 400
@@ -212,7 +217,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
 
     "calling with an invalid tax year (current year plus 2) and with BPA" should {
 
-      val result = getMaxPersonalAllowance(DateTime.now().getYear + 2, Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(DateTime.now().getYear + 2, Some(true))(fakeRequest)
 
       "return status 400" in {
         status(result) shouldBe 400
@@ -232,7 +237,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
   "validating the getTaxYear method" when {
 
     "calling with the date 10/10/2016" should {
-      val result = getTaxYear("2016-10-10")(fakeRequest)
+      val result = controller.getTaxYear("2016-10-10")(fakeRequest)
       val data = contentAsString(result)
       val json = Json.parse(data)
 
@@ -259,7 +264,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "calling with the date 10/10/2014" should {
-      val result = getTaxYear("2014-10-10")(fakeRequest)
+      val result = controller.getTaxYear("2014-10-10")(fakeRequest)
       val data = contentAsString(result)
       val json = Json.parse(data)
 
@@ -285,7 +290,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "calling with an invalid date 10/100/2014" should {
-      val result = getTaxYear("2014-100-10")(fakeRequest)
+      val result = controller.getTaxYear("2014-100-10")(fakeRequest)
       val data = contentAsString(result)
       val json = Json.parse(data)
 
@@ -304,7 +309,7 @@ class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication {
   }
 
   "Calling the .getMinimumYear method" should {
-    lazy val result = TaxRatesAndBandsController.getMinimumDate(fakeRequest)
+    lazy val result = controller.getMinimumDate(fakeRequest)
 
     "return a status of 200" in {
       status(result) shouldBe 200

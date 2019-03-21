@@ -22,11 +22,8 @@ import config.TaxRatesAndBands
 import models.CalculationResultModel
 import org.joda.time.DateTime
 
-object CalculationService extends CalculationService
+class CalculationService {
 
-trait CalculationService {
-
-  //scalastyle:off
   def calculateCapitalGainsTax(
                                 calculationType: String,
                                 priorDisposal: String,

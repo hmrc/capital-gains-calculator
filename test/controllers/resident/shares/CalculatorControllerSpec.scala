@@ -18,19 +18,27 @@ package controllers.resident.shares
 
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import org.joda.time.DateTime
+import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.CalculationService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
+
+class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+
+  val service = new CalculationService
+  val mockComponents = fakeApplication.injector.instanceOf[ControllerComponents]
+  val controller = new CalculatorController(service, mockComponents)
 
   "ShareCalculatorController.calculateTotalGain" when {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" should {
       val model = TotalGainModel(100000, 10000, 50000, 10000)
-      lazy val result = CalculatorController.calculateTotalGain(model)(fakeRequest)
+      lazy val result = controller.calculateTotalGain(model)(fakeRequest)
 
       "return a 200" in {
         status(result) shouldBe 200
@@ -54,7 +62,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
+      lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 195000,
           disposalCosts = 1000,
           acquisitionValue = 160000,
@@ -117,7 +125,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "numeric values are passed with correct rounding" should {
 
-      lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
+      lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 195000,
           disposalCosts = 1000,
           acquisitionValue = 160000,
@@ -183,7 +191,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" should {
-      lazy val result = CalculatorController.calculateTaxOwed(CalculateTaxOwedModel(
+      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
         ChargeableGainModel(TotalGainModel(disposalValue = 195000,
           disposalCosts = 1000,
           acquisitionValue = 160000,
@@ -265,7 +273,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "all optional values are provided" should {
-      lazy val result = CalculatorController.calculateTaxOwed(CalculateTaxOwedModel(
+      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
          ChargeableGainModel(TotalGainModel(disposalValue = 250000,
           disposalCosts = 10000,
           acquisitionValue = 100000,
@@ -347,7 +355,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
 
     "when using 2016/17 tax year values" should {
 
-      lazy val result = CalculatorController.calculateTaxOwed(CalculateTaxOwedModel(
+      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
          ChargeableGainModel(TotalGainModel(disposalValue = 250000,
           disposalCosts = 10000,
           acquisitionValue = 100000,
@@ -428,7 +436,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
     }
 
     "Part allowableLossesUsed" should {
-      lazy val result = CalculatorController.calculateChargeableGain(ChargeableGainModel(
+      lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 50000,
           disposalCosts = 0,
           acquisitionValue = 0,
@@ -485,7 +493,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication {
       val totalGainModel = TotalGainModel(0, 999.99, 0, 299.50)
 
       lazy val fakeRequest = FakeRequest("GET", "")
-      lazy val result = CalculatorController.calculateTotalCosts(totalGainModel)(fakeRequest)
+      lazy val result = controller.calculateTotalCosts(totalGainModel)(fakeRequest)
 
       "return a 200 status" in {
         status(result) shouldBe 200

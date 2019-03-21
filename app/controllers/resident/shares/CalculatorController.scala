@@ -20,19 +20,23 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
+import controllers.resident.properties.CalculatorController
+import javax.inject.{Inject, Singleton}
 import models.CalculationResultModel
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.CalculationService
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future
 
-trait CalculatorController extends BaseController {
-
-  val calculationService: CalculationService
+@Singleton
+class CalculatorController @Inject()(
+                                          val calculationService: CalculationService,
+                                          val cc: ControllerComponents
+                                        ) extends BackendController(cc) {
 
   def calculateTotalGain(totalGainModel: TotalGainModel): Action[AnyContent] =
     Action.async { implicit request =>
@@ -65,12 +69,12 @@ trait CalculatorController extends BaseController {
       chargeableGainModel.allowableLosses.getOrElse(0)
     )
     val aeaRemaining = calculationService.annualExemptAmountLeft(chargeableGainModel.annualExemptAmount, aeaUsed)
-    val allowableLossesRemaining = CalculationService.determineLossLeft(gain, chargeableGainModel.allowableLosses.getOrElse(0))
-    val broughtForwardLossesRemaining = CalculationService.determineLossLeft(chargeableGain + chargeableGainModel.broughtForwardLosses.getOrElse(0.0),
+    val allowableLossesRemaining = calculationService.determineLossLeft(gain, chargeableGainModel.allowableLosses.getOrElse(0))
+    val broughtForwardLossesRemaining = calculationService.determineLossLeft(chargeableGain + chargeableGainModel.broughtForwardLosses.getOrElse(0.0),
       chargeableGainModel.broughtForwardLosses.getOrElse(0))
-    val broughtForwardLossesUsed = CalculationService.calculateAmountUsed(round("up", chargeableGainModel.broughtForwardLosses.getOrElse(0)),
+    val broughtForwardLossesUsed = calculationService.calculateAmountUsed(round("up", chargeableGainModel.broughtForwardLosses.getOrElse(0)),
       broughtForwardLossesRemaining)
-    val allowableLossesUsed = CalculationService.calculateAmountUsed(round("up", chargeableGainModel.allowableLosses.getOrElse(0)), allowableLossesRemaining)
+    val allowableLossesUsed = calculationService.calculateAmountUsed(round("up", chargeableGainModel.allowableLosses.getOrElse(0)), allowableLossesRemaining)
 
     val deductions = round("up", allowableLossesUsed) + aeaUsed + round("up", broughtForwardLossesUsed)
 
@@ -138,10 +142,4 @@ trait CalculatorController extends BaseController {
 
     Future.successful(Ok(Json.toJson(result)))
   }
-}
-
-object CalculatorController extends CalculatorController {
-
-  override val calculationService = CalculationService
-
 }
