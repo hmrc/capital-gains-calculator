@@ -35,11 +35,12 @@ trait TaxRatesAndBands {
   val blindPersonsAllowance: Int
   val maxLettingsRelief: Double
   val startOfTax = "2015-04-06"
-  val startOfTaxDateTime = DateTime.parse(startOfTax)
+  val startOfTaxDateTime: DateTime = DateTime.parse(startOfTax)
   val eighteenMonths = 18
 }
 
 object TaxRatesAndBands {
+
   val rates = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 :: TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: Nil
 
   def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
