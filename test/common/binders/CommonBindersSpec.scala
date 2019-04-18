@@ -17,7 +17,7 @@
 package common.binders
 
 import org.joda.time.DateTime
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CommonBindersSpec extends UnitSpec with MockitoSugar {

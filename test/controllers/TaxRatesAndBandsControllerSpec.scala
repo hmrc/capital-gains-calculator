@@ -28,7 +28,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication with  MockitoSugar {
+class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   val fakeRequest = FakeRequest()
   implicit val system = ActorSystem("QuickStart")

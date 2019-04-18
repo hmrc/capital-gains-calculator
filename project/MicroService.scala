@@ -25,6 +25,8 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import play.sbt.routes.RoutesKeys.routesGenerator
 import play.routes.compiler.StaticRoutesGenerator
+import com.timushev.sbt.updates.UpdatesKeys._
+import com.timushev.sbt.updates.UpdatesPlugin.autoImport.moduleFilterRemoveValue
 
 trait MicroService {
 
@@ -72,4 +74,11 @@ trait MicroService {
     .settings(routesImport += "models.nonResident._")
     .settings(routesImport += "common.binders._")
     .settings(routesImport += "common.binders.CommonBinders._")
+    .settings(dependencyUpdatesFilter -= moduleFilter(organization = "org.scala-lang"))
+    .settings(dependencyUpdatesFilter -= moduleFilter(organization = "com.typesafe.play"))
+    .settings(dependencyUpdatesFilter -= moduleFilter(organization = "org.scalatest"))
+    .settings(dependencyUpdatesFilter -= moduleFilter(organization = "org.scalatestplus.play"))
+    .settings(dependencyUpdatesFilter -= moduleFilter(organization = "org.scalameta"))
+    .settings(dependencyUpdatesFilter -= moduleFilter(organization = "org.scoverage"))
+    .settings(dependencyUpdatesFailBuild := true)
 }
