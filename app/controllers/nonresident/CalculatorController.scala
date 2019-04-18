@@ -20,23 +20,19 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-import controllers.resident.properties.CalculatorController
 import javax.inject.{Inject, Singleton}
 import models.nonResident._
 import org.joda.time.DateTime
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.CalculationService
-import uk.gov.hmrc.play.bootstrap.controller.{BackendController, BaseController}
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future
 
 @Singleton
-class CalculatorController @Inject()(
-                                          val calculationService: CalculationService,
-                                          val cc: ControllerComponents
-                                        ) extends BackendController(cc) {
-
+class CalculatorController @Inject()(val calculationService: CalculationService,
+                                     val cc: ControllerComponents) extends BackendController(cc) {
 
   def timeApportionedCalculationApplicable(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
     (disposalDate, acquisitionDate) match {
