@@ -20,9 +20,13 @@ import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
 import models.resident.properties.PropertyTotalGainModel
 import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
+import org.mockito.ArgumentMatchers._
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
+import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class RouteSpec extends UnitSpec with WithFakeApplication {
+class RouteSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   "The route for calculate gain after prr for non-resident properties" should {
     val testDate = Some(new DateTime("2001-01-01"))
@@ -89,8 +93,8 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
   "The route for calculate tax owed for non-resident properties" should {
     val testDate = Some(new DateTime("2001-01-01"))
-    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1,1,1,1,1,Some(1),1,testDate.get, testDate,
-      1, PrivateResidenceReliefModel(claimingPRR = true, Some(1), Some(1)),1,1,1,1,1,1, OtherReliefsModel(1, 1, 1)).url
+    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1, 1, 1, 1, 1, Some(1), 1, testDate.get, testDate,
+      1, PrivateResidenceReliefModel(claimingPRR = true, Some(1), Some(1)), 1, 1, 1, 1, 1, 1, OtherReliefsModel(1, 1, 1)).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -214,7 +218,7 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
 
   "The route for calculate total costs for resident properties" should {
 
-    val totalGainModel = TotalGainModel(0,0,0,0)
+    val totalGainModel = TotalGainModel(0, 0, 0, 0)
     val propertyTotalGainModel = PropertyTotalGainModel(totalGainModel, 0)
 
     lazy val url = controllers.resident.properties.routes.CalculatorController.calculateTotalCosts(propertyTotalGainModel).url
@@ -250,4 +254,60 @@ class RouteSpec extends UnitSpec with WithFakeApplication {
       controllers.routes.TaxRatesAndBandsController.getMinimumDate().url shouldBe "/capital-gains-calculator/minimum-date"
     }
   }
+
+  "The relief model" should {
+    "unbind" in {
+      val reliefsBinder = OtherReliefsModel.otherReliefsBinder.unbind("key", OtherReliefsModel(0, 0, 0))
+      reliefsBinder shouldBe "&otherReliefsFlat=0.0&otherReliefsRebased=0.0&otherReliefsTimeApportioned=0.0"
+    }
+
+    "unbind with values" in {
+      val reliefsBinder = OtherReliefsModel.otherReliefsBinder.unbind("key", OtherReliefsModel(1.1, 2.2, 3.3))
+      reliefsBinder shouldBe "&otherReliefsFlat=1.1&otherReliefsRebased=2.2&otherReliefsTimeApportioned=3.3"
+    }
+
+    "bind" in {
+      val reliefsBinder = OtherReliefsModel.otherReliefsBinder.bind("key", Map.empty[String, Seq[String]])
+      reliefsBinder shouldBe Some(Right(OtherReliefsModel(0.0, 0.0, 0.0)))
+    }
+  }
+
+  "The Private Residence Relief Model" should {
+
+    "unbind no values defined" in {
+      val reliefModel = PrivateResidenceReliefModel(false, None, None)
+      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.unbind("key", reliefModel)
+      reliefsBinder shouldBe "claimingPRR=false&daysClaimed=0&daysClaimedAfter=0"
+    }
+
+    "unbind no one value defined" in {
+      val reliefModel = PrivateResidenceReliefModel(true, Some(1.1), None)
+      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.unbind("key", reliefModel)
+      reliefsBinder shouldBe "claimingPRR=true&daysClaimed=1.1&daysClaimedAfter=0"
+    }
+
+    "unbind all values defined" in {
+      val reliefModel = PrivateResidenceReliefModel(true, None, Some(2.2))
+      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.unbind("key", reliefModel)
+      reliefsBinder shouldBe "claimingPRR=true&daysClaimed=0&daysClaimedAfter=2.2"
+    }
+
+    "bind with empty seq of config" in {
+      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.bind("key", Map.empty[String, Seq[String]])
+      reliefsBinder shouldBe None
+    }
+
+    "bind with seq of settings" in {
+      implicit val booleanBinder = mock[QueryStringBindable[Boolean]]
+      implicit val optionDoubleBinder = mock[QueryStringBindable[Option[Double]]]
+
+      when(booleanBinder.bind(any(), any())).thenReturn(Some(Right(true)))
+      when(optionDoubleBinder.bind(any(), any())).thenReturn(Some(Right(Some(0.0))))
+
+      val params = Map("param-1" -> Seq("seq1", "value1"))
+      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.bind("key", params)
+      reliefsBinder shouldBe Some(Right(PrivateResidenceReliefModel(true,Some(0.0),Some(0.0))))
+    }
+  }
+
 }
