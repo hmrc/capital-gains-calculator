@@ -38,7 +38,7 @@ private object AppDependencies {
   private val hmrcTestVersion = "3.9.0-play-26"
   private val jsoupVersion = "1.12.1"
   private val pegDownVersion = "1.6.0"
-  private val bootstrapVersion = "1.1.0"
+  private val bootstrapVersion = "1.3.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
