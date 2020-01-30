@@ -15,25 +15,11 @@
  */
 
 import sbt._
-import uk.gov.hmrc.SbtAutoBuildPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.versioning.SbtGitVersioning
+import play.sbt.PlayImport._
+import play.core.PlayVersion
 
-object MicroServiceBuild extends Build with MicroService {
+object AppDependencies {
 
-  val appName = "capital-gains-calculator"
-
-  override lazy val plugins: Seq[Plugins] = Seq(
-    SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin
-  )
-
-  override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-
-}
-
-private object AppDependencies {
-  import play.sbt.PlayImport._
-  import play.core.PlayVersion
 
   private val hmrcTestVersion = "3.9.0-play-26"
   private val jsoupVersion = "1.12.1"
@@ -44,8 +30,8 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "bootstrap-play-26" % bootstrapVersion,
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
-    "joda-time" % "joda-time" % "2.10.4",
-    "com.typesafe.play" %% "play-json-joda" % "2.7.2"
+    "joda-time" % "joda-time" % "2.10.5",
+    "com.typesafe.play" %% "play-json-joda" % "2.7.4"
   )
 
   trait TestDependencies {
@@ -57,8 +43,8 @@ private object AppDependencies {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
-        "org.mockito" % "mockito-core" % "3.1.0" % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.3" % scope,
+        "org.mockito" % "mockito-core" % "3.2.4" % scope,
         "org.pegdown" % "pegdown" % pegDownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.jsoup" % "jsoup" % jsoupVersion % scope
@@ -73,7 +59,7 @@ private object AppDependencies {
 
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.3" % scope,
         "org.pegdown" % "pegdown" % pegDownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.jsoup" % "jsoup" % jsoupVersion % scope
