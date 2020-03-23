@@ -18,7 +18,7 @@ package common.binders
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
@@ -177,7 +177,6 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
       }
 
       "return an error message when a value fails validation" in {
-        val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000, 2500, 3000, 3500), 1500)
         val result = binder.bind("", Map("disposalValue" -> Seq("2000.0"),
           "disposalCosts" -> Seq("2500.0"),
           "acquisitionValue" -> Seq("3000.0"),
@@ -254,13 +253,11 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "previousIncome" -> Seq("1000.0"),
           "personalAllowance" -> Seq("1000.0")
         ))
-        val date = DateTime.parse("2016-10-10")
 
         result shouldBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0)))
       }
 
       "return a valid queryString on unbind" in {
-        val date = DateTime.parse("2016-10-10")
         val result = binder.unbind("key", PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0))
 
         result shouldBe propertyChargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0"
@@ -292,12 +289,10 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("4000.0")
         ))
 
-        val date = DateTime.parse("2016-10-10")
         result shouldBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, None, 4000.0, 4000.0)))
       }
 
       "return a valid queryString on unbind" in {
-        val date = DateTime.parse("2016-10-10")
         val result = binder.unbind("key", PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(4500.0), 5000.0, 5500.0))
 
         result shouldBe propertyChargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0"
@@ -307,12 +302,6 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
     "given an invalid binding value" should {
 
       "return one error message on a failed bind on all inputs" in {
-        val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), 6000.0)
-        val date = DateTime.parse("2016-10-10")
-        val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0),
-          Some(1000.0), 1000.0, date)
-        val propertyChargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
-          "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
 
         val result = binder.bind("", Map("disposalValue" -> Seq("a"),
           "disposalCosts" -> Seq("b"),
@@ -335,12 +324,6 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
 
 
       "return an error message when one component fails" in {
-        val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), 6000.0)
-        val date = DateTime.parse("2016-10-10")
-        val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0),
-          Some(1000.0), 1000.0, date)
-        val propertyChargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
-          "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
 
         val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
           "disposalCosts" -> Seq("1000.0"),

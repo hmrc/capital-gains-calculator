@@ -20,7 +20,6 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-import controllers.resident.properties.CalculatorController
 import javax.inject.{Inject, Singleton}
 import models.CalculationResultModel
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
@@ -39,7 +38,7 @@ class CalculatorController @Inject()(
                                         ) extends BackendController(cc) {
 
   def calculateTotalGain(totalGainModel: TotalGainModel): Action[AnyContent] =
-    Action.async { implicit request =>
+    Action.async {
 
       val result = calculationService.calculateGainFlat(
         totalGainModel.disposalValue,
@@ -54,7 +53,7 @@ class CalculatorController @Inject()(
   def calculateChargeableGain
   (
     chargeableGainModel: ChargeableGainModel
-  ): Action[AnyContent] = Action.async { implicit request =>
+  ): Action[AnyContent] = Action.async {
     val totalGainModel = chargeableGainModel.totalGainModel
 
     val gain = calculationService.calculateGainFlat(totalGainModel.disposalValue, totalGainModel.disposalCosts,
@@ -87,7 +86,7 @@ class CalculatorController @Inject()(
   def calculateTaxOwed
   (
     calculateTaxOwedModel: CalculateTaxOwedModel
-  ): Action[AnyContent] = Action.async { implicit request =>
+  ): Action[AnyContent] = Action.async {
 
     val chargeableGainModel = calculateTaxOwedModel.chargeableGainModel
 
@@ -135,7 +134,7 @@ class CalculatorController @Inject()(
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTotalCosts(totalGainModel: TotalGainModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalCosts(totalGainModel: TotalGainModel): Action[AnyContent] = Action.async {
 
     val result = calculationService.calculateTotalCosts(totalGainModel.disposalCosts,
       totalGainModel.acquisitionCosts)

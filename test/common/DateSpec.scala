@@ -17,8 +17,8 @@
 package common
 
 import common.Date._
+import org.joda.time.DateTime
 import uk.gov.hmrc.play.test.UnitSpec
-import org.joda.time.{DateTime, Days}
 
 class DateSpec extends UnitSpec {
 

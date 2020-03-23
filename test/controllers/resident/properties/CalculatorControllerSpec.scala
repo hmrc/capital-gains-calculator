@@ -16,14 +16,13 @@
 
 package controllers.resident.properties
 
-import controllers.resident.properties.CalculatorController
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.ControllerComponents
 import services.CalculationService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}

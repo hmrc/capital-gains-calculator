@@ -18,7 +18,7 @@ package common.binders
 
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import org.joda.time.DateTime
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 
@@ -267,11 +267,6 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
     "given an invalid binding value" should {
 
       "return one error message on a failed bind on all inputs" in {
-        val totalGainModel = TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0)
-        val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(1000.0), Some(1000.0), 1000.0)
-        val chargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
-          "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
-
         val result = binder.bind("", Map("disposalValue" -> Seq("a"),
           "disposalCosts" -> Seq("b"),
           "acquisitionValue" -> Seq("c"),
@@ -290,11 +285,6 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
 
 
       "return an error message when one component fails" in {
-        val totalGainModel = TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0)
-        val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(1000.0), Some(1000.0), 1000.0)
-        val chargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
-          "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
-
         val result = binder.bind("", Map("disposalValue" -> Seq("1000.0"),
           "disposalCosts" -> Seq("1000.0"),
           "acquisitionValue" -> Seq("1000.0"),

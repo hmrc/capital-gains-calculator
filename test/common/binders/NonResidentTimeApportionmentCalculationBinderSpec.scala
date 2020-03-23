@@ -17,7 +17,7 @@
 package common.binders
 
 import models.nonResident.TimeApportionmentCalculationRequestModel
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.play.test.UnitSpec
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
