@@ -37,7 +37,7 @@ class CalculatorController @Inject()(
                                           val cc: ControllerComponents
                                         ) extends BackendController(cc) {
 
-  def calculateTotalGain(propertyGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalGain(propertyGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async {
 
     val result = calculationService.calculateGainFlat(propertyGainModel.totalGainModel.disposalValue,
       propertyGainModel.totalGainModel.disposalCosts,
@@ -48,7 +48,7 @@ class CalculatorController @Inject()(
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateChargeableGain(propertyChargeableGainModel: PropertyChargeableGainModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateChargeableGain(propertyChargeableGainModel: PropertyChargeableGainModel): Action[AnyContent] = Action.async {
 
     val taxYear = getTaxYear(propertyChargeableGainModel.disposalDate)
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
@@ -91,7 +91,7 @@ class CalculatorController @Inject()(
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTaxOwed(propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTaxOwed(propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): Action[AnyContent] = Action.async {
 
     val taxYear = getTaxYear(propertyCalculateTaxOwedModel.propertyChargeableGainModel.disposalDate)
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
@@ -143,7 +143,7 @@ class CalculatorController @Inject()(
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTotalCosts(propertyTotalGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalCosts(propertyTotalGainModel: PropertyTotalGainModel): Action[AnyContent] = Action.async {
 
     val result = calculationService.calculateTotalCosts(propertyTotalGainModel.totalGainModel.disposalCosts,
       propertyTotalGainModel.totalGainModel.acquisitionCosts,

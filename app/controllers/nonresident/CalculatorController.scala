@@ -115,7 +115,7 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
                                    improvementsAfterTaxStarted: Double,
                                    claimingPRR: Boolean,
                                    daysClaimed: Double,
-                                   daysClaimedAfter: Double): Action[AnyContent] = Action.async { implicit request =>
+                                   daysClaimedAfter: Double): Action[AnyContent] = Action.async {
 
     val totalGainModel = buildTotalGainsModel(disposalValue,
       disposalCosts,
@@ -189,7 +189,7 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
                        previousGain: Double,
                        annualExemptAmount: Double,
                        broughtForwardLoss: Double,
-                       otherReliefsModel: OtherReliefsModel): Action[AnyContent] = Action.async { implicit request =>
+                       otherReliefsModel: OtherReliefsModel): Action[AnyContent] = Action.async {
 
     val totalGainModel = buildTotalGainsModel(disposalValue,
       disposalCosts,
@@ -329,7 +329,7 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTotalCosts(disposalCosts: Double, acquisitionCosts: Double, improvements: Double = 0): Action[AnyContent] = Action.async { implicit request =>
+  def calculateTotalCosts(disposalCosts: Double, acquisitionCosts: Double, improvements: Double = 0): Action[AnyContent] = Action.async {
     val result = calculationService.calculateTotalCosts(disposalCosts, acquisitionCosts, improvements)
     Future.successful(Ok(Json.toJson(result)))
   }

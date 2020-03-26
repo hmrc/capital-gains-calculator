@@ -17,10 +17,8 @@
 package common.validation
 
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => residentShareKeys}
-import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import common.validation.CommonValidation._
-import config.TaxRatesAndBands20152016
-import org.joda.time.DateTime
+import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 
 object SharesValidation {
 

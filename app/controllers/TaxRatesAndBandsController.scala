@@ -24,10 +24,10 @@ import javax.inject.{Inject, Singleton}
 import models._
 import org.joda.time.DateTime
 import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Success, Try}
@@ -37,12 +37,12 @@ class TaxRatesAndBandsController @Inject()(
                                             val cc: ControllerComponents
                                           ) extends BackendController(cc) {
 
-  def getMaxAEA(year: Int): Action[AnyContent] = Action.async { implicit request =>
+  def getMaxAEA(year: Int): Action[AnyContent] = Action.async {
     if(TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
     else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
-  def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async { implicit request =>
+  def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async {
     if(TaxRatesAndBandsValidation.checkValidTaxYear(year)){
       isEligibleBlindPersonsAllowance match {
         case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
@@ -52,7 +52,7 @@ class TaxRatesAndBandsController @Inject()(
     else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
-  def getTaxYear(dateString: String): Action[AnyContent] = Action.async { implicit request =>
+  def getTaxYear(dateString: String): Action[AnyContent] = Action.async {
 
     def tryParsing(): Either[String, DateTime] = {
       Try {
@@ -76,7 +76,7 @@ class TaxRatesAndBandsController @Inject()(
     }
   }
 
-  val getMinimumDate: Action[AnyContent] = Action.async { implicit request =>
+  val getMinimumDate: Action[AnyContent] = Action.async {
     Future {
       val date = Date.taxYearEndDate(TaxRatesAndBands.getEarliestTaxYear.taxYear)
       Ok(Json.toJson(date))

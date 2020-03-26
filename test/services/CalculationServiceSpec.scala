@@ -17,7 +17,7 @@
 package services
 
 import org.joda.time.DateTime
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CalculationServiceSpec extends UnitSpec with MockitoSugar {
@@ -794,6 +794,7 @@ class CalculationServiceSpec extends UnitSpec with MockitoSugar {
 
     "return an AEA of £0 when losses and reliefs eliminate the gain through rounding" in {
       val result = calculationService.partialAEAUsed(6000, 2999.01, 2999.01)
+      result shouldEqual 0
     }
   }
 
