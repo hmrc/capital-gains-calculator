@@ -105,17 +105,17 @@ class CalculationServiceSpec extends UnitSpec with MockitoSugar {
   "Calling CalculationService.brRemaining" should {
 
 
-    "return a value of 1 when Individual has income of 49999, PA of 12500" in {
+    "return a value of 1 when Individual has income of 49999, PA of 12300" in {
       val result = calculationService.brRemaining(49999, 12500, 0, 2020)
       result shouldEqual 1
     }
 
-    "return a value of 0 when Individual has income of 50000, PA of 12500" in {
+    "return a value of 0 when Individual has income of 50000, PA of 12300" in {
       val result = calculationService.brRemaining(50000, 12500, 0, 2020)
       result shouldEqual 0
     }
 
-    "return a value of 37500 when Individual has income of 50000, PA of 12500" in {
+    "return a value of 37500 when Individual has income of 50000, PA of 12300" in {
       val result = calculationService.brRemaining(0, 12500, 0, 2020)
       result shouldEqual 37500
     }

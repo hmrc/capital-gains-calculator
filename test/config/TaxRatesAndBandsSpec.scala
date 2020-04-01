@@ -31,8 +31,46 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
       TaxRatesAndBands.getRates(0).startOfTaxDateTime shouldEqual DateTime.parse("2015-04-06")
     }
 
-    "return 18 as the value of eighteenMonths" in {
-      TaxRatesAndBands.getRates(0).eighteenMonths shouldEqual 18
+    "return 18 as the value of months" in {
+      PrivateResidenceReliefDateUtils(DateTime.parse("2020-04-05")).pRRMonthDeductionApplicable().months shouldEqual 18
+    }
+
+    "return 9 as the value of months" in {
+      PrivateResidenceReliefDateUtils(DateTime.parse("2020-04-06")).pRRMonthDeductionApplicable().months shouldEqual 9
+    }
+
+  }
+
+  "validating 2020/2021 parameters" should {
+
+    "return 2021 for the tax year" in {
+      TaxRatesAndBands20202021.taxYear shouldBe 2021
+    }
+
+    "return 18 as the basic percentage rate for the tax year" in {
+      TaxRatesAndBands20202021.basicRate shouldBe 0.18
+      TaxRatesAndBands20202021.basicRatePercentage shouldBe 18
+    }
+
+    "return 28 as the higher percentage rate for the tax year" in {
+      TaxRatesAndBands20202021.higherRate shouldBe 0.28
+      TaxRatesAndBands20202021.higherRatePercentage shouldBe 28
+    }
+
+    "return 12300 as the maximum Annual Excempt Amount" in {
+      TaxRatesAndBands20202021.maxAnnualExemptAmount shouldBe 12300
+    }
+
+    "return 6000 as the non-vulnerable trustee Annual Exempt Amount" in {
+      TaxRatesAndBands20202021.notVulnerableMaxAnnualExemptAmount shouldBe 6000
+    }
+
+    "return 37500 as the basic rate band" in {
+      TaxRatesAndBands20202021.basicRateBand shouldBe 37500
+    }
+
+    "return 12500 as the maximum Personal Allowance" in {
+      TaxRatesAndBands20202021.maxPersonalAllowance shouldBe 12500
     }
 
   }
@@ -271,8 +309,8 @@ class TaxRatesAndBandsSpec extends UnitSpec with WithFakeApplication {
 
   "calling .getClosestTaxYear" should {
 
-    "return 2020 for a tax year input of 2021" in {
-      TaxRatesAndBands.getClosestTaxYear(2021) shouldBe 2020
+    "return 2021 for a tax year input of 2021" in {
+      TaxRatesAndBands.getClosestTaxYear(2021) shouldBe 2021
     }
 
     "return 2020 for a tax year input of 2020" in {

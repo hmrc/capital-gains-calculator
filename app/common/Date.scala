@@ -16,6 +16,8 @@
 
 package common
 
+import java.time.{LocalDate, LocalTime}
+
 import org.joda.time.{DateTime, Days}
 
 object Date {
@@ -23,6 +25,7 @@ object Date {
   val taxYearEnd = "04-05"
   val taxYearStart = "04-06"
   val taxStartDate = DateTime.parse("2015-04-05")
+  val PRRDeductionApplicableDate = DateTime.parse("2020-04-05")
 
   def daysBetween(start: String, end: String): Double = {
     Days.daysBetween(DateTime.parse(start), DateTime.parse(end)).getDays + 1
