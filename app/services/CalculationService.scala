@@ -18,7 +18,7 @@ package services
 
 import common.Date._
 import common.Math._
-import config.TaxRatesAndBands
+import config.{PrivateResidenceReliefDateUtils, TaxRatesAndBands}
 import models.CalculationResultModel
 import org.joda.time.DateTime
 
@@ -196,7 +196,9 @@ class CalculationService {
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
-    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
+    val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
+
+    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
       daysBetween(acquisitionDate, disposalDate))), gain)
   }
 
@@ -209,7 +211,9 @@ class CalculationService {
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
+    val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
+
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
       daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
 
   }
@@ -223,7 +227,9 @@ class CalculationService {
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(taxRatesAndBands.eighteenMonths), disposalDate)) /
+    val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
+
+    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
       daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
 
   }

@@ -16,7 +16,10 @@
 
 package config
 
+import java.time.LocalDate
+
 import org.joda.time.DateTime
+
 
 trait TaxRatesAndBands {
   val taxYear: Int
@@ -36,12 +39,12 @@ trait TaxRatesAndBands {
   val maxLettingsRelief: Double
   val startOfTax = "2015-04-06"
   val startOfTaxDateTime: DateTime = DateTime.parse(startOfTax)
-  val eighteenMonths = 18
 }
 
 object TaxRatesAndBands {
 
-  val rates = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 :: TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: Nil
+  val rates: List[TaxRatesAndBands] = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 ::
+    TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: TaxRatesAndBands20202021 :: Nil
 
   def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
     case params if params.nonEmpty => params.head
@@ -58,6 +61,24 @@ object TaxRatesAndBands {
   }
 
   def getEarliestTaxYear: TaxRatesAndBands = rates.minBy(_.taxYear)
+}
+
+object TaxRatesAndBands20202021 extends TaxRatesAndBands {
+  override val taxYear = 2021
+  override val maxAnnualExemptAmount = 12300
+  override val notVulnerableMaxAnnualExemptAmount = 6000
+  override val basicRatePercentage = 18
+  override val higherRatePercentage = 28
+  override val shareBasicRatePercentage = 10
+  override val shareHigherRatePercentage = 20
+  override val maxPersonalAllowance = 12500
+  override val basicRate = basicRatePercentage / 100.toDouble
+  override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
+  override val basicRateBand = 37500
+  override val blindPersonsAllowance = 2390
+  override val maxLettingsRelief = 40000.0
 }
 
 object TaxRatesAndBands20192020 extends TaxRatesAndBands {
