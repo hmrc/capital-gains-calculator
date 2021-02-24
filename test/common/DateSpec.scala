@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,131 +18,131 @@ package common
 
 import common.Date._
 import org.joda.time.DateTime
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class DateSpec extends UnitSpec {
+class DateSpec extends PlaySpec {
 
-  "calling common.Date.daysBetween" should {
+  "calling common.Date.daysBetween" must {
 
     "return 10 days when passing in String dates 1/1/2015 and 10/1/2015" in {
       val result = daysBetween("2015-1-1", "2015-1-10")
-      result shouldEqual 10
+      result mustEqual 10
     }
 
     "return 1 day when passing in String dates 1/1/2015 and 1/1/2015" in {
       val result = daysBetween("2015-1-1", "2015-1-1")
-      result shouldEqual 1
+      result mustEqual 1
     }
 
     "return 365 days when passing in String dates 1/1/2015 and 31/12/2015" in {
       val result = daysBetween("2015-1-1","2015-12-31")
-      result shouldEqual 365
+      result mustEqual 365
     }
 
     "return 366 days when passing in String dates 1/1/2016 and 31/12/2016 (leap year test)" in {
       val result = daysBetween("2016-1-1", "2016-12-31")
-      result shouldEqual 366
+      result mustEqual 366
     }
 
     "return 10 days when passing in DateTime dates 1/1/2015 and 10/1/2015" in {
       val result = daysBetween(DateTime.parse("2015-1-1"), DateTime.parse("2015-1-10"))
-      result shouldEqual 10
+      result mustEqual 10
     }
 
     "return 1 day when passing in DateTime dates 1/1/2015 and 1/1/2015" in {
       val result = daysBetween(DateTime.parse("2015-1-1"), DateTime.parse("2015-1-1"))
-      result shouldEqual 1
+      result mustEqual 1
     }
 
     "return 365 days when passing in DateTime dates 1/1/2015 and 31/12/2015" in {
       val result = daysBetween(DateTime.parse("2015-1-1"), DateTime.parse("2015-12-31"))
-      result shouldEqual 365
+      result mustEqual 365
     }
 
     "return 366 days when passing in DateTime dates 1/1/2016 and 31/12/2016 (leap year test)" in {
       val result = daysBetween(DateTime.parse("2016-1-1"), DateTime.parse("2016-12-31"))
-      result shouldEqual 366
+      result mustEqual 366
     }
   }
 
-  "calling getTaxYear" should {
+  "calling getTaxYear" must {
 
     "return 2017 from a date after 5th April in 2016" in {
       val result = getTaxYear(DateTime.parse("2016-10-10"))
-      result shouldBe 2017
+      result mustBe 2017
     }
 
     "return 2017 from a date before 5th April in 2017" in {
       val result = getTaxYear(DateTime.parse("2017-01-01"))
-      result shouldBe 2017
+      result mustBe 2017
     }
 
     "return 2016 from a date after 5th April in 2015" in {
       val result = getTaxYear(DateTime.parse("2015-10-10"))
-      result shouldBe 2016
+      result mustBe 2016
     }
 
     "return 2016 from a date before 5th April in 2016" in {
       val result = getTaxYear(DateTime.parse("2016-01-01"))
-      result shouldBe 2016
+      result mustBe 2016
     }
   }
 
-  "calling taxYearToString" should {
+  "calling taxYearToString" must {
 
     "return a date of '2016/17' from 2017" in {
       val result = taxYearToString(2017)
-      result shouldBe "2016/17"
+      result mustBe "2016/17"
     }
 
     "return a date of '2015/16' from 2016" in {
       val result = taxYearToString(2016)
-      result shouldBe "2015/16"
+      result mustBe "2015/16"
     }
   }
 
-  "Calling afterTaxStarted" should {
+  "Calling afterTaxStarted" must {
 
     "return a false with a date before the start date" in {
       val date = DateTime.parse("2015-04-04")
       val result = Date.afterTaxStarted(date)
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return a false with a date on the start date" in {
       val date = DateTime.parse("2015-04-05")
       val result = Date.afterTaxStarted(date)
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return a true with a date after the start date" in {
       val date = DateTime.parse("2015-04-06")
       val result = Date.afterTaxStarted(date)
 
-      result shouldBe true
+      result mustBe true
     }
   }
 
-  "Calling .taxYearStartDate" should {
+  "Calling .taxYearStartDate" must {
 
     "return a value of 2015-04-05 from 2016" in {
       val result = Date.taxYearEndDate(2016)
 
-      result shouldBe DateTime.parse("2015-04-05")
+      result mustBe DateTime.parse("2015-04-05")
     }
 
     "return a value of 2016-04-05 from 2017" in {
       val result = Date.taxYearEndDate(2017)
 
-      result shouldBe DateTime.parse("2016-04-05")
+      result mustBe DateTime.parse("2016-04-05")
     }
 
     "return a value of 2014-04-05 from 2015" in {
       val result = Date.taxYearEndDate(2015)
 
-      result shouldBe DateTime.parse("2014-04-05")
+      result mustBe DateTime.parse("2014-04-05")
     }
   }
 }

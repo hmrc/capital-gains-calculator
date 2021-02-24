@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package models
 import models.nonResident.NonResidentTotalGainRequestModel
 import org.joda.time.DateTime
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class NonResidentTotalGainRequestSpec extends UnitSpec {
+class NonResidentTotalGainRequestSpec extends PlaySpec {
 
-  "NonResidentTotalGainRequest" should {
+  "NonResidentTotalGainRequest" must {
     "reads from Json" in {
       val inputJson = Json.parse(
         """
@@ -53,7 +53,7 @@ class NonResidentTotalGainRequestSpec extends UnitSpec {
         acquisitionDate = Some(DateTime.parse("2014-08-14")),
         improvementsAfterTaxStarted = 1000)
 
-      inputJson.as[NonResidentTotalGainRequestModel] shouldBe model
+      inputJson.as[NonResidentTotalGainRequestModel] mustBe model
     }
     "non optional values" in {
       val inputJson = Json.parse(
@@ -81,7 +81,7 @@ class NonResidentTotalGainRequestSpec extends UnitSpec {
         acquisitionDate = None,
         improvementsAfterTaxStarted = 1000)
 
-      inputJson.as[NonResidentTotalGainRequestModel] shouldBe model
+      inputJson.as[NonResidentTotalGainRequestModel] mustBe model
     }
     "setting defaut values" in {
       val inputJson = Json.parse(
@@ -108,7 +108,7 @@ class NonResidentTotalGainRequestSpec extends UnitSpec {
         improvementsAfterTaxStarted = 0
       )
 
-      Json.fromJson[NonResidentTotalGainRequestModel](inputJson) shouldBe JsSuccess(model)
+      Json.fromJson[NonResidentTotalGainRequestModel](inputJson) mustBe JsSuccess(model)
 
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyCharge
 import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
+class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
 
   "Calling Property Total Gain binder " when {
 
     val binder = new ResidentPropertyBinders {}.propertyTotalGainBinder
 
-    "calling .bind" should {
+    "calling .bind" must {
 
       "return a valid PropertyTotalGainModel from a valid map with the same values" in {
         val totalGainModel = new TotalGainModel(2000, 2000, 2000, 2000)
@@ -37,7 +37,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionCosts" -> Seq("2000.0"),
           "improvements" -> Seq("2000.0")))
 
-        result shouldBe Some(Right(PropertyTotalGainModel(totalGainModel, 2000.0)))
+        result mustBe Some(Right(PropertyTotalGainModel(totalGainModel, 2000.0)))
       }
 
       "return a valid PropertyTotalGainModel from a valid map with different values" in {
@@ -48,7 +48,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionCosts" -> Seq("3500.0"),
           "improvements" -> Seq("1500.0")))
 
-        result shouldBe Some(Right(PropertyTotalGainModel(totalGainModel, 1500.0)))
+        result mustBe Some(Right(PropertyTotalGainModel(totalGainModel, 1500.0)))
 
       }
 
@@ -59,7 +59,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionCosts" -> Seq("1000.0"),
           "improvements" -> Seq("1000.0")))
 
-        result shouldBe Some(Left("""Cannot parse parameter acquisitionValue as Double: For input string: "b""""))
+        result mustBe Some(Left("""Cannot parse parameter acquisitionValue as Double: For input string: "b""""))
       }
 
       "return an error message when a component is missing" in {
@@ -68,7 +68,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("3000.0"),
           "improvements" -> Seq("1000.0")))
 
-        result shouldBe Some(Left("acquisitionCosts is required."))
+        result mustBe Some(Left("acquisitionCosts is required."))
       }
 
       "return an error message when a value fails validation" in {
@@ -78,24 +78,24 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionCosts" -> Seq("2500.0"),
           "improvements" -> Seq("-3000.0")))
 
-        result shouldBe Some(Left("improvements cannot be negative."))
+        result mustBe Some(Left("improvements cannot be negative."))
       }
     }
 
-    "calling .unBind" should {
+    "calling .unBind" must {
 
       "return a valid queryString on unbind with identical values" in {
         val totalGainString = "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0"
         val result = binder.unbind("", PropertyTotalGainModel(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0), 1000.0))
 
-        result shouldBe totalGainString + "&improvements=1000.0"
+        result mustBe totalGainString + "&improvements=1000.0"
       }
 
       "return a valid queryString on unbind with different values" in {
         val totalGainString = "disposalValue=2000.0&disposalCosts=1500.0&acquisitionValue=1750.0&acquisitionCosts=3000.0"
         val result = binder.unbind("", PropertyTotalGainModel(TotalGainModel(2000.0, 1500.0, 1750.0, 3000.0), 2500.0))
 
-        result shouldBe totalGainString + "&improvements=2500.0"
+        result mustBe totalGainString + "&improvements=2500.0"
       }
     }
   }
@@ -104,7 +104,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
 
     val binder = new ResidentPropertyBinders {}.propertyChargeableGainBinder
 
-    "calling .bind" should {
+    "calling .bind" must {
 
       "return a valid PropertyTotalGainModel from a valid map with the same values" in {
         val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000, 2000, 2000, 2000), 2000)
@@ -121,7 +121,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "disposalDate" -> Seq("2016-10-10")))
 
         val date = DateTime.parse("2016-10-10")
-        result shouldBe Some(Right(PropertyChargeableGainModel(propertyTotalGainModel, Some(2000.0), Some(2000.0), Some(2000.0),
+        result mustBe Some(Right(PropertyChargeableGainModel(propertyTotalGainModel, Some(2000.0), Some(2000.0), Some(2000.0),
                                   Some(2000.0), 2000, date)))
       }
 
@@ -140,7 +140,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "disposalDate" -> Seq("2016-10-10")))
 
         val date = DateTime.parse("2016-10-10")
-        result shouldBe Some(Right(PropertyChargeableGainModel(propertyTotalGainModel, Some(2050.0), Some(2100.0), Some(2200.0),
+        result mustBe Some(Right(PropertyChargeableGainModel(propertyTotalGainModel, Some(2050.0), Some(2100.0), Some(2200.0),
           Some(2300.0), 2400.0, date)))
 
       }
@@ -158,7 +158,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "annualExemptAmount" -> Seq("2000.0"),
           "disposalDate" -> Seq("2016-10-10")))
 
-        result shouldBe Some(Left("""Cannot parse parameter acquisitionValue as Double: For input string: "b""""))
+        result mustBe Some(Left("""Cannot parse parameter acquisitionValue as Double: For input string: "b""""))
       }
 
       "return an error message when a component is missing" in {
@@ -173,7 +173,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "annualExemptAmount" -> Seq("2000.0"),
           "disposalDate" -> Seq("2016-10-10")))
 
-        result shouldBe Some(Left("acquisitionCosts is required."))
+        result mustBe Some(Left("acquisitionCosts is required."))
       }
 
       "return an error message when a value fails validation" in {
@@ -189,11 +189,11 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "annualExemptAmount" -> Seq("2400.0"),
           "disposalDate" -> Seq("2016-10-10")))
 
-        result shouldBe Some(Left("prrValue cannot be negative."))
+        result mustBe Some(Left("prrValue cannot be negative."))
       }
     }
 
-    "calling .unBind" should {
+    "calling .unBind" must {
 
       "return a valid queryString on unbind with identical values" in {
         val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2000.0, 2000.0, 2000.0), 2000.0)
@@ -204,7 +204,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
         val propertyTotalGainString = "disposalValue=2000.0&disposalCosts=2000.0&acquisitionValue=2000.0&acquisitionCosts=2000.0&improvements=2000.0"
         val result = binder.unbind("", propertyChargeableGainModel)
 
-        result shouldBe propertyTotalGainString + "&prrValue=2000.0&lettingReliefs=2000.0&allowableLosses=2000.0&broughtForwardLosses=2000.0" +
+        result mustBe propertyTotalGainString + "&prrValue=2000.0&lettingReliefs=2000.0&allowableLosses=2000.0&broughtForwardLosses=2000.0" +
           "&annualExemptAmount=2000.0&disposalDate=2016-10-10"
       }
 
@@ -217,7 +217,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
         val propertyTotalGainString = "disposalValue=2000.0&disposalCosts=1500.0&acquisitionValue=1750.0&acquisitionCosts=3000.0&improvements=2500.0"
         val result = binder.unbind("", propertyChargeableGainModel)
 
-        result shouldBe propertyTotalGainString + "&prrValue=2050.0&lettingReliefs=2100.0&allowableLosses=2200.0&broughtForwardLosses=2300.0" +
+        result mustBe propertyTotalGainString + "&prrValue=2050.0&lettingReliefs=2100.0&allowableLosses=2200.0&broughtForwardLosses=2300.0" +
           "&annualExemptAmount=2400.0&disposalDate=2016-10-10"
       }
     }
@@ -227,7 +227,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
 
     val binder = new ResidentPropertyBinders {}.propertyCalculateTaxOwedBinder
 
-    "given a valid binding value where all values are the same" should {
+    "given a valid binding value where all values are the same" must {
       val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0), 1000.0)
       val date = DateTime.parse("2016-10-10")
       val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0), Some(1000.0),
@@ -254,17 +254,17 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("1000.0")
         ))
 
-        result shouldBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0)))
+        result mustBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0)))
       }
 
       "return a valid queryString on unbind" in {
         val result = binder.unbind("key", PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(1000.0), 1000.0, 1000.0))
 
-        result shouldBe propertyChargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0"
+        result mustBe propertyChargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0"
       }
     }
 
-    "given a valid binding value where all values are different" should {
+    "given a valid binding value where all values are different" must {
       val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0),6000.0)
       val date = DateTime.parse("2016-10-10")
       val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(4000.0), Some(4500.0), Some(5000.0),
@@ -289,17 +289,17 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("4000.0")
         ))
 
-        result shouldBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, None, 4000.0, 4000.0)))
+        result mustBe Some(Right(PropertyCalculateTaxOwedModel(propertyChargeableGainModel, None, 4000.0, 4000.0)))
       }
 
       "return a valid queryString on unbind" in {
         val result = binder.unbind("key", PropertyCalculateTaxOwedModel(propertyChargeableGainModel, Some(4500.0), 5000.0, 5500.0))
 
-        result shouldBe propertyChargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0"
+        result mustBe propertyChargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0"
       }
     }
 
-    "given an invalid binding value" should {
+    "given an invalid binding value" must {
 
       "return one error message on a failed bind on all inputs" in {
 
@@ -319,7 +319,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("n")
         ))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
       }
 
 
@@ -341,7 +341,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("n")
         ))
 
-        result shouldBe Some(Left("""Cannot parse parameter personalAllowance as Double: For input string: "n""""))
+        result mustBe Some(Left("""Cannot parse parameter personalAllowance as Double: For input string: "n""""))
       }
 
       "return an error message when a component is missing" in {
@@ -361,7 +361,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("n")
         ))
 
-        result shouldBe Some(Left("previousIncome is required."))
+        result mustBe Some(Left("previousIncome is required."))
       }
 
       "return an error message when model fails validation" in {
@@ -381,7 +381,7 @@ class ResidentPropertyBindersSpec extends UnitSpec with MockitoSugar {
           "personalAllowance" -> Seq("-1000.0")
         ))
 
-        result shouldBe Some(Left("personalAllowance cannot be negative."))
+        result mustBe Some(Left("personalAllowance cannot be negative."))
       }
 
     }

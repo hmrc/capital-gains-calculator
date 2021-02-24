@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package common.binders
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import org.joda.time.DateTime
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
 
-class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
+class ResidentSharesBindersSpec extends PlaySpec with MockitoSugar {
 
   "Calling totalGainBinder" when {
     val binder = new ResidentSharesBinders{}.totalGainBinder
 
-    "calling .bind" should {
+    "calling .bind" must {
 
       "return a valid TotalGainModel from a valid map with the same values" in {
         val result = binder.bind("Any", Map("disposalValue" -> Seq("1000.0"),
@@ -35,7 +35,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("1000.0"),
           "acquisitionCosts" -> Seq("1000.0")))
 
-        result shouldBe Some(Right(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0)))
+        result mustBe Some(Right(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0)))
       }
 
       "return a valid TotalGainModel from a valid map with different values" in {
@@ -44,7 +44,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("3000.0"),
           "acquisitionCosts" -> Seq("3500.0")))
 
-        result shouldBe Some(Right(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0)))
+        result mustBe Some(Right(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0)))
       }
 
       "return one error message on a failed bind on all inputs" in {
@@ -53,7 +53,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("c"),
           "acquisitionCosts" -> Seq("d")))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
       }
 
       "return an error message when one component fails" in {
@@ -62,7 +62,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("3000.0"),
           "acquisitionCosts" -> Seq("3500.0")))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalCosts as Double: For input string: "b""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalCosts as Double: For input string: "b""""))
       }
 
       "return an error message when a component is missing" in {
@@ -70,7 +70,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("3000.0"),
           "acquisitionCosts" -> Seq("3500.0")))
 
-        result shouldBe Some(Left("disposalValue is required."))
+        result mustBe Some(Left("disposalValue is required."))
       }
 
       "return an error message when a value fails validation" in {
@@ -79,23 +79,23 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionValue" -> Seq("-3000.0"),
           "acquisitionCosts" -> Seq("3500.0")))
 
-        result shouldBe Some(Left("acquisitionValue cannot be negative."))
+        result mustBe Some(Left("acquisitionValue cannot be negative."))
       }
 
     }
 
-    "calling .unBind" should {
+    "calling .unBind" must {
 
       "return a valid queryString on unbind with identical values" in {
         val result = binder.unbind("", TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0))
 
-        result shouldBe "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0"
+        result mustBe "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0"
       }
 
       "return a valid queryString on unbind with different values" in {
         val result = binder.unbind("", TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0))
 
-        result shouldBe "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0"
+        result mustBe "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0"
       }
     }
   }
@@ -103,7 +103,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
   "Calling chargeableGain Binder" when {
     val binder = new ResidentSharesBinders{}.chargeableGainBinder
 
-    "calling .bind" should {
+    "calling .bind" must {
 
       "return a valid ChargeableGainModel from a valid map with the same values" in {
         val totalGainModel = TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0)
@@ -115,7 +115,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "broughtForwardLosses" -> Seq("1000.0"),
           "annualExemptAmount" -> Seq("1000.0")))
 
-        result shouldBe Some(Right(ChargeableGainModel(totalGainModel, Some(1000.0), Some(1000.0), 1000.0)))
+        result mustBe Some(Right(ChargeableGainModel(totalGainModel, Some(1000.0), Some(1000.0), 1000.0)))
       }
 
       "return a valid ChargeableGainModel from a valid map with different values" in {
@@ -126,7 +126,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "acquisitionCosts" -> Seq("3500.0"),
           "annualExemptAmount" -> Seq("4000.0")))
 
-        result shouldBe Some(Right(ChargeableGainModel(totalGainModel, None, None, 4000.0)))
+        result mustBe Some(Right(ChargeableGainModel(totalGainModel, None, None, 4000.0)))
       }
 
       "return one error message on a failed bind on all inputs" in {
@@ -138,7 +138,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "broughtForwardLosses" -> Seq("f"),
           "annualExemptAmount" -> Seq("g")))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
       }
 
       "return an error message when one component fails" in {
@@ -150,7 +150,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "broughtForwardLosses" -> Seq("1000.0"),
           "annualExemptAmount" -> Seq("1000.0")))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalCosts as Double: For input string: "b""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalCosts as Double: For input string: "b""""))
       }
 
       "return an error message when a component is missing" in {
@@ -160,7 +160,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "broughtForwardLosses" -> Seq("1000.0"),
           "annualExemptAmount" -> Seq("1000.0")))
 
-        result shouldBe Some(Left("disposalValue is required."))
+        result mustBe Some(Left("disposalValue is required."))
       }
 
       "return an error message if validation fails" in {
@@ -172,24 +172,24 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "broughtForwardLosses" -> Seq("-1000.0"),
           "annualExemptAmount" -> Seq("1000.0")))
 
-        result shouldBe Some(Left("broughtForwardLosses cannot be negative."))
+        result mustBe Some(Left("broughtForwardLosses cannot be negative."))
       }
     }
 
-    "calling .unBind" should {
+    "calling .unBind" must {
 
       "return a valid queryString on unbind with identical values" in {
         val totalGainString = "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0"
         val result = binder.unbind("", ChargeableGainModel(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0), Some(1000.0), Some(1000.0), 1000.0))
 
-        result shouldBe totalGainString + "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
+        result mustBe totalGainString + "&allowableLosses=1000.0&broughtForwardLosses=1000.0&annualExemptAmount=1000.0"
       }
 
       "return a valid queryString on unbind with different values" in {
         val totalGainString = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0"
         val result = binder.unbind("", ChargeableGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0), None, None, 4000.0))
 
-        result shouldBe totalGainString + "&annualExemptAmount=4000.0"
+        result mustBe totalGainString + "&annualExemptAmount=4000.0"
       }
     }
   }
@@ -198,7 +198,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
     
     val binder = CalculateTaxOwedModel.calculateTaxOwedBinder
 
-    "given a valid binding value where all values are the same" should {
+    "given a valid binding value where all values are the same" must {
       val totalGainModel = TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0)
       val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(1000.0), Some(1000.0), 1000.0)
       val chargeableGainRequest = "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0" +
@@ -221,18 +221,18 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
         ))
         val date = DateTime.parse("2016-10-10")
 
-        result shouldBe Some(Right(CalculateTaxOwedModel(chargeableGainModel, Some(1000.0), 1000.0, 1000.0, date)))
+        result mustBe Some(Right(CalculateTaxOwedModel(chargeableGainModel, Some(1000.0), 1000.0, 1000.0, date)))
       }
 
       "return a valid queryString on unbind" in {
         val date = DateTime.parse("2016-10-10")
         val result = binder.unbind("key", CalculateTaxOwedModel(chargeableGainModel, Some(1000.0), 1000.0, 1000.0, date))
 
-        result shouldBe chargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0&disposalDate=2016-10-10"
+        result mustBe chargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0&disposalDate=2016-10-10"
       }
     }
 
-    "given a valid binding value where all values are different" should {
+    "given a valid binding value where all values are different" must {
       val totalGainModel = TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0)
       val chargeableGainModel = ChargeableGainModel(totalGainModel, Some(4000.0), Some(4500.0), 5000.0)
       val chargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0" +
@@ -253,18 +253,18 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
         ))
 
         val date = DateTime.parse("2016-10-10")
-        result shouldBe Some(Right(CalculateTaxOwedModel(chargeableGainModel, None, 4000.0, 4000.0, date)))
+        result mustBe Some(Right(CalculateTaxOwedModel(chargeableGainModel, None, 4000.0, 4000.0, date)))
       }
 
       "return a valid queryString on unbind" in {
         val date = DateTime.parse("2016-10-10")
         val result = binder.unbind("key", CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.0, date))
 
-        result shouldBe chargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0&disposalDate=2016-10-10"
+        result mustBe chargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0&disposalDate=2016-10-10"
       }
     }
 
-    "given an invalid binding value" should {
+    "given an invalid binding value" must {
 
       "return one error message on a failed bind on all inputs" in {
         val result = binder.bind("", Map("disposalValue" -> Seq("a"),
@@ -280,7 +280,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "disposalDate" -> Seq("k")
         ))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalValue as Double: For input string: "a""""))
       }
 
 
@@ -298,7 +298,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "disposalDate" -> Seq("k")
         ))
 
-        result shouldBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "k""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "k""""))
       }
 
       "return an error message when a component is missing" in {
@@ -314,7 +314,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "previousIncome" -> Seq("1000.0"),
           "disposalDate" -> Seq("k")))
 
-        result shouldBe Some(Left("personalAllowance is required."))
+        result mustBe Some(Left("personalAllowance is required."))
       }
 
       "return an error message when model fails validation" in {
@@ -331,7 +331,7 @@ class ResidentSharesBindersSpec extends UnitSpec with MockitoSugar {
           "disposalDate" -> Seq("1000.0")
         ))
 
-        result shouldBe Some(Left("broughtForwardLosses cannot be negative."))
+        result mustBe Some(Left("broughtForwardLosses cannot be negative."))
       }
     }
   }

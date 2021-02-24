@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,50 +18,50 @@ package common.binders
 
 import org.joda.time.DateTime
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class CommonBindersSpec extends UnitSpec with MockitoSugar {
+class CommonBindersSpec extends PlaySpec with MockitoSugar {
 
   val binder = new CommonBinders{}.dateTimeBinder
 
-  "Binding to a localDateBinder" should {
+  "Binding to a localDateBinder" must {
 
     "return a LocalDate with a valid map" in {
       val map = Map("disposalDate" -> Seq("2016-05-04"))
       val result = binder.bind("disposalDate", map)
 
-      result shouldBe Some(Right(DateTime.parse("2016-05-04")))
+      result mustBe Some(Right(DateTime.parse("2016-05-04")))
     }
 
     "return an error message with a valid map but invalid date" in {
       val map = Map("disposalDate" -> Seq("not-a-date"))
       val result = binder.bind("disposalDate", map)
 
-      result shouldBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "not-a-date""""))
+      result mustBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "not-a-date""""))
     }
 
     "return an error message with an invalid map with empty value" in {
       val map = Map("disposalDate" -> Seq())
       val result = binder.bind("disposalDate", map)
 
-      result shouldBe None
+      result mustBe None
     }
 
     "return an error message with an invalid map with no value" in {
       val map = Map("test" -> Seq())
       val result = binder.bind("disposalDate", map)
 
-      result shouldBe None
+      result mustBe None
     }
   }
 
-  "Unbinding using the localDateBinder" should {
+  "Unbinding using the localDateBinder" must {
 
     "return a valid String from a LocalDate" in {
       val date = DateTime.parse("2015-06-04")
       val result = binder.unbind("disposalDate", date)
 
-      result shouldBe "disposalDate=2015-6-4"
+      result mustBe "disposalDate=2015-6-4"
     }
   }
 }

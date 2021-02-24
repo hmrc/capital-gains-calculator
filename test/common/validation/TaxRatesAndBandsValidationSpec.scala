@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,39 +18,39 @@ package common.validation
 
 import common.validation.TaxRatesAndBandsValidation._
 import org.joda.time.DateTime
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class TaxRatesAndBandsValidationSpec extends UnitSpec{
+class TaxRatesAndBandsValidationSpec extends PlaySpec{
 
-  "calling checkValidTaxYear" should {
+  "calling checkValidTaxYear" must {
 
     "return true with a year after 2020" in {
       val result = checkValidTaxYear(2020)
-      result shouldBe true
+      result mustBe true
     }
 
     "return true with a year after 2015" in {
       val result = checkValidTaxYear(2016)
 
-      result shouldBe true
+      result mustBe true
     }
 
     "return false with a year 2015" in {
       val result = checkValidTaxYear(2015)
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return false with a year less than 2015" in {
       val result = checkValidTaxYear(2014)
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return false with a year greater than the current tax year band" in {
       val result = checkValidTaxYear(DateTime.now().getYear + 2)
 
-      result shouldBe false
+      result mustBe false
     }
   }
 }

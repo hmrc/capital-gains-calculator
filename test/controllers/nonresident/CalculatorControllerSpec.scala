@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,13 @@ import play.api.mvc.{AnyContentAsJson, ControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CalculationService
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
-class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar with BeforeAndAfterEach {
+class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with BeforeAndAfterEach {
 
   val mockService: CalculationService = mock[CalculationService]
-  val injectedComponents: ControllerComponents = fakeApplication.injector.instanceOf[ControllerComponents]
+  val injectedComponents: ControllerComponents = app.injector.instanceOf[ControllerComponents]
 
   val controller = new CalculatorController(mockService, injectedComponents)
 
@@ -44,14 +45,14 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
     super.beforeEach()
   }
 
-  "Calling timeApportionedCalculationApplied" should {
+  "Calling timeApportionedCalculationApplied" must {
 
     "return a true when provided with valid dates" in {
       val acquisitionDate = DateTime.parse("2013-03-10")
       val disposalDate = DateTime.parse("2016-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
-      result shouldBe true
+      result mustBe true
     }
 
     "return a false when provided with an acquisition date after the tax start date" in {
@@ -59,7 +60,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val disposalDate = DateTime.parse("2016-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return a false when provided a disposal date before the tax start date" in {
@@ -67,21 +68,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       val disposalDate = DateTime.parse("2013-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return a false when not provided with an acquisition date" in {
       val disposalDate = DateTime.parse("2016-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), None)
 
-      result shouldBe false
+      result mustBe false
     }
 
     "return a false when not provided with a disposal date" in {
       val acquisitionDate = DateTime.parse("2013-07-10")
       val result = controller.timeApportionedCalculationApplicable(None, Some(acquisitionDate))
 
-      result shouldBe false
+      result mustBe false
     }
   }
 
@@ -90,7 +91,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       FakeRequest("POST", "").withJsonBody(json)
     }
 
-    "only provided with mandatory values" should {
+    "only provided with mandatory values" must {
       when(mockService.calculateGainFlat(any(), any(), any(),
         any(), any())).thenReturn(1.0)
 
@@ -113,11 +114,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       ))
 
       "return a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -125,20 +126,20 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         val json = Json.parse(data)
 
         "should have a flatGain of 1.0" in {
-          (json \ "flatGain").as[Double] shouldBe 1.0
+          (json \ "flatGain").as[Double] mustBe 1.0
         }
 
         "should have no value for rebasedGain" in {
-          (json \ "rebasedGain").asOpt[Double] shouldBe None
+          (json \ "rebasedGain").asOpt[Double] mustBe None
         }
 
         "should have no value for timeApportionedGain" in {
-          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+          (json \ "timeApportionedGain").asOpt[Double] mustBe None
         }
       }
     }
 
-    "provided with the values for the rebased calculation" should {
+    "provided with the values for the rebased calculation" must {
       when(mockService.calculateGainFlat(any(), any(), any(),
         any(), any())).thenReturn(1.0)
 
@@ -171,15 +172,15 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         val json = Json.parse(data)
 
         "should have a flatGain of 1.0" in {
-          (json \ "flatGain").as[Double] shouldBe 1.0
+          (json \ "flatGain").as[Double] mustBe 1.0
         }
 
         "should have no value for rebasedGain" in {
-          (json \ "rebasedGain").asOpt[Double] shouldBe None
+          (json \ "rebasedGain").asOpt[Double] mustBe None
         }
 
         "should have no value for timeApportionedGain" in {
-          (json \ "timeApportionedGain").asOpt[Double] shouldBe None
+          (json \ "timeApportionedGain").asOpt[Double] mustBe None
         }
       }
 
@@ -187,7 +188,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       }
     }
 
-    "provided with the values for the time apportioned calculation" should {
+    "provided with the values for the time apportioned calculation" must {
       val disposalDate = DateTime.parse("2016-05-08")
       val acquisitionDate = DateTime.parse("2012-04-09")
 
@@ -226,15 +227,15 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         val json = Json.parse(data)
 
         "should have a flatGain of 1.0" in {
-          (json \ "flatGain").as[Double] shouldBe 1.0
+          (json \ "flatGain").as[Double] mustBe 1.0
         }
 
         "should have no value for rebasedGain" in {
-          (json \ "rebasedGain").asOpt[Double] shouldBe None
+          (json \ "rebasedGain").asOpt[Double] mustBe None
         }
 
         "should have a timeApportionedGain of 3.0" in {
-          (json \ "timeApportionedGain").asOpt[Double] shouldBe Some(3.0)
+          (json \ "timeApportionedGain").asOpt[Double] mustBe Some(3.0)
         }
       }
     }
@@ -242,7 +243,7 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
 
   "Calling .calculateTaxableGainAfterPRR" when {
 
-    "provided with a flat calculation with no acquisition date" should {
+    "provided with a flat calculation with no acquisition date" must {
       val fakeRequest = FakeRequest("GET", "")
       val disposalDate = DateTime.parse("2016-05-08")
 
@@ -258,11 +259,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -274,29 +275,29 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
 
           "should have a totalGain of 6.0" in {
-            flatResultJson.totalGain shouldEqual 6.0
+            flatResultJson.totalGain mustEqual 6.0
           }
 
           "should have a taxableGain of 6.0" in {
-            flatResultJson.taxableGain shouldEqual 6.0
+            flatResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 0.0" in {
-            flatResultJson.prrUsed shouldEqual 0.0
+            flatResultJson.prrUsed mustEqual 0.0
           }
         }
 
         "should have a rebasedGain of None" in {
-          json.toString should not include "rebasedGain"
+          json.toString must not include "rebasedGain"
         }
 
         "should have a timeApportionedGain of None" in {
-          json.toString should not include "timeApportionedGain"
+          json.toString must not include "timeApportionedGain"
         }
       }
     }
 
-    "only provided with values for the flat calculation with an acquisition date" should {
+    "only provided with values for the flat calculation with an acquisition date" must {
       val fakeRequest = FakeRequest("GET", "")
 
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
@@ -317,11 +318,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -333,29 +334,29 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
 
           "should have a totalGain of 6.0" in {
-            flatResultJson.totalGain shouldEqual 6.0
+            flatResultJson.totalGain mustEqual 6.0
           }
 
           "should have a taxableGain of 6.0" in {
-            flatResultJson.taxableGain shouldEqual 6.0
+            flatResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 100.0" in {
-            flatResultJson.prrUsed shouldEqual 100.0
+            flatResultJson.prrUsed mustEqual 100.0
           }
         }
 
         "should have a rebasedGain of None" in {
-          json.toString should not include "rebasedGain"
+          json.toString must not include "rebasedGain"
         }
 
         "should have a timeApportionedGain of None" in {
-          json.toString should not include "timeApportionedGain"
+          json.toString must not include "timeApportionedGain"
         }
       }
     }
 
-    "only provided with values for the flat and rebased calculation without an acquisition date" should {
+    "only provided with values for the flat and rebased calculation without an acquisition date" must {
       val fakeRequest = FakeRequest("GET", "")
 
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
@@ -378,11 +379,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -394,29 +395,29 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
 
           "should have a totalGain of 6.0" in {
-            flatResultJson.totalGain shouldEqual 6.0
+            flatResultJson.totalGain mustEqual 6.0
           }
 
           "should have a taxableGain of 6.0" in {
-            flatResultJson.taxableGain shouldEqual 6.0
+            flatResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 100.0" in {
-            flatResultJson.prrUsed shouldEqual 100.0
+            flatResultJson.prrUsed mustEqual 100.0
           }
         }
 
         "should have a rebaseGain of None" in {
-          json.toString should not include "rebasedResult"
+          json.toString must not include "rebasedResult"
         }
 
         "should have a timeApportionedGain of None" in {
-          json.toString should not include "timeApportionedGain"
+          json.toString must not include "timeApportionedGain"
         }
       }
     }
 
-    "provided with values for the flat, rebased and time apportioned calculations" should {
+    "provided with values for the flat, rebased and time apportioned calculations" must {
       val fakeRequest = FakeRequest("GET", "")
 
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
@@ -444,11 +445,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -460,15 +461,15 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           val flatResultJson = (json \ "flatResult").as[GainsAfterPRRModel]
 
           "should have a totalGain of 6.0" in {
-            flatResultJson.totalGain shouldEqual 6.0
+            flatResultJson.totalGain mustEqual 6.0
           }
 
           "should have a taxableGain of 6.0" in {
-            flatResultJson.taxableGain shouldEqual 6.0
+            flatResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 100.0" in {
-            flatResultJson.prrUsed shouldEqual 100.0
+            flatResultJson.prrUsed mustEqual 100.0
           }
         }
 
@@ -477,15 +478,15 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           val rebasedResultJson = (json \ "rebasedResult").as[GainsAfterPRRModel]
 
           "should have a totalGain of 100" in {
-            rebasedResultJson.totalGain shouldEqual 100.0
+            rebasedResultJson.totalGain mustEqual 100.0
           }
 
           "should have a taxableGain of 6.0" in {
-            rebasedResultJson.taxableGain shouldEqual 6.0
+            rebasedResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 100.0" in {
-            rebasedResultJson.prrUsed shouldEqual 100.0
+            rebasedResultJson.prrUsed mustEqual 100.0
           }
         }
 
@@ -494,21 +495,21 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           val timeApportionedResultJson = (json \ "timeApportionedResult").as[GainsAfterPRRModel]
 
           "should have a totalGain of 50" in {
-            timeApportionedResultJson.totalGain shouldEqual 50.0
+            timeApportionedResultJson.totalGain mustEqual 50.0
           }
 
           "should have a taxableGain of 6.0" in {
-            timeApportionedResultJson.taxableGain shouldEqual 6.0
+            timeApportionedResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 100.0" in {
-            timeApportionedResultJson.prrUsed shouldEqual 100.0
+            timeApportionedResultJson.prrUsed mustEqual 100.0
           }
         }
       }
     }
 
-    "provided with values for the flat, rebased and time apportioned calculations but no disposal date" should {
+    "provided with values for the flat, rebased and time apportioned calculations but no disposal date" must {
       val fakeRequest = FakeRequest("GET", "")
 
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
@@ -527,11 +528,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
 
       "return a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -543,24 +544,24 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
           println(flatResultJson.toString)
 
           "should have a totalGain of 6.0" in {
-            flatResultJson.totalGain shouldEqual 6.0
+            flatResultJson.totalGain mustEqual 6.0
           }
 
           "should have a taxableGain of 6.0" in {
-            flatResultJson.taxableGain shouldEqual 6.0
+            flatResultJson.taxableGain mustEqual 6.0
           }
 
           "should have a prrUsed of 0.0" in {
-            flatResultJson.prrUsed shouldEqual 0.0
+            flatResultJson.prrUsed mustEqual 0.0
           }
         }
 
         "should have a rebasedGain of None" in {
-          json.toString should not include "rebasedGain"
+          json.toString must not include "rebasedGain"
         }
 
         "should have a timeApportionedGain of None" in {
-          json.toString should not include "timeApportionedGain"
+          json.toString must not include "timeApportionedGain"
         }
       }
     }
@@ -588,11 +589,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -621,15 +622,15 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         )
 
         "should have a flat result" in {
-          (json \ "flatResult").as[TaxOwedModel] shouldBe flatResultModel
+          (json \ "flatResult").as[TaxOwedModel] mustBe flatResultModel
         }
 
-        "should not have a rebased result" in {
-          (json \ "rebasedResult").asOpt[TaxOwedModel] shouldBe None
+        "must not have a rebased result" in {
+          (json \ "rebasedResult").asOpt[TaxOwedModel] mustBe None
         }
 
-        "should not have a timeApportioned result" in {
-          (json \ "timeApportionedResult").asOpt[TaxOwedModel] shouldBe None
+        "must not have a timeApportioned result" in {
+          (json \ "timeApportionedResult").asOpt[TaxOwedModel] mustBe None
         }
       }
     }
@@ -657,11 +658,11 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         0, PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) shouldBe Some("application/json")
+        contentType(result) mustBe Some("application/json")
       }
 
       "return a valid result" which {
@@ -732,15 +733,15 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
         )
 
         "should have a flat result" in {
-          (json \ "flatResult").as[TaxOwedModel] shouldBe flatResultModel
+          (json \ "flatResult").as[TaxOwedModel] mustBe flatResultModel
         }
 
         "should have a rebased result" in {
-          (json \ "rebasedResult").asOpt[TaxOwedModel] shouldBe Some(rebasedResultModel)
+          (json \ "rebasedResult").asOpt[TaxOwedModel] mustBe Some(rebasedResultModel)
         }
 
         "should have a timeApportioned result" in {
-          (json \ "timeApportionedResult").asOpt[TaxOwedModel] shouldBe Some(timeApportionedResultModel)
+          (json \ "timeApportionedResult").asOpt[TaxOwedModel] mustBe Some(timeApportionedResultModel)
         }
       }
     }
@@ -761,18 +762,18 @@ class CalculatorControllerSpec extends UnitSpec with WithFakeApplication with Mo
       acquisitionCosts = 1000.00)(fakeRequest)
 
     "return 200" in {
-      status(result) shouldBe Status.OK
+      status(result) mustBe Status.OK
     }
 
     "return a JSON result" in {
-      contentType(result) shouldBe Some("application/json")
+      contentType(result) mustBe Some("application/json")
     }
 
     "return a valid result" in {
       val data = contentAsString(result)
       val json = Json.parse(data)
 
-      json.as[Double] shouldEqual 5000.0
+      json.as[Double] mustEqual 5000.0
     }
   }
 }
