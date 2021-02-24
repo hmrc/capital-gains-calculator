@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package common.binders
 import models.nonResident.TimeApportionmentCalculationRequestModel
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import org.joda.time.DateTime
 
-class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with MockitoSugar {
+class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with MockitoSugar {
 
   val target = new NonResidentTimeApportionmentCalculationRequestBinder {}.requestBinder
   implicit val mockStringBinder = mock[QueryStringBindable[String]]
@@ -80,11 +80,11 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with Mo
 
 //    def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""
 
-    "an acquisition date is not supplied" should {
+    "an acquisition date is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.acquisitionDate, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.acquisitionDate} is required."))
+        result mustBe Some(Left(s"${keys.acquisitionDate} is required."))
       }
     }
   }

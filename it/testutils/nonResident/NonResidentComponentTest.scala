@@ -22,9 +22,9 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.api.libs.ws.{WSClient, WSResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
+class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .build()
@@ -33,7 +33,7 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
 
   lazy val ws: WSClient = app.injector.instanceOf[WSClient]
 
-  "Hitting the /non-resident/calculate-total-gain route" should {
+  "Hitting the /non-resident/calculate-total-gain route" must {
     val calculateUrl = s"$baseUrl/non-resident/calculate-total-gain"
 
     s"return a $OK with a valid result" when {
@@ -68,8 +68,8 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
             |}
           """.stripMargin)
 
-        request.status shouldBe 200
-        request.json shouldBe responseJson
+        request.status mustBe 200
+        request.json mustBe responseJson
       }
     }
 
@@ -95,16 +95,16 @@ class NonResidentComponentTest extends UnitSpec with GuiceOneServerPerSuite {
                 stripMargin)
           )
 
-        request.status shouldBe 400
-        request.body shouldBe "Validation failed with errors: List((/disposalValue,List(ValidationError(List(error.path.missing),WrappedArray()))))"
+        request.status mustBe 400
+        request.body mustBe "Validation failed with errors: List((/disposalValue,List(ValidationError(List(error.path.missing),WrappedArray()))))"
       }
 
       "no data is provided" in {
         def request: WSResponse = ws.url(calculateUrl)
           .post("")
 
-        request.status shouldBe 400
-        request.body shouldBe "No Json provided"
+        request.status mustBe 400
+        request.body mustBe "No Json provided"
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package common.binders
 import models.nonResident.CalculationRequestModel
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import org.joda.time.DateTime
 
-class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
+class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
 
   val target = new NonResidentCalculationRequestBinder {}.requestBinder
   implicit val mockStringBinder = mock[QueryStringBindable[String]]
@@ -78,183 +78,183 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
       case _ => emptyCalculationRequest
     }
 
-    "a prior disposal is defined" should {
+    "a prior disposal is defined" must {
       "return a CalculationRequest with the prior disposal populated" in {
-        result.priorDisposal shouldBe expectedRequest.priorDisposal
+        result.priorDisposal mustBe expectedRequest.priorDisposal
       }
     }
 
-    "an annual exempt amount is defined" should {
+    "an annual exempt amount is defined" must {
       "return a CalculationRequest with the annual exempt amount populated" in {
-        result.annualExemptAmount shouldBe expectedRequest.annualExemptAmount
+        result.annualExemptAmount mustBe expectedRequest.annualExemptAmount
       }
     }
 
-    "an annual exempt amount is not defined" should {
+    "an annual exempt amount is not defined" must {
       val request = validRequest.filterKeys(key => key != keys.annualExemptAmount)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
       "return a CalculationRequest with the annual exempt amount not populated" in {
-        result.annualExemptAmount shouldBe None
+        result.annualExemptAmount mustBe None
       }
       "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
+        result must not be emptyCalculationRequest
       }
     }
 
-    "an other properties amount is defined" should {
+    "an other properties amount is defined" must {
       "return a CalculationRequest with the other properties amount populated" in {
-        result.otherPropertiesAmount shouldBe expectedRequest.otherPropertiesAmount
+        result.otherPropertiesAmount mustBe expectedRequest.otherPropertiesAmount
       }
     }
 
-    "an other properties amount is not defined" should {
+    "an other properties amount is not defined" must {
       val request = validRequest.filterKeys(key => key != keys.otherPropertiesAmount)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
       "return a CalculationRequest with the other properties amount not populated" in {
-        result.otherPropertiesAmount shouldBe None
+        result.otherPropertiesAmount mustBe None
       }
       "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
+        result must not be emptyCalculationRequest
       }
     }
 
-    "a current income is defined" should {
+    "a current income is defined" must {
       "return a CalculationRequest with the current income populated" in {
-        result.currentIncome shouldBe expectedRequest.currentIncome
+        result.currentIncome mustBe expectedRequest.currentIncome
       }
     }
 
-    "a personal allowance is defined" should {
+    "a personal allowance is defined" must {
       "return a CalculationRequest with the personal allowance populated" in {
-        result.personalAllowanceAmount shouldBe expectedRequest.personalAllowanceAmount
+        result.personalAllowanceAmount mustBe expectedRequest.personalAllowanceAmount
       }
     }
 
-    "a personal allowance is not defined" should {
+    "a personal allowance is not defined" must {
       val request = validRequest.filterKeys(key => key != keys.personalAllowanceAmount)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
       "return a CalculationRequest with the personal allowance not populated" in {
-        result.personalAllowanceAmount shouldBe None
+        result.personalAllowanceAmount mustBe None
       }
       "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
+        result must not be emptyCalculationRequest
       }
     }
 
-    "a disposal value is defined" should {
+    "a disposal value is defined" must {
       "return a CalculationRequest with the disposal value populated" in {
-        result.disposalValue shouldBe expectedRequest.disposalValue
+        result.disposalValue mustBe expectedRequest.disposalValue
       }
     }
 
-    "a disposal costs is defined" should {
+    "a disposal costs is defined" must {
       "return a CalculationRequest with the disposal costs populated" in {
-        result.disposalCosts shouldBe expectedRequest.disposalCosts
+        result.disposalCosts mustBe expectedRequest.disposalCosts
       }
     }
 
-    "an acquisition value is defined" should {
+    "an acquisition value is defined" must {
       "return a CalculationRequest with the acquisition value populated" in {
-        result.initialValue shouldBe expectedRequest.initialValue
+        result.initialValue mustBe expectedRequest.initialValue
       }
     }
 
-    "an acquisition cost is defined" should {
+    "an acquisition cost is defined" must {
       "return a CalculationRequest with the acquisition costs populated" in {
-        result.initialCosts shouldBe expectedRequest.initialCosts
+        result.initialCosts mustBe expectedRequest.initialCosts
       }
     }
 
-    "an improvements amount is defined" should {
+    "an improvements amount is defined" must {
       "return a CalculationRequest with the improvements amount populated" in {
-        result.improvementsAmount shouldBe expectedRequest.improvementsAmount
+        result.improvementsAmount mustBe expectedRequest.improvementsAmount
       }
     }
 
-    "a reliefs amount is defined" should {
+    "a reliefs amount is defined" must {
       "return a CalculationRequest with the reliefs amount populated" in {
-        result.reliefsAmount shouldBe expectedRequest.reliefsAmount
+        result.reliefsAmount mustBe expectedRequest.reliefsAmount
       }
     }
 
-    "an allowable losses amount is defined" should {
+    "an allowable losses amount is defined" must {
       "return a CalculationRequest with the allowable losses amount populated" in {
-        result.allowableLosses shouldBe expectedRequest.allowableLosses
+        result.allowableLosses mustBe expectedRequest.allowableLosses
       }
     }
 
-    "an acquisition date is defined" should {
+    "an acquisition date is defined" must {
       "return a CalculationRequest with the acquisition date populated" in {
-        result.acquisitionDate shouldBe expectedRequest.acquisitionDate
+        result.acquisitionDate mustBe expectedRequest.acquisitionDate
       }
     }
 
-    "an acquisition date is not defined" should {
+    "an acquisition date is not defined" must {
       val request = validRequest.filterKeys(key => key != keys.acquisitionDate)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
       "return a CalculationRequest with the acquisition date not populated" in {
-        result.acquisitionDate shouldBe None
+        result.acquisitionDate mustBe None
       }
       "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
+        result must not be emptyCalculationRequest
       }
     }
 
-    "a disposal date is defined" should {
+    "a disposal date is defined" must {
       "return a CalculationRequest with the disposal date populated" in {
-        result.disposalDate shouldBe expectedRequest.disposalDate
+        result.disposalDate mustBe expectedRequest.disposalDate
       }
     }
 
-    "an is claiming prr is defined" should {
+    "an is claiming prr is defined" must {
       "return a CalculationRequest with the is claiming prr populated" in {
-        result.isClaimingPRR shouldBe expectedRequest.isClaimingPRR
+        result.isClaimingPRR mustBe expectedRequest.isClaimingPRR
       }
     }
 
-    "is claiming prr is not defined" should {
+    "is claiming prr is not defined" must {
       val request = validRequest.filterKeys(key => key != keys.isClaimingPRR)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
       "return a CalculationRequest with the is claiming prr not populated" in {
-        result.isClaimingPRR shouldBe None
+        result.isClaimingPRR mustBe None
       }
       "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
+        result must not be emptyCalculationRequest
       }
     }
 
-    "a days claimed is defined" should {
+    "a days claimed is defined" must {
       "return a CalculationRequest with the days claimed populated" in {
-        result.daysClaimed shouldBe expectedRequest.daysClaimed
+        result.daysClaimed mustBe expectedRequest.daysClaimed
       }
     }
 
-    "a days claimed value is not defined" should {
+    "a days claimed value is not defined" must {
       val request = validRequest.filterKeys(key => key != keys.daysClaimed)
       val result = target.bind("", request) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
       }
       "return a CalculationRequest with the annual exempt amount not populated" in {
-        result.daysClaimed shouldBe None
+        result.daysClaimed mustBe None
       }
       "not match the empty test model as defined above" in {
-        result should not be emptyCalculationRequest
+        result must not be emptyCalculationRequest
       }
     }
   }
@@ -270,304 +270,304 @@ class NonResidentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
     def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""
 
-    "a prior disposal is not supplied" should {
+    "a prior disposal is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.priorDisposal, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.priorDisposal} is required."))
+        result mustBe Some(Left(s"${keys.priorDisposal} is required."))
       }
     }
 
-    "an annual exempt amount with an invalid value" should {
+    "an annual exempt amount with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.annualExemptAmount, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.annualExemptAmount, badData)))
+        result mustBe Some(Left(doubleParseError(keys.annualExemptAmount, badData)))
       }
     }
 
-    "an other properties amount with an invalid value" should {
+    "an other properties amount with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.otherPropertiesAmount, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.otherPropertiesAmount, badData)))
+        result mustBe Some(Left(doubleParseError(keys.otherPropertiesAmount, badData)))
       }
     }
 
-    "a current income with an invalid value" should {
+    "a current income with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.currentIncome, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.currentIncome, badData)))
+        result mustBe Some(Left(doubleParseError(keys.currentIncome, badData)))
       }
     }
 
-    "a personal allowance with an invalid value" should {
+    "a personal allowance with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.personalAllowanceAmount, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.personalAllowanceAmount, badData)))
+        result mustBe Some(Left(doubleParseError(keys.personalAllowanceAmount, badData)))
       }
     }
 
-    "a disposal value is not supplied" should {
+    "a disposal value is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.disposalValue, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.disposalValue} is required."))
+        result mustBe Some(Left(s"${keys.disposalValue} is required."))
       }
     }
 
-    "a disposal value with an invalid value" should {
+    "a disposal value with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.disposalValue, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.disposalValue, badData)))
+        result mustBe Some(Left(doubleParseError(keys.disposalValue, badData)))
       }
     }
 
-    "a disposal costs is not supplied" should {
+    "a disposal costs is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.disposalCosts, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.disposalCosts} is required."))
+        result mustBe Some(Left(s"${keys.disposalCosts} is required."))
       }
     }
 
-    "a disposal costs with an invalid value" should {
+    "a disposal costs with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.disposalCosts, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.disposalCosts, badData)))
+        result mustBe Some(Left(doubleParseError(keys.disposalCosts, badData)))
       }
     }
 
-    "an initial value is not supplied" should {
+    "an initial value is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.initialValue, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.initialValue} is required."))
+        result mustBe Some(Left(s"${keys.initialValue} is required."))
       }
     }
 
-    "an initial value with an invalid value" should {
+    "an initial value with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.initialValue, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.initialValue, badData)))
+        result mustBe Some(Left(doubleParseError(keys.initialValue, badData)))
       }
     }
 
-    "an initial costs is not supplied" should {
+    "an initial costs is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.initialCosts, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.initialCosts} is required."))
+        result mustBe Some(Left(s"${keys.initialCosts} is required."))
       }
     }
 
-    "an initial costs with an invalid value" should {
+    "an initial costs with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.initialCosts, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.initialCosts, badData)))
+        result mustBe Some(Left(doubleParseError(keys.initialCosts, badData)))
       }
     }
 
-    "an improvements amount is not supplied" should {
+    "an improvements amount is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.improvementsAmount, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.improvementsAmount} is required."))
+        result mustBe Some(Left(s"${keys.improvementsAmount} is required."))
       }
     }
 
-    "an improvements amount with an invalid value" should {
+    "an improvements amount with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.improvementsAmount, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.improvementsAmount, badData)))
+        result mustBe Some(Left(doubleParseError(keys.improvementsAmount, badData)))
       }
     }
 
-    "an reliefs amount is not supplied" should {
+    "an reliefs amount is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.reliefsAmount, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.reliefsAmount} is required."))
+        result mustBe Some(Left(s"${keys.reliefsAmount} is required."))
       }
     }
 
-    "an reliefs amount with an invalid value" should {
+    "an reliefs amount with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.reliefsAmount, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.reliefsAmount, badData)))
+        result mustBe Some(Left(doubleParseError(keys.reliefsAmount, badData)))
       }
     }
 
-    "an allowable losses amount is not supplied" should {
+    "an allowable losses amount is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.allowableLosses, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.allowableLosses} is required."))
+        result mustBe Some(Left(s"${keys.allowableLosses} is required."))
       }
     }
 
-    "an allowable losses amount with an invalid value" should {
+    "an allowable losses amount with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.allowableLosses, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.allowableLosses, badData)))
+        result mustBe Some(Left(doubleParseError(keys.allowableLosses, badData)))
       }
     }
 
-    "a acquisition date with an invalid value" should {
+    "a acquisition date with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.acquisitionDate, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(dateParseError(keys.acquisitionDate, badData)))
+        result mustBe Some(Left(dateParseError(keys.acquisitionDate, badData)))
       }
     }
 
-    "a disposal date is not supplied" should {
+    "a disposal date is not supplied" must {
       "return an error message" in {
         val request = badRequest(keys.disposalDate, None)
         val result = target.bind("", request)
-        result shouldBe Some(Left(s"${keys.disposalDate} is required."))
+        result mustBe Some(Left(s"${keys.disposalDate} is required."))
       }
     }
 
-    "a disposal date amount with an invalid value" should {
+    "a disposal date amount with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.disposalDate, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(dateParseError(keys.disposalDate, badData)))
+        result mustBe Some(Left(dateParseError(keys.disposalDate, badData)))
       }
     }
 
-    "a days claimed with an invalid value" should {
+    "a days claimed with an invalid value" must {
       "return an error message" in {
         val badData = "bad data"
         val request = badRequest(keys.daysClaimed, Some(badData))
         val result = target.bind("", request)
-        result shouldBe Some(Left(doubleParseError(keys.daysClaimed, badData)))
+        result mustBe Some(Left(doubleParseError(keys.daysClaimed, badData)))
       }
     }
   }
 
   "Unbinding a non resident calculation request" when {
 
-    "all properties are populated" should {
+    "all properties are populated" must {
 
       val request = expectedRequest
       val result = target.unbind("", request)
 
       "output the prior disposal key and value" in {
-        result should include(s"${keys.priorDisposal}=Yes")
+        result must include(s"${keys.priorDisposal}=Yes")
       }
 
       "output the annual exempt amount key and value" in {
-        result should include(s"&${keys.annualExemptAmount}=111.11")
+        result must include(s"&${keys.annualExemptAmount}=111.11")
       }
 
       "output the other properties amount key and value" in {
-        result should include(s"&${keys.otherPropertiesAmount}=222.22")
+        result must include(s"&${keys.otherPropertiesAmount}=222.22")
       }
 
       "output the current income key and value" in {
-        result should include(s"&${keys.currentIncome}=333.33")
+        result must include(s"&${keys.currentIncome}=333.33")
       }
 
       "output the personal allowance key and value" in {
-        result should include(s"&${keys.personalAllowanceAmount}=444.44")
+        result must include(s"&${keys.personalAllowanceAmount}=444.44")
       }
 
       "output the disposal value key and value" in {
-        result should include(s"&${keys.disposalValue}=555.55")
+        result must include(s"&${keys.disposalValue}=555.55")
       }
 
       "output the disposal costs key and value" in {
-        result should include(s"&${keys.disposalCosts}=666.66")
+        result must include(s"&${keys.disposalCosts}=666.66")
       }
 
       "output the acquisition value key and value" in {
-        result should include(s"&${keys.initialValue}=777.77")
+        result must include(s"&${keys.initialValue}=777.77")
       }
 
       "output the acquisition costs key and value" in {
-        result should include(s"&${keys.initialCosts}=888.88")
+        result must include(s"&${keys.initialCosts}=888.88")
       }
 
       "output the improvements amount key and value" in {
-        result should include(s"&${keys.improvementsAmount}=999.99")
+        result must include(s"&${keys.improvementsAmount}=999.99")
       }
 
       "output the reliefs amount key and value" in {
-        result should include(s"&${keys.reliefsAmount}=11.11")
+        result must include(s"&${keys.reliefsAmount}=11.11")
       }
 
       "output the allowable losses amount key and value" in {
-        result should include(s"&${keys.allowableLosses}=22.22")
+        result must include(s"&${keys.allowableLosses}=22.22")
       }
 
       "output the acquisition date key and value" in {
-        result should include(s"&${keys.acquisitionDate}=2016-12-20")
+        result must include(s"&${keys.acquisitionDate}=2016-12-20")
       }
 
       "output the disposal date key and value" in {
-        result should include(s"&${keys.disposalDate}=2018-9-13")
+        result must include(s"&${keys.disposalDate}=2018-9-13")
       }
 
       "output the is claiming prr key and value" in {
-        result should include(s"&${keys.isClaimingPRR}=Yes")
+        result must include(s"&${keys.isClaimingPRR}=Yes")
       }
 
       "output the days claiming key and value" in {
-        result should include(s"&${keys.daysClaimed}=200")
+        result must include(s"&${keys.daysClaimed}=200")
       }
     }
 
-    "optional properties are missing" should {
+    "optional properties are missing" must {
 
       val request = emptyCalculationRequest
       val result = target.unbind("", request)
 
       "not output the annual exempt amount key and value" in {
-        result should not include s"&${keys.annualExemptAmount}"
+        result must not include s"&${keys.annualExemptAmount}"
       }
 
       "not output the other properties amount key and value" in {
-        result should not include s"&${keys.otherPropertiesAmount}"
+        result must not include s"&${keys.otherPropertiesAmount}"
       }
 
       "not output the personal allowance key and value" in {
-        result should not include s"&${keys.personalAllowanceAmount}"
+        result must not include s"&${keys.personalAllowanceAmount}"
       }
 
       "not output the acquisition date key and value" in {
-        result should not include s"&${keys.acquisitionDate}"
+        result must not include s"&${keys.acquisitionDate}"
       }
 
       "not output the is claiming prr key and value" in {
-        result should not include s"&${keys.isClaimingPRR}"
+        result must not include s"&${keys.isClaimingPRR}"
       }
 
       "not output the days claiming key and value" in {
-        result should not include s"&${keys.daysClaimed}"
+        result must not include s"&${keys.daysClaimed}"
       }
     }
   }
