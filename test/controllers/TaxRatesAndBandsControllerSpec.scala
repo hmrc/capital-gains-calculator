@@ -25,84 +25,83 @@ import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
+class TaxRatesAndBandsControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   val fakeRequest = FakeRequest()
   implicit val system = ActorSystem("QuickStart")
   implicit val materializer = ActorMaterializer()
-  val components = app.injector.instanceOf[ControllerComponents]
+  val components = fakeApplication.injector.instanceOf[ControllerComponents]
   val controller = new TaxRatesAndBandsController(components)
 
   "validating the getMaxAEA method" when {
 
-    "calling with the year 2017" must {
+    "calling with the year 2017" should {
 
       val result = controller.getMaxAEA(2017)(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 11100 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 11100
+        json.as[Int] shouldBe 11100
 
       }
     }
 
-    "calling with the year 2015 (boundary check)" must {
+    "calling with the year 2015 (boundary check)" should {
 
       val result = controller.getMaxAEA(2015)(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
     }
 
-    "calling with the year 2014" must {
+    "calling with the year 2014" should {
 
       val result = controller.getMaxAEA(2014)(fakeRequest)
 
       "return status 400" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 'This tax year is not valid' as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[String] mustBe "This tax year is not valid"
+        json.as[String] shouldBe "This tax year is not valid"
 
       }
     }
 
-    "calling with the year after the valid tax year" must {
+    "calling with the year after the valid tax year" should {
 
       val result = controller.getMaxAEA(DateTime.now().getYear + 2)(fakeRequest)
 
       "return status 400" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 'This tax year is not valid' as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[String] mustBe "This tax year is not valid"
+        json.as[String] shouldBe "This tax year is not valid"
 
       }
     }
@@ -110,236 +109,236 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
   "validating the getMaxPersonalAllowance method" when {
 
-    "calling with the year 2021 and with no BPA" must {
+    "calling with the year 2021 and with no BPA" should {
       val result = controller.getMaxPersonalAllowance(2021, None)(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 12300 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 12500
+        json.as[Int] shouldBe 12500
       }
 
     }
 
-    "calling with the year 2020 and with no BPA" must {
+    "calling with the year 2020 and with no BPA" should {
       val result = controller.getMaxPersonalAllowance(2020, None)(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 12500 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 12500
+        json.as[Int] shouldBe 12500
       }
 
     }
 
-    "calling with the year 2018 and with no BPA" must {
+    "calling with the year 2018 and with no BPA" should {
       val result = controller.getMaxPersonalAllowance(2018, None)(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 11500 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 11500
+        json.as[Int] shouldBe 11500
       }
 
     }
 
-    "calling with the year 2017 and no BPA" must {
+    "calling with the year 2017 and no BPA" should {
 
       val result = controller.getMaxPersonalAllowance(2017, None)(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 11100 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 11000
+        json.as[Int] shouldBe 11000
       }
 
     }
 
-    "calling with the year 2016 and with BPA" must {
+    "calling with the year 2016 and with BPA" should {
 
       val result = controller.getMaxPersonalAllowance(2016, Some(true))(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 12890 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 12890
+        json.as[Int] shouldBe 12890
       }
     }
 
-    "calling with the year 2015 and with BPA" must {
+    "calling with the year 2015 and with BPA" should {
 
       val result = controller.getMaxPersonalAllowance(2015, Some(true))(fakeRequest)
 
       "return status 200" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
     }
 
-    "calling with the year 2014 and no BPA" must {
+    "calling with the year 2014 and no BPA" should {
 
       val result = controller.getMaxPersonalAllowance(2014, None)(fakeRequest)
 
       "return status 400" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
       }
     }
 
-    "calling with the year 2014 and with BPA" must {
+    "calling with the year 2014 and with BPA" should {
 
       val result = controller.getMaxPersonalAllowance(2014, Some(true))(fakeRequest)
 
       "return status 400" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
     }
 
-    "calling with an invalid tax year (current year plus 2) and with BPA" must {
+    "calling with an invalid tax year (current year plus 2) and with BPA" should {
 
       val result = controller.getMaxPersonalAllowance(DateTime.now().getYear + 2, Some(true))(fakeRequest)
 
       "return status 400" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return 11000 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[String] mustBe "This tax year is not valid"
+        json.as[String] shouldBe "This tax year is not valid"
       }
     }
 
   "validating the getTaxYear method" when {
 
-    "calling with the date 10/10/2016" must {
+    "calling with the date 10/10/2016" should {
       val result = controller.getTaxYear("2016-10-10")(fakeRequest)
       val data = contentAsString(result)
       val json = Json.parse(data)
 
       "return a status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return a supplied TaxYearModel for 2016/17" in {
-        (json \ "taxYearSupplied").as[String] mustBe "2016/17"
+        (json \ "taxYearSupplied").as[String] shouldBe "2016/17"
       }
 
       "return a supplied TaxYearModel with isValidYear as true" in {
-        (json \ "isValidYear").as[Boolean] mustBe true
+        (json \ "isValidYear").as[Boolean] shouldBe true
       }
 
       "return a supplied TaxYearModel with calculationTaxYear as 2016/17" in {
-        (json \ "calculationTaxYear").as[String] mustBe "2016/17"
+        (json \ "calculationTaxYear").as[String] shouldBe "2016/17"
       }
 
     }
 
-    "calling with the date 10/10/2014" must {
+    "calling with the date 10/10/2014" should {
       val result = controller.getTaxYear("2014-10-10")(fakeRequest)
       val data = contentAsString(result)
       val json = Json.parse(data)
 
       "return a status 200" in {
-        status(result) mustBe 200
+        status(result) shouldBe 200
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       "return a supplied TaxYearModel for 2014/15" in {
-        (json \ "taxYearSupplied").as[String] mustBe "2014/15"
+        (json \ "taxYearSupplied").as[String] shouldBe "2014/15"
       }
 
       "return a supplied TaxYearModel with isValidYear as false" in {
-        (json \ "isValidYear").as[Boolean] mustBe false
+        (json \ "isValidYear").as[Boolean] shouldBe false
       }
 
       "return a supplied TaxYearModel with calculationTaxYear as 2015/16" in {
-        (json \ "calculationTaxYear").as[String] mustBe "2015/16"
+        (json \ "calculationTaxYear").as[String] shouldBe "2015/16"
       }
     }
 
-    "calling with an invalid date 10/100/2014" must {
+    "calling with an invalid date 10/100/2014" should {
       val result = controller.getTaxYear("2014-100-10")(fakeRequest)
       val data = contentAsString(result)
       val json = Json.parse(data)
 
       "return a status 400" in {
-        status(result) mustBe 400
+        status(result) shouldBe 400
       }
 
       "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
+        contentType(result) shouldBe Some("application/json")
       }
 
       s"return a message with the text ${assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")}" in {
-        json.as[String] mustBe assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")
+        json.as[String] shouldBe assets.ValidationMessageLookup.invalidDateFormat("2014-100-10")
       }
     }
   }
 
-  "Calling the .getMinimumYear method" must {
+  "Calling the .getMinimumYear method" should {
     lazy val result = controller.getMinimumDate(fakeRequest)
 
     "return a status of 200" in {
-      status(result) mustBe 200
+      status(result) shouldBe 200
     }
 
     "return a JSON result" in {
-      contentType(result) mustBe Some("application/json")
+      contentType(result) shouldBe Some("application/json")
     }
 
-    "contain a body with the earliest date" in {
-      contentAsJson(result) mustBe Json.toJson(DateTime.parse("2015-04-05"))
+    "should contain a body with the earliest date" in {
+      await(bodyOf(result)) shouldBe Json.toJson(DateTime.parse("2015-04-05")).toString()
     }
   }
 }

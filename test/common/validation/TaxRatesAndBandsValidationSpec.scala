@@ -18,39 +18,39 @@ package common.validation
 
 import common.validation.TaxRatesAndBandsValidation._
 import org.joda.time.DateTime
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 
-class TaxRatesAndBandsValidationSpec extends PlaySpec{
+class TaxRatesAndBandsValidationSpec extends UnitSpec{
 
-  "calling checkValidTaxYear" must {
+  "calling checkValidTaxYear" should {
 
     "return true with a year after 2020" in {
       val result = checkValidTaxYear(2020)
-      result mustBe true
+      result shouldBe true
     }
 
     "return true with a year after 2015" in {
       val result = checkValidTaxYear(2016)
 
-      result mustBe true
+      result shouldBe true
     }
 
     "return false with a year 2015" in {
       val result = checkValidTaxYear(2015)
 
-      result mustBe false
+      result shouldBe false
     }
 
     "return false with a year less than 2015" in {
       val result = checkValidTaxYear(2014)
 
-      result mustBe false
+      result shouldBe false
     }
 
     "return false with a year greater than the current tax year band" in {
       val result = checkValidTaxYear(DateTime.now().getYear + 2)
 
-      result mustBe false
+      result shouldBe false
     }
   }
 }

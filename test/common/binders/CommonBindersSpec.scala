@@ -18,50 +18,50 @@ package common.binders
 
 import org.joda.time.DateTime
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 
-class CommonBindersSpec extends PlaySpec with MockitoSugar {
+class CommonBindersSpec extends UnitSpec with MockitoSugar {
 
   val binder = new CommonBinders{}.dateTimeBinder
 
-  "Binding to a localDateBinder" must {
+  "Binding to a localDateBinder" should {
 
     "return a LocalDate with a valid map" in {
       val map = Map("disposalDate" -> Seq("2016-05-04"))
       val result = binder.bind("disposalDate", map)
 
-      result mustBe Some(Right(DateTime.parse("2016-05-04")))
+      result shouldBe Some(Right(DateTime.parse("2016-05-04")))
     }
 
     "return an error message with a valid map but invalid date" in {
       val map = Map("disposalDate" -> Seq("not-a-date"))
       val result = binder.bind("disposalDate", map)
 
-      result mustBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "not-a-date""""))
+      result shouldBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "not-a-date""""))
     }
 
     "return an error message with an invalid map with empty value" in {
       val map = Map("disposalDate" -> Seq())
       val result = binder.bind("disposalDate", map)
 
-      result mustBe None
+      result shouldBe None
     }
 
     "return an error message with an invalid map with no value" in {
       val map = Map("test" -> Seq())
       val result = binder.bind("disposalDate", map)
 
-      result mustBe None
+      result shouldBe None
     }
   }
 
-  "Unbinding using the localDateBinder" must {
+  "Unbinding using the localDateBinder" should {
 
     "return a valid String from a LocalDate" in {
       val date = DateTime.parse("2015-06-04")
       val result = binder.unbind("disposalDate", date)
 
-      result mustBe "disposalDate=2015-6-4"
+      result shouldBe "disposalDate=2015-6-4"
     }
   }
 }

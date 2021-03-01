@@ -16,123 +16,123 @@
 
 package common
 
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 
-class QueryStringKeysSpec extends PlaySpec {
+class QueryStringKeysSpec extends UnitSpec {
   import common.QueryStringKeys.{NonResidentCalculationKeys => target}
   import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => propertyTarget}
 
-  "NonResidentCalculationKeys" must {
+  "NonResidentCalculationKeys" should {
 
     s"have a prior disposal key with the value ${target.priorDisposal}" in {
-      target.priorDisposal mustBe "priorDisposal"
+      target.priorDisposal shouldBe "priorDisposal"
     }
 
     s"have an annual exempt amount key with the value ${target.annualExemptAmount}" in {
-      target.annualExemptAmount mustBe "annualExemptAmount"
+      target.annualExemptAmount shouldBe "annualExemptAmount"
     }
 
     s"have an other properties amount key with the value ${target.otherPropertiesAmount}" in {
-      target.otherPropertiesAmount mustBe "otherPropertiesAmt"
+      target.otherPropertiesAmount shouldBe "otherPropertiesAmt"
     }
 
     s"have a current income key with the value ${target.currentIncome}" in {
-      target.currentIncome mustBe "currentIncome"
+      target.currentIncome shouldBe "currentIncome"
     }
 
     s"have a personal allowance key with the value ${target.personalAllowanceAmount}" in {
-      target.personalAllowanceAmount mustBe "personalAllowanceAmt"
+      target.personalAllowanceAmount shouldBe "personalAllowanceAmt"
     }
 
     s"have a disposal value key with the value ${target.disposalValue}" in {
-      target.disposalValue mustBe "disposalValue"
+      target.disposalValue shouldBe "disposalValue"
     }
 
     s"have a disposal costs key with the value ${target.disposalCosts}" in {
-      target.disposalCosts mustBe "disposalCosts"
+      target.disposalCosts shouldBe "disposalCosts"
     }
 
     s"have an acquisition value key with the value ${target.initialValue}" in {
-      target.initialValue mustBe "initialValueAmt"
+      target.initialValue shouldBe "initialValueAmt"
     }
 
     s"have an acquisition costs key with the value ${target.initialCosts}" in {
-      target.initialCosts mustBe "initialCostsAmt"
+      target.initialCosts shouldBe "initialCostsAmt"
     }
 
     s"have an improvements amount key with the value ${target.improvementsAmount}" in {
-      target.improvementsAmount mustBe "improvementsAmt"
+      target.improvementsAmount shouldBe "improvementsAmt"
     }
 
     s"have a reliefs amount key with the value ${target.reliefsAmount}" in {
-      target.reliefsAmount mustBe "reliefs"
+      target.reliefsAmount shouldBe "reliefs"
     }
 
     s"have an allowable losses amount key with the value ${target.allowableLosses}" in {
-      target.allowableLosses mustBe "allowableLossesAmt"
+      target.allowableLosses shouldBe "allowableLossesAmt"
     }
 
     s"have an acquisition date key with the value ${target.acquisitionDate}" in {
-      target.acquisitionDate mustBe "acquisitionDate"
+      target.acquisitionDate shouldBe "acquisitionDate"
     }
 
     s"have an disposal date key with the value ${target.disposalDate}" in {
-      target.disposalDate mustBe "disposalDate"
+      target.disposalDate shouldBe "disposalDate"
     }
 
     s"have an is claiming private residence relief key with the value ${target.isClaimingPRR}" in {
-      target.isClaimingPRR mustBe "isClaimingPRR"
+      target.isClaimingPRR shouldBe "isClaimingPRR"
     }
 
     s"have an days claiming key with the value ${target.daysClaimed}" in {
-      target.daysClaimed mustBe "daysClaimed"
+      target.daysClaimed shouldBe "daysClaimed"
     }
   }
 
-  "ResidentPropertiesCalculationKeys" must {
+  "ResidentPropertiesCalculationKeys" should {
 
     s"have a disposalValue key with the value ${propertyTarget.disposalValue}" in {
-      propertyTarget.disposalValue mustBe "disposalValue"
+      propertyTarget.disposalValue shouldBe "disposalValue"
     }
 
     s"have a disposalCosts key with the value ${propertyTarget.disposalCosts}" in {
-      propertyTarget.disposalCosts mustBe "disposalCosts"
+      propertyTarget.disposalCosts shouldBe "disposalCosts"
     }
 
     s"have a acquisitionValue key with the value ${propertyTarget.acquisitionValue}" in {
-      propertyTarget.acquisitionValue mustBe "acquisitionValue"
+      propertyTarget.acquisitionValue shouldBe "acquisitionValue"
     }
 
     s"have a acquisitionCosts key with the value ${propertyTarget.acquisitionCosts}" in {
-      propertyTarget.acquisitionCosts mustBe "acquisitionCosts"
+      propertyTarget.acquisitionCosts shouldBe "acquisitionCosts"
     }
 
     s"have a improvements key with the value ${propertyTarget.improvements}" in {
-      propertyTarget.improvements mustBe "improvements"
+      propertyTarget.improvements shouldBe "improvements"
     }
 
     s"have a prrValue key with the value ${propertyTarget.prrValue}" in {
-      propertyTarget.prrValue mustBe "prrValue"
+      propertyTarget.prrValue shouldBe "prrValue"
     }
 
     s"have a lettingReliefs key with the value ${propertyTarget.lettingReliefs}" in {
-      propertyTarget.lettingReliefs mustBe "lettingReliefs"
+      propertyTarget.lettingReliefs shouldBe "lettingReliefs"
     }
 
     s"have a allowableLosses key with the value ${propertyTarget.allowableLosses}" in {
-      propertyTarget.allowableLosses mustBe "allowableLosses"
+      propertyTarget.allowableLosses shouldBe "allowableLosses"
     }
 
     s"have a broughtForwardLosses key with the value ${propertyTarget.broughtForwardLosses}" in {
-      propertyTarget.broughtForwardLosses mustBe "broughtForwardLosses"
+      propertyTarget.broughtForwardLosses shouldBe "broughtForwardLosses"
     }
 
     s"have a annualExemptAmount key with the value ${propertyTarget.annualExemptAmount}" in {
-      propertyTarget.annualExemptAmount mustBe "annualExemptAmount"
+      propertyTarget.annualExemptAmount shouldBe "annualExemptAmount"
     }
 
     s"have a disposalDate key with the value ${propertyTarget.disposalDate}" in {
-      propertyTarget.disposalDate mustBe "disposalDate"
+      propertyTarget.disposalDate shouldBe "disposalDate"
     }
   }
 }

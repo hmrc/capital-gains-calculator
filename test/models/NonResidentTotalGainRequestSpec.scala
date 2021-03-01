@@ -19,11 +19,11 @@ package models
 import models.nonResident.NonResidentTotalGainRequestModel
 import org.joda.time.DateTime
 import play.api.libs.json.{JsSuccess, Json}
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 
-class NonResidentTotalGainRequestSpec extends PlaySpec {
+class NonResidentTotalGainRequestSpec extends UnitSpec {
 
-  "NonResidentTotalGainRequest" must {
+  "NonResidentTotalGainRequest" should {
     "reads from Json" in {
       val inputJson = Json.parse(
         """
@@ -53,7 +53,7 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
         acquisitionDate = Some(DateTime.parse("2014-08-14")),
         improvementsAfterTaxStarted = 1000)
 
-      inputJson.as[NonResidentTotalGainRequestModel] mustBe model
+      inputJson.as[NonResidentTotalGainRequestModel] shouldBe model
     }
     "non optional values" in {
       val inputJson = Json.parse(
@@ -81,7 +81,7 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
         acquisitionDate = None,
         improvementsAfterTaxStarted = 1000)
 
-      inputJson.as[NonResidentTotalGainRequestModel] mustBe model
+      inputJson.as[NonResidentTotalGainRequestModel] shouldBe model
     }
     "setting defaut values" in {
       val inputJson = Json.parse(
@@ -108,7 +108,7 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
         improvementsAfterTaxStarted = 0
       )
 
-      Json.fromJson[NonResidentTotalGainRequestModel](inputJson) mustBe JsSuccess(model)
+      Json.fromJson[NonResidentTotalGainRequestModel](inputJson) shouldBe JsSuccess(model)
 
     }
 

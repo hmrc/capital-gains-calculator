@@ -19,11 +19,11 @@ package common.binders
 import models.nonResident.TimeApportionmentCalculationRequestModel
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import org.joda.time.DateTime
 
-class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with MockitoSugar {
+class NonResidentTimeApportionmentCalculationBinderSpec extends UnitSpec with MockitoSugar {
 
   val target = new NonResidentTimeApportionmentCalculationRequestBinder {}.requestBinder
   implicit val mockStringBinder = mock[QueryStringBindable[String]]
@@ -80,11 +80,11 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with Mo
 
 //    def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""
 
-    "an acquisition date is not supplied" must {
+    "an acquisition date is not supplied" should {
       "return an error message" in {
         val request = badRequest(keys.acquisitionDate, None)
         val result = target.bind("", request)
-        result mustBe Some(Left(s"${keys.acquisitionDate} is required."))
+        result shouldBe Some(Left(s"${keys.acquisitionDate} is required."))
       }
     }
   }
