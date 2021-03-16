@@ -41,6 +41,41 @@ class TaxRatesAndBandsSpec extends PlaySpec {
 
   }
 
+  "validating 2021/2022 parameters" must {
+
+    "return 2021 for the tax year" in {
+      TaxRatesAndBands20212022.taxYear mustBe 2022
+    }
+
+    "return 18 as the basic percentage rate for the tax year" in {
+      TaxRatesAndBands20212022.basicRate mustBe 0.18
+      TaxRatesAndBands20212022.basicRatePercentage mustBe 18
+    }
+
+    "return 28 as the higher percentage rate for the tax year" in {
+      TaxRatesAndBands20212022.higherRate mustBe 0.28
+      TaxRatesAndBands20212022.higherRatePercentage mustBe 28
+    }
+
+    "return 12300 as the maximum Annual Excempt Amount" in {
+      TaxRatesAndBands20212022.maxAnnualExemptAmount mustBe 12300
+    }
+
+    "return 6000 as the non-vulnerable trustee Annual Exempt Amount" in {
+      TaxRatesAndBands20212022.notVulnerableMaxAnnualExemptAmount mustBe 6000
+    }
+
+    "return 37500 as the basic rate band" in {
+      TaxRatesAndBands20212022.basicRateBand mustBe 37700
+    }
+
+    "return 12500 as the maximum Personal Allowance" in {
+      TaxRatesAndBands20212022.maxPersonalAllowance mustBe 12570
+    }
+
+  }
+
+
   "validating 2020/2021 parameters" must {
 
     "return 2021 for the tax year" in {
@@ -218,6 +253,22 @@ class TaxRatesAndBandsSpec extends PlaySpec {
 
   "calling the .filterRatesByTaxYear method" when {
 
+    "passed a tax year of 2021" must {
+      val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2021)
+
+      "return non-empty list" in {
+        taxYearList.nonEmpty mustBe true
+      }
+
+      "return a list with a single value" in {
+        taxYearList.size mustBe 1
+      }
+
+      "the listed item should be for the tax year 2021" in {
+        taxYearList.head.taxYear mustBe 2021
+      }
+    }
+
     "passed a tax year of 2020" must {
       val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(2020)
 
@@ -308,6 +359,10 @@ class TaxRatesAndBandsSpec extends PlaySpec {
   }
 
   "calling .getClosestTaxYear" must {
+
+    "return 2022 for a tax year input of 2022" in {
+      TaxRatesAndBands.getClosestTaxYear(2022) mustBe 2022
+    }
 
     "return 2021 for a tax year input of 2021" in {
       TaxRatesAndBands.getClosestTaxYear(2021) mustBe 2021
