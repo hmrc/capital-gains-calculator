@@ -16,8 +16,6 @@
 
 package config
 
-import java.time.LocalDate
-
 import common.Date
 import org.joda.time.DateTime
 

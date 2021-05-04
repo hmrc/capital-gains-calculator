@@ -192,9 +192,9 @@ class CalculationService {
    daysClaimed: Double,
    gain: Double): Double = {
 
-    val taxYear = getTaxYear(disposalDate)
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
+    //val taxYear = getTaxYear(disposalDate)
+    //val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    //val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
 
     val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
 

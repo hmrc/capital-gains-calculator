@@ -23,7 +23,7 @@ object AppDependencies {
 
   private val jsoupVersion = "1.12.1"
   private val pegDownVersion = "1.6.0"
-  private val bootstrapVersion = "3.4.0"
+  private val bootstrapVersion = "4.2.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
