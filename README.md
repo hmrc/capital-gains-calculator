@@ -9,8 +9,11 @@
 
 This protected microservice provides RESTful endpoints to calculate the amount of Capital Gains Tax that is due for a Taxpayer based on a number of core input data items.
 
-There is a frontend microservice [Capital-Gains-Calculator-Frontend](https://github.com/hmrc/capital-gains-calculator-frontend) that provides
-the views and controllers which interact with this protected microservice.
+There are 3 frontend microservices that provides the views and controllers which interact with this protected microservice.
+* https://github.com/hmrc/cgt-calculator-non-resident-frontend
+* https://github.com/hmrc/cgt-calculator-resident-shares-frontend
+* https://github.com/hmrc/cgt-calculator-resident-properties-frontend
+
 
 ## Requirements
 
