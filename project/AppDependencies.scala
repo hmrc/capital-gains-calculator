@@ -23,12 +23,11 @@ object AppDependencies {
 
   private val jsoupVersion = "1.13.1"
   private val pegDownVersion = "1.6.0"
-  private val bootstrapVersion = "5.3.0"
+  private val bootstrapVersion = "5.4.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-27" % bootstrapVersion,
-    "uk.gov.hmrc" %% "domain" % "5.11.0-play-27",
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapVersion,
     "joda-time" % "joda-time" % "2.10.10",
     "com.typesafe.play" %% "play-json-joda" % "2.9.2"
   )
