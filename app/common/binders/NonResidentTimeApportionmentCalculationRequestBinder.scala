@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,7 @@ trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders
         }
       }
 
+      //LDS ignore (https://jira.tools.tax.service.gov.uk/browse/DL-7623)
       override def unbind(key: String, request: TimeApportionmentCalculationRequestModel): String =
         Seq(
           stringBinder.unbind(keys.priorDisposal, request.priorDisposal),
