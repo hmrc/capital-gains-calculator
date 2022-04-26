@@ -139,6 +139,7 @@ trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders
         }
       }
 
+      //LDS ignore (https://jira.tools.tax.service.gov.uk/browse/DL-7623)
       override def unbind(key: String, request: TimeApportionmentCalculationRequestModel): String =
         Seq(
           stringBinder.unbind(keys.priorDisposal, request.priorDisposal),
