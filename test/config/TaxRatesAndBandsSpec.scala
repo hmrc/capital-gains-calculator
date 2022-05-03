@@ -389,6 +389,40 @@ class TaxRatesAndBandsSpec extends PlaySpec {
     }
   }
 
+  "validating 2022/2023 parameters" must {
+
+    "return 2023 for the tax year" in {
+      TaxRatesAndBands20222023.taxYear mustBe 2023
+    }
+
+    "return 18 as the basic percentage rate for the tax year" in {
+      TaxRatesAndBands20222023.basicRate mustBe 0.18
+      TaxRatesAndBands20222023.basicRatePercentage mustBe 18
+    }
+
+    "return 28 as the higher percentage rate for the tax year" in {
+      TaxRatesAndBands20222023.higherRate mustBe 0.28
+      TaxRatesAndBands20222023.higherRatePercentage mustBe 28
+    }
+
+    "return 11700 as the maximum Annual Excempt Amount" in {
+      TaxRatesAndBands20222023.maxAnnualExemptAmount mustBe 12300
+    }
+
+    "return 5850 as the non-vulnerable trustee Annual Exempt Amount" in {
+      TaxRatesAndBands20222023.notVulnerableMaxAnnualExemptAmount mustBe 6000
+    }
+
+    "return 33500 as the basic rate band" in {
+      TaxRatesAndBands20222023.basicRateBand mustBe 37700
+    }
+
+    "return 11500 as the maximum Personal Allowance" in {
+      TaxRatesAndBands20222023.maxPersonalAllowance mustBe 12570
+    }
+
+  }
+
   "Calling .getEarliestTaxYear" must {
 
     "return the earliest tax year in the list" in {
