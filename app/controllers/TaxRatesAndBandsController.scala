@@ -42,12 +42,13 @@ class TaxRatesAndBandsController @Inject()(
     else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
-  def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean]): Action[AnyContent] = Action.async {
+  def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean],
+                              isEligibleMarriageAllowance: Option[Boolean]): Action[AnyContent] = Action.async {
     if(TaxRatesAndBandsValidation.checkValidTaxYear(year)){
-      isEligibleBlindPersonsAllowance match {
-        case Some(true) => Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance + getRates(year).blindPersonsAllowance)))
-        case _ =>     Future.successful(Ok(Json.toJson(getRates(year).maxPersonalAllowance)))
-      }
+      val rates = getRates(year)
+      val blindPersonalAllowance = if(isEligibleBlindPersonsAllowance.contains(true)) rates.blindPersonsAllowance else 0
+      val marriageAllowance = if(isEligibleMarriageAllowance.contains(true)) rates.marriageAllowance else 0
+      Future.successful(Ok(Json.toJson(rates.maxPersonalAllowance + blindPersonalAllowance + marriageAllowance)))
     }
     else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
