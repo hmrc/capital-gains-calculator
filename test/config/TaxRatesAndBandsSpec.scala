@@ -62,7 +62,7 @@ class TaxRatesAndBandsSpec extends PlaySpec {
     }
 
     "return 6000 as the non-vulnerable trustee Annual Exempt Amount" in {
-      TaxRatesAndBands20212022.notVulnerableMaxAnnualExemptAmount mustBe 6000
+      TaxRatesAndBands20212022.notVulnerableMaxAnnualExemptAmount mustBe 6150
     }
 
     "return 37500 as the basic rate band" in {
@@ -410,7 +410,7 @@ class TaxRatesAndBandsSpec extends PlaySpec {
     }
 
     "return 5850 as the non-vulnerable trustee Annual Exempt Amount" in {
-      TaxRatesAndBands20222023.notVulnerableMaxAnnualExemptAmount mustBe 6000
+      TaxRatesAndBands20222023.notVulnerableMaxAnnualExemptAmount mustBe 6150
     }
 
     "return 33500 as the basic rate band" in {
