@@ -23,7 +23,7 @@ object AppDependencies {
 
   private val jsoupVersion = "1.13.1"
   private val pegDownVersion = "1.6.0"
-  private val bootstrapVersion = "5.4.0"
+  private val bootstrapVersion = "5.25.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
@@ -41,7 +41,7 @@ object AppDependencies {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % scope,
-        "org.mockito" % "mockito-core" % "3.3.3" % scope,
+        "org.mockito" % "mockito-core" % "3.12.4" % scope,
         "org.pegdown" % "pegdown" % pegDownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.jsoup" % "jsoup" % jsoupVersion % scope

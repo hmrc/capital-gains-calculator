@@ -251,7 +251,7 @@ class RouteSpec extends PlaySpec with MockitoSugar {
   "The route for the earliest tax year" must {
 
     "be equal to /capital-gains-calculator/minimum-date" in {
-      controllers.routes.TaxRatesAndBandsController.getMinimumDate().url mustBe "/minimum-date"
+      controllers.routes.TaxRatesAndBandsController.getMinimumDate.url mustBe "/minimum-date"
     }
   }
 
