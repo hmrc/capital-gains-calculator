@@ -63,7 +63,6 @@ object TaxRatesAndBands {
   def getEarliestTaxYear: TaxRatesAndBands = rates.minBy(_.taxYear)
 }
 
-
 object TaxRatesAndBands20222023 extends TaxRatesAndBands {
   override val taxYear = 2023
   override val maxAnnualExemptAmount = 12300
