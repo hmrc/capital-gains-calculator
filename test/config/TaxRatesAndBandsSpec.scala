@@ -423,6 +423,44 @@ class TaxRatesAndBandsSpec extends PlaySpec {
 
   }
 
+  "validating 2023/2024 parameters" must {
+
+    "return 2024 for the tax year" in {
+      TaxRatesAndBands20232024.taxYear mustBe 2024
+    }
+
+    "return 18 as the basic percentage rate for the tax year" in {
+      TaxRatesAndBands20232024.basicRate mustBe 0.18
+      TaxRatesAndBands20232024.basicRatePercentage mustBe 18
+    }
+
+    "return 28 as the higher percentage rate for the tax year" in {
+      TaxRatesAndBands20232024.higherRate mustBe 0.28
+      TaxRatesAndBands20232024.higherRatePercentage mustBe 28
+    }
+
+    "return 11700 as the maximum Annual Excempt Amount" in {
+      TaxRatesAndBands20232024.maxAnnualExemptAmount mustBe 6000
+    }
+
+    "return 5850 as the non-vulnerable trustee Annual Exempt Amount" in {
+      TaxRatesAndBands20232024.notVulnerableMaxAnnualExemptAmount mustBe 3000
+    }
+
+    "return 33500 as the basic rate band" in {
+      TaxRatesAndBands20232024.basicRateBand mustBe 37700
+    }
+
+    "return 11500 as the maximum Personal Allowance" in {
+      TaxRatesAndBands20232024.maxPersonalAllowance mustBe 12570
+    }
+
+    "return 2870 as the blind personal allowance" in {
+      TaxRatesAndBands20232024.blindPersonsAllowance mustBe 2870
+    }
+
+  }
+
   "Calling .getEarliestTaxYear" must {
 
     "return the earliest tax year in the list" in {
