@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ object TaxRatesAndBands {
 
   val rates: List[TaxRatesAndBands] = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 ::
     TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: TaxRatesAndBands20202021 :: TaxRatesAndBands20212022 ::
-    TaxRatesAndBands20222023 :: Nil
+    TaxRatesAndBands20222023 :: TaxRatesAndBands20232024 :: Nil
 
   def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
     case params if params.nonEmpty => params.head
@@ -63,6 +63,23 @@ object TaxRatesAndBands {
   def getEarliestTaxYear: TaxRatesAndBands = rates.minBy(_.taxYear)
 }
 
+object TaxRatesAndBands20232024 extends TaxRatesAndBands {
+  override val taxYear = 2024
+  override val maxAnnualExemptAmount = 6000
+  override val notVulnerableMaxAnnualExemptAmount = 3000
+  override val basicRatePercentage = 18
+  override val higherRatePercentage = 28
+  override val shareBasicRatePercentage = 10
+  override val shareHigherRatePercentage = 20
+  override val maxPersonalAllowance = 12570
+  override val basicRate = basicRatePercentage / 100.toDouble
+  override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
+  override val basicRateBand = 37700
+  override val blindPersonsAllowance = 2870
+  override val maxLettingsRelief = 40000.0
+}
 
 object TaxRatesAndBands20222023 extends TaxRatesAndBands {
   override val taxYear = 2023
