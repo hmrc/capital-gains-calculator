@@ -22,7 +22,7 @@ import models.resident.shares.TotalGainModel
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
 import org.scalatestplus.play.PlaySpec
 
