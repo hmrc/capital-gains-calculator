@@ -19,7 +19,7 @@ package controllers
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import org.joda.time.DateTime
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import play.api.libs.json.JodaWrites._
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents

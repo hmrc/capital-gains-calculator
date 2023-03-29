@@ -22,7 +22,7 @@ import org.joda.time.DateTime
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import play.api.mvc.ControllerComponents
 import services.CalculationService
 import org.scalatestplus.play.PlaySpec

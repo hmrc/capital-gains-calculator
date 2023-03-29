@@ -17,7 +17,7 @@
 package services
 
 import org.joda.time.DateTime
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
 class CalculationServiceSpec extends PlaySpec with MockitoSugar {

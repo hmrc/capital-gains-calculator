@@ -17,7 +17,7 @@
 package common.binders
 
 import org.joda.time.DateTime
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
 class CommonBindersSpec extends PlaySpec with MockitoSugar {
