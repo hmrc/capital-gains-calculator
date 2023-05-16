@@ -29,7 +29,7 @@ This code is open source software licensed under the [Apache 2.0 License]("http:
 
 ## Running locally
 
-Start microserves using service manager
+Start microservices using service manager
 <code>sm --start CGT_ALL -r</code></br>
 Stop capital-gains-calculator on service manager
 <code>sm --stop CGT_CALC</code></br>
