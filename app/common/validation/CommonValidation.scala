@@ -27,7 +27,7 @@ object CommonValidation {
   val minNumeric = 0.0
 
   def getFirstErrorMessage(inputs: Seq[Either[String, Any]]): String = {
-    inputs.find(_.isLeft).fold("")(_.left.get)
+    inputs.find(_.isLeft).fold("")(_.left.getOrElse(""))
   }
 
   def validateDouble(input: Double, key: String): Either[String, Double] = {

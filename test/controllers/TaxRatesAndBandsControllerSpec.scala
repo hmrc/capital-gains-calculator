@@ -17,7 +17,6 @@
 package controllers
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import org.joda.time.DateTime
 import org.mockito.MockitoSugar
 import play.api.libs.json.JodaWrites._
@@ -28,13 +27,14 @@ import play.api.test.Helpers._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
+import scala.concurrent.ExecutionContext.global
+
 class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 
   val fakeRequest = FakeRequest()
   implicit val system = ActorSystem("QuickStart")
-  implicit val materializer = ActorMaterializer()
   val components = app.injector.instanceOf[ControllerComponents]
-  val controller = new TaxRatesAndBandsController(components)
+  val controller = new TaxRatesAndBandsController(components)(global)
 
   "validating the getMaxAEA method" when {
 

@@ -74,8 +74,8 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with Mo
   "Binding a invalid non resident calculation request" when {
 
     def badRequest(badKey: String, value: Option[String]): Map[String, Seq[String]] = value match {
-      case Some(data) => validRequest.filterKeys(key => key != badKey).toMap ++ Map(badKey -> Seq(data))
-      case None => validRequest.filterKeys(key => key != badKey).toMap
+      case Some(data) => validRequest.view.filterKeys(key => key != badKey).toMap ++ Map(badKey -> Seq(data))
+      case None => validRequest.view.filterKeys(key => key != badKey).toMap
     }
 
 //    def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""

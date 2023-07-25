@@ -1,6 +1,5 @@
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings, targetJvm}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import uk.gov.hmrc.DefaultBuildSettings.targetJvm
+import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
+
 
 lazy val appName = "capital-gains-calculator"
 lazy val appDependencies : Seq[ModuleID] = ???
@@ -27,7 +26,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings : _*)
   .settings(PlayKeys.playDefaultPort := 9985)
   .settings(scalaSettings: _*)
-  .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(
     scalaVersion := "2.13.8",
@@ -44,6 +42,11 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings())
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+  .settings(
+    IntegrationTest / fork := false,
+    IntegrationTest / unmanagedResourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it" / "resources")).value,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
+    IntegrationTest / parallelExecution := false)
   .settings(
     resolvers += Resolver.jcenterRepo)
   .settings(routesImport += "models.nonResident._")
