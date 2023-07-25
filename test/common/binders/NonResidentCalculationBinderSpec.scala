@@ -91,7 +91,7 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
     }
 
     "an annual exempt amount is not defined" must {
-      val request = validRequest.filterKeys(key => key != keys.annualExemptAmount)
+      val request = validRequest.view.filterKeys(key => key != keys.annualExemptAmount)
       val result = target.bind("", request.toMap) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
@@ -111,7 +111,7 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
     }
 
     "an other properties amount is not defined" must {
-      val request = validRequest.filterKeys(key => key != keys.otherPropertiesAmount)
+      val request = validRequest.view.filterKeys(key => key != keys.otherPropertiesAmount)
       val result = target.bind("", request.toMap) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
@@ -137,7 +137,7 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
     }
 
     "a personal allowance is not defined" must {
-      val request = validRequest.filterKeys(key => key != keys.personalAllowanceAmount)
+      val request = validRequest.view.filterKeys(key => key != keys.personalAllowanceAmount)
       val result = target.bind("", request.toMap) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
@@ -199,7 +199,7 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
     }
 
     "an acquisition date is not defined" must {
-      val request = validRequest.filterKeys(key => key != keys.acquisitionDate)
+      val request = validRequest.view.filterKeys(key => key != keys.acquisitionDate)
       val result = target.bind("", request.toMap) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
@@ -225,7 +225,7 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
     }
 
     "is claiming prr is not defined" must {
-      val request = validRequest.filterKeys(key => key != keys.isClaimingPRR)
+      val request = validRequest.view.filterKeys(key => key != keys.isClaimingPRR)
       val result = target.bind("", request.toMap) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
@@ -245,7 +245,7 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
     }
 
     "a days claimed value is not defined" must {
-      val request = validRequest.filterKeys(key => key != keys.daysClaimed)
+      val request = validRequest.view.filterKeys(key => key != keys.daysClaimed)
       val result = target.bind("", request.toMap) match {
         case Some(Right(data)) => data
         case _ => emptyCalculationRequest
@@ -262,8 +262,8 @@ class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
   "Binding a invalid non resident calculation request" when {
 
     def badRequest(badKey: String, value: Option[String]): Map[String, Seq[String]] = value match {
-      case Some(data) => validRequest.filterKeys(key => key != badKey).toMap ++ Map(badKey -> Seq(data))
-      case None => validRequest.filterKeys(key => key != badKey).toMap
+      case Some(data) => validRequest.view.filterKeys(key => key != badKey).toMap ++ Map(badKey -> Seq(data))
+      case None => validRequest.view.filterKeys(key => key != badKey).toMap
     }
 
     def doubleParseError(param: String, value: String): String = s"""Cannot parse parameter $param as Double: For input string: "$value""""

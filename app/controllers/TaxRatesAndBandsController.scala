@@ -20,6 +20,7 @@ import common._
 import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
 import config.TaxRatesAndBands._
+
 import javax.inject.{Inject, Singleton}
 import models._
 import org.joda.time.DateTime
@@ -28,14 +29,13 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
 class TaxRatesAndBandsController @Inject()(
                                             val cc: ControllerComponents
-                                          ) extends BackendController(cc) {
+                                          )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   def getMaxAEA(year: Int): Action[AnyContent] = Action.async {
     if(TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))

@@ -24,6 +24,9 @@ import play.api.test.Helpers._
 import play.api.libs.ws.{WSClient, WSResponse}
 import org.scalatestplus.play.PlaySpec
 
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
 class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -39,7 +42,7 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
     s"return a $OK with a valid result" when {
 
       "non-residential" in {
-        def request: WSResponse = ws.url(s"$calculateUrl")
+        def request: WSResponse = Await.result(ws.url(s"$calculateUrl")
           .post(
             Json.parse(
               """
@@ -57,7 +60,7 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
                 |}
               """.
                 stripMargin)
-          )
+          ), Duration(60, SECONDS))
 
         val responseJson = Json.parse(
           """
@@ -76,7 +79,7 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
     s"return a $BAD_REQUEST" when {
 
       "data is missing" in {
-        def request: WSResponse = ws.url(calculateUrl)
+        def request: WSResponse = Await.result(ws.url(calculateUrl)
           .post(
             Json.parse(
               """
@@ -93,15 +96,15 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
                 |}
               """.
                 stripMargin)
-          )
+          ), Duration(60, SECONDS))
 
         request.status mustBe 400
-        request.body mustBe "Validation failed with errors: List((/disposalValue,List(ValidationError(List(error.path.missing),WrappedArray()))))"
+        request.body mustBe "Validation failed with errors: List((/disposalValue,List(JsonValidationError(List(error.path.missing),List()))))"
       }
 
       "no data is provided" in {
-        def request: WSResponse = ws.url(calculateUrl)
-          .post("")
+        def request: WSResponse = Await.result(ws.url(calculateUrl)
+          .post(""), Duration(60, SECONDS))
 
         request.status mustBe 400
         request.body mustBe "No Json provided"

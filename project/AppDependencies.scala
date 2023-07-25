@@ -20,50 +20,32 @@ import play.core.PlayVersion
 
 object AppDependencies {
 
-
-  private val jsoupVersion = "1.13.1"
-  val bootstrapVersion = "7.15.0"
+  val jsoupVersion     = "1.15.4"
+  val bootstrapVersion = "7.19.0"
+  val scalaTestVersion = "5.1.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapVersion,
-    "joda-time" % "joda-time" % "2.10.10",
-    "com.typesafe.play" %% "play-json-joda" % "2.9.2",
-    "org.mockito" %% "mockito-scala-scalatest" % "1.17.12"
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapVersion,
+    "joda-time"          % "joda-time"                 % "2.12.5",
+    "com.typesafe.play" %% "play-json-joda"            % "2.9.4",
+    "org.mockito"       %% "mockito-scala-scalatest"   % "1.17.12"
   )
 
-  trait TestDependencies {
-    lazy val scope: String = "test"
-    lazy val test : Seq[ModuleID] = ???
-  }
+  val test: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapVersion,
+    "org.mockito"             % "mockito-core"           % "3.12.4",
+    "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestVersion,
+    "com.typesafe.play"      %% "play-test"              % PlayVersion.current,
+    "org.jsoup"               % "jsoup"                  % jsoupVersion
+  ).map(_ % "test")
 
-  object Test {
-    def apply(): Seq[ModuleID] = new TestDependencies {
-      override lazy val test = Seq(
-        "uk.gov.hmrc"                 %% "bootstrap-test-play-28"     % bootstrapVersion,
-        "org.mockito" % "mockito-core" % "3.12.4" % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % scope,
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "org.jsoup" % "jsoup" % jsoupVersion % scope
-      )
-    }.test
-  }
+  val integrationTest: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapVersion,
+    "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestVersion,
+    "com.typesafe.play"      %% "play-test"              % PlayVersion.current
+  ).map(_ % "it")
 
-  object IntegrationTest {
-    def apply(): Seq[ModuleID] = new TestDependencies {
-
-      override lazy val scope: String = "it"
-
-      override lazy val test = Seq(
-        "uk.gov.hmrc"                 %% "bootstrap-test-play-28"     % bootstrapVersion,
-        "org.mockito" % "mockito-core" % "5.2.0" % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % scope,
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "org.jsoup" % "jsoup" % jsoupVersion % scope
-      )
-    }.test
-  }
-
-  def apply(): Seq[ModuleID] = compile ++ Test() ++ IntegrationTest()
+  def apply(): Seq[ModuleID] = compile ++ test ++ integrationTest
 }
 
