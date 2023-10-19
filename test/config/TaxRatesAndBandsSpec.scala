@@ -16,7 +16,7 @@
 
 package config
 
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 
 class TaxRatesAndBandsSpec extends PlaySpec {
@@ -28,15 +28,15 @@ class TaxRatesAndBandsSpec extends PlaySpec {
     }
 
     "return a date of 2015-04-06 for the start of the tax date" in {
-      TaxRatesAndBands.getRates(0).startOfTaxDateTime mustEqual DateTime.parse("2015-04-06")
+      TaxRatesAndBands.getRates(0).startOfTaxLocalDate mustEqual LocalDate.parse("2015-04-06")
     }
 
     "return 18 as the value of months" in {
-      PrivateResidenceReliefDateUtils(DateTime.parse("2020-04-05")).pRRMonthDeductionApplicable().months mustEqual 18
+      PrivateResidenceReliefDateUtils(LocalDate.parse("2020-04-05")).pRRMonthDeductionApplicable().months mustEqual 18
     }
 
     "return 9 as the value of months" in {
-      PrivateResidenceReliefDateUtils(DateTime.parse("2020-04-06")).pRRMonthDeductionApplicable().months mustEqual 9
+      PrivateResidenceReliefDateUtils(LocalDate.parse("2020-04-06")).pRRMonthDeductionApplicable().months mustEqual 9
     }
 
   }

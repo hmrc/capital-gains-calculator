@@ -17,7 +17,8 @@
 package models.nonResident
 
 import common.binders.{NonResidentCalculationRequestBinder, NonResidentTimeApportionmentCalculationRequestBinder}
-import org.joda.time.DateTime
+
+import java.time.LocalDate
 
 case class CalculationRequestModel(priorDisposal: String,
                                    annualExemptAmount: Option[Double],
@@ -31,8 +32,8 @@ case class CalculationRequestModel(priorDisposal: String,
                                    improvementsAmount: Double,
                                    reliefsAmount: Double,
                                    allowableLosses: Double,
-                                   acquisitionDate: Option[DateTime],
-                                   disposalDate: DateTime,
+                                   acquisitionDate: Option[LocalDate],
+                                   disposalDate: LocalDate,
                                    isClaimingPRR: Option[String],
                                    daysClaimed: Option[Double],
                                    isProperty: Boolean = true)
@@ -51,8 +52,8 @@ case class TimeApportionmentCalculationRequestModel(priorDisposal: String,
                                                     improvementsAmount: Double,
                                                     reliefsAmount: Double,
                                                     allowableLosses: Double,
-                                                    acquisitionDate: DateTime,
-                                                    disposalDate: DateTime,
+                                                    acquisitionDate: LocalDate,
+                                                    disposalDate: LocalDate,
                                                     isClaimingPRR: Option[String],
                                                     daysClaimed: Option[Double],
                                                     isProperty: Boolean = true)

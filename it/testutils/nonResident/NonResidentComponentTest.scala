@@ -99,7 +99,7 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
           ), Duration(60, SECONDS))
 
         request.status mustBe 400
-        request.body mustBe "Validation failed with errors: List((/disposalValue,List(JsonValidationError(List(error.path.missing),List()))))"
+        request.body mustBe "Validation failed with errors: List((/disposalValue,List(JsonValidationError(List(error.path.missing),ArraySeq()))))"
       }
 
       "no data is provided" in {

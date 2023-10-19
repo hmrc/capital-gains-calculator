@@ -17,7 +17,7 @@
 package common.binders
 
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
@@ -219,13 +219,13 @@ class ResidentSharesBindersSpec extends PlaySpec with MockitoSugar {
           "personalAllowance" -> Seq("1000.0"),
           "disposalDate" -> Seq("2016-10-10")
         ))
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
 
         result mustBe Some(Right(CalculateTaxOwedModel(chargeableGainModel, Some(1000.0), 1000.0, 1000.0, date)))
       }
 
       "return a valid queryString on unbind" in {
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         val result = binder.unbind("key", CalculateTaxOwedModel(chargeableGainModel, Some(1000.0), 1000.0, 1000.0, date))
 
         result mustBe chargeableGainRequest + "&previousTaxableGain=1000.0&previousIncome=1000.0&personalAllowance=1000.0&disposalDate=2016-10-10"
@@ -252,12 +252,12 @@ class ResidentSharesBindersSpec extends PlaySpec with MockitoSugar {
           "disposalDate" -> Seq("2016-10-10")
         ))
 
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         result mustBe Some(Right(CalculateTaxOwedModel(chargeableGainModel, None, 4000.0, 4000.0, date)))
       }
 
       "return a valid queryString on unbind" in {
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         val result = binder.unbind("key", CalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.0, date))
 
         result mustBe chargeableGainRequest + "&previousTaxableGain=4500.0&previousIncome=5000.0&personalAllowance=5500.0&disposalDate=2016-10-10"
@@ -298,7 +298,7 @@ class ResidentSharesBindersSpec extends PlaySpec with MockitoSugar {
           "disposalDate" -> Seq("k")
         ))
 
-        result mustBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "k""""))
+        result mustBe Some(Left("""Cannot parse parameter disposalDate as LocalDate: For input string: "k""""))
       }
 
       "return an error message when a component is missing" in {

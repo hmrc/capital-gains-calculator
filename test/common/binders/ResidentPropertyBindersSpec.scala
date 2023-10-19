@@ -17,7 +17,7 @@
 package common.binders
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
@@ -120,7 +120,7 @@ class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
           "annualExemptAmount" -> Seq("2000.0"),
           "disposalDate" -> Seq("2016-10-10")))
 
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         result mustBe Some(Right(PropertyChargeableGainModel(propertyTotalGainModel, Some(2000.0), Some(2000.0), Some(2000.0),
                                   Some(2000.0), 2000, date)))
       }
@@ -139,7 +139,7 @@ class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
           "annualExemptAmount" -> Seq("2400.0"),
           "disposalDate" -> Seq("2016-10-10")))
 
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         result mustBe Some(Right(PropertyChargeableGainModel(propertyTotalGainModel, Some(2050.0), Some(2100.0), Some(2200.0),
           Some(2300.0), 2400.0, date)))
 
@@ -197,7 +197,7 @@ class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
 
       "return a valid queryString on unbind with identical values" in {
         val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2000.0, 2000.0, 2000.0), 2000.0)
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         val propertyChargeableGainModel = new PropertyChargeableGainModel(propertyTotalGainModel, Some(2000.0), Some(2000.0), Some(2000.0),
           Some(2000.0), 2000.0, date)
 
@@ -210,7 +210,7 @@ class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
 
       "return a valid queryString on unbind with different values" in {
         val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 1500.0, 1750.0, 3000.0), 2500.0)
-        val date = DateTime.parse("2016-10-10")
+        val date = LocalDate.parse("2016-10-10")
         val propertyChargeableGainModel = new PropertyChargeableGainModel(propertyTotalGainModel, Some(2050.0), Some(2100.0), Some(2200.0),
           Some(2300.0), 2400.0, date)
 
@@ -229,7 +229,7 @@ class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
 
     "given a valid binding value where all values are the same" must {
       val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(1000.0, 1000.0, 1000.0, 1000.0), 1000.0)
-      val date = DateTime.parse("2016-10-10")
+      val date = LocalDate.parse("2016-10-10")
       val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(1000.0), Some(1000.0), Some(1000.0), Some(1000.0),
         1000.0, date)
       val propertyChargeableGainRequest = "disposalValue=1000.0&disposalCosts=1000.0&acquisitionValue=1000.0&acquisitionCosts=1000.0&improvements=1000.0" +
@@ -266,7 +266,7 @@ class ResidentPropertyBindersSpec extends PlaySpec with MockitoSugar {
 
     "given a valid binding value where all values are different" must {
       val propertyTotalGainModel = new PropertyTotalGainModel(TotalGainModel(2000.0, 2500.0, 3000.0, 3500.0),6000.0)
-      val date = DateTime.parse("2016-10-10")
+      val date = LocalDate.parse("2016-10-10")
       val propertyChargeableGainModel = PropertyChargeableGainModel(propertyTotalGainModel, Some(4000.0), Some(4500.0), Some(5000.0),
         Some(5500.0), 6000.0, date)
       val propertyChargeableGainRequest = "disposalValue=2000.0&disposalCosts=2500.0&acquisitionValue=3000.0&acquisitionCosts=3500.0&improvements=6000.0" +

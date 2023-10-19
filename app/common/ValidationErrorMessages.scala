@@ -18,5 +18,5 @@ package common
 
 object ValidationErrorMessages {
 
-  val invalidDateFormat: String => String = input => s"""Cannot parse input as DateTime: For input string: "$input""""
+  val invalidDateFormat: String => String = input => s"""Cannot parse input as LocalDate: For input string: "$input""""
 }

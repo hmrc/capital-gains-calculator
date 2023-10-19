@@ -21,7 +21,7 @@ import org.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
 import org.scalatestplus.play.PlaySpec
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
-import org.joda.time.DateTime
+import java.time.LocalDate
 
 class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with MockitoSugar {
 
@@ -62,14 +62,14 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with Mo
     999.99,
     11.11,
     22.22,
-    DateTime.parse("2016-12-20"),
-    DateTime.parse("2018-09-13"),
+    LocalDate.parse("2016-12-20"),
+    LocalDate.parse("2018-09-13"),
     Some("Yes"),
     Some(200.0)
   )
 
   // the opposite of the expectedRequest
-  val emptyCalculationRequest = TimeApportionmentCalculationRequestModel("", None, None, 0.00, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, DateTime.parse("0000-01-01"), DateTime.parse("0000-01-01"), None, None)
+  val emptyCalculationRequest = TimeApportionmentCalculationRequestModel("", None, None, 0.00, None, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, LocalDate.parse("0000-01-01"), LocalDate.parse("0000-01-01"), None, None)
 
   "Binding a invalid non resident calculation request" when {
 
@@ -78,7 +78,7 @@ class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with Mo
       case None => validRequest.view.filterKeys(key => key != badKey).toMap
     }
 
-//    def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as DateTime: For input string: "$value""""
+//    def dateParseError(param: String, value: String): String = s"""Cannot parse parameter $param as LocalDate: For input string: "$value""""
 
     "an acquisition date is not supplied" must {
       "return an error message" in {

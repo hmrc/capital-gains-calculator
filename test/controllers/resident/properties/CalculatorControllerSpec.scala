@@ -18,7 +18,7 @@ package controllers.resident.properties
 
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
-import org.joda.time.DateTime
+import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -63,7 +63,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     "numeric values are passed" must {
 
       lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, Some(1000), Some(5000), Some(20000), 11100, DateTime.parse("2015-05-06"))
+        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, Some(1000), Some(5000), Some(20000), 11100, LocalDate.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -127,7 +127,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "numeric values are passed with correct rounding" must {
       lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, None, Some(4999.01), Some(19999.01), 11100, DateTime.parse("2015-05-06"))
+        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, None, Some(4999.01), Some(19999.01), 11100, LocalDate.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -194,7 +194,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
       lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
         TotalGainModel(195000, 1000, 160000, 1000), 5000), Some(20000), Some(30000), Some(4999.01), Some(19999.01),
-        11100, DateTime.parse("2015-05-06"))
+        11100, LocalDate.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -259,7 +259,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     "numeric values are passed with reliefs greater than gain and lettings exceeding 40000" must {
 
       lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(200000, 0, 100000, 0), 0), Some(55000), Some(45000), Some(4999.01), Some(19999.01), 11100, DateTime.parse("2015-05-06"))
+        TotalGainModel(200000, 0, 100000, 0), 0), Some(55000), Some(45000), Some(4999.01), Some(19999.01), 11100, LocalDate.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -337,7 +337,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
         allowableLosses = None,
         broughtForwardLosses = None,
         annualExemptAmount = 11100,
-          disposalDate = DateTime.parse("2015-10-10")),
+          disposalDate = LocalDate.parse("2015-10-10")),
         previousTaxableGain = None,
         previousIncome = 20000,
         personalAllowance = 11000)
@@ -431,7 +431,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
         allowableLosses = Some(20000),
         broughtForwardLosses = Some(10000),
         annualExemptAmount = 11100,
-        disposalDate = DateTime.parse("2015-10-10")),
+        disposalDate = LocalDate.parse("2015-10-10")),
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
         personalAllowance = 11000)
@@ -514,7 +514,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "Part allowableLossesUsed" must {
       lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(50000, 0, 0, 0), 0), None, None, Some(100000), Some(0), 11100, DateTime.parse("2015-05-06"))
+        TotalGainModel(50000, 0, 0, 0), 0), None, None, Some(100000), Some(0), 11100, LocalDate.parse("2015-05-06"))
       )(fakeRequest)
 
       "return a 200" in {

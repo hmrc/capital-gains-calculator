@@ -17,7 +17,7 @@
 package controllers.resident.shares
 
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
@@ -203,7 +203,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
         previousTaxableGain = None,
         previousIncome = 20000,
         personalAllowance = 11000,
-        disposalDate = DateTime.parse("2015-10-10"))
+        disposalDate = LocalDate.parse("2015-10-10"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -284,7 +284,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
         personalAllowance = 11000,
-        disposalDate = DateTime.parse("2015-10-10"))
+        disposalDate = LocalDate.parse("2015-10-10"))
       )(fakeRequest)
 
       "return a 200" in {
@@ -366,7 +366,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
         previousTaxableGain = Some(10000),
         previousIncome = 10000,
         personalAllowance = 11000,
-        disposalDate = DateTime.parse("2016-10-10")
+        disposalDate = LocalDate.parse("2016-10-10")
       ))(fakeRequest)
 
       "return a 200" in {

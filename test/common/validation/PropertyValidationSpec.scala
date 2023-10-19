@@ -18,7 +18,7 @@ package common.validation
 
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 
 class PropertyValidationSpec extends PlaySpec {
@@ -64,7 +64,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Right with all validation passing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Right(model)
@@ -72,7 +72,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with an invalid PropertyTotalGainModel" in {
       val model = PropertyChargeableGainModel(invalidPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("improvements cannot be negative.")
@@ -80,7 +80,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with prrValue validation failing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(-3500.0), Some(4000.0), Some(4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("prrValue cannot be negative.")
@@ -88,7 +88,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with lettingReliefs validation failing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(-4000.0), Some(4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("lettingReliefs cannot be negative.")
@@ -96,7 +96,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with allowableLosses validation failing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(-4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2016-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("allowableLosses cannot be negative.")
@@ -104,7 +104,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with broughtForwardLosses validation failing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
-        Some(-5000.0), 5500.0, DateTime.parse("2016-09-09"))
+        Some(-5000.0), 5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("broughtForwardLosses cannot be negative.")
@@ -112,7 +112,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with annualExemptAmount validation failing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
-        Some(5000.0), -5500.0, DateTime.parse("2016-09-09"))
+        Some(5000.0), -5500.0, LocalDate.parse("2016-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("annualExemptAmount cannot be negative.")
@@ -120,7 +120,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with disposalDate validation failing" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(3500.0), Some(4000.0), Some(4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2014-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2014-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("disposalDate cannot be before 2015-04-06")
@@ -128,7 +128,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Left with multiple arguments failing validation" in {
       val model = PropertyChargeableGainModel(validPropertyTotalGainModel, Some(-3500.0), Some(4000.0), Some(-4500.0),
-        Some(5000.0), 5500.0, DateTime.parse("2014-09-09"))
+        Some(5000.0), 5500.0, LocalDate.parse("2014-09-09"))
       val result = PropertyValidation.validatePropertyChargeableGain(model)
 
       result mustBe Left("prrValue cannot be negative.")
@@ -139,7 +139,7 @@ class PropertyValidationSpec extends PlaySpec {
 
     "return a Right when all validation passes with no optional values" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
-      val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, None, None, None, None, 4000.0, DateTime.parse("2016-05-04"))
+      val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, None, None, None, None, 4000.0, LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, None, 5000.0, 5500.0)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 
@@ -149,7 +149,7 @@ class PropertyValidationSpec extends PlaySpec {
     "return a Right when all validation passes with optional values" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
       val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), Some(4000.0), Some(4500.0), 5000.0,
-        DateTime.parse("2016-05-04"))
+        LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, Some(5500.0), 6000.0, 6500.0)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 
@@ -159,7 +159,7 @@ class PropertyValidationSpec extends PlaySpec {
     "return a Left when validation fails on chargeableGain" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
       val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, Some(-3000.0), Some(3500.0), Some(4000.0), Some(4500.0), 5000.0,
-        DateTime.parse("2016-05-04"))
+        LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.0)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 
@@ -169,7 +169,7 @@ class PropertyValidationSpec extends PlaySpec {
     "return a Left when validation fails on previousTaxableGain" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
       val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), Some(4000.0), Some(4500.0), 5000.0,
-        DateTime.parse("2016-05-04"))
+        LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, Some(-4500.0), 5000.0, 5500.0)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 
@@ -179,7 +179,7 @@ class PropertyValidationSpec extends PlaySpec {
     "return a Left when validation fails on previousIncome" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
       val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), Some(4000.0), Some(4500.0), 5000.0,
-        DateTime.parse("2016-05-04"))
+        LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.045, 5500.0)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 
@@ -189,7 +189,7 @@ class PropertyValidationSpec extends PlaySpec {
     "return a Left when validation fails on personalAllowance" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
       val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, Some(3000.0), Some(3500.0), Some(4000.0), Some(4500.0), 5000.0,
-        DateTime.parse("2016-05-04"))
+        LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, Some(4500.0), 5000.0, 5500.076)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 
@@ -199,7 +199,7 @@ class PropertyValidationSpec extends PlaySpec {
     "return a Left with a single message when multiple validation failures occur" in {
       val totalGainModel = PropertyTotalGainModel(TotalGainModel(1000.0, 1500.0, 2000.0, 2500.0), 3000.0)
       val chargeableGainModel = PropertyChargeableGainModel(totalGainModel, Some(3000.123), Some(3500.0), Some(4000.0), Some(4500.0), 5000.0,
-        DateTime.parse("2016-05-04"))
+        LocalDate.parse("2016-05-04"))
       val calculateTaxOwedModel = PropertyCalculateTaxOwedModel(chargeableGainModel, Some(4500.777), -5000.0, 5500.0)
       val result = PropertyValidation.validatePropertyTaxOwed(calculateTaxOwedModel)
 

@@ -16,12 +16,11 @@
 
 package models.nonResident
 
-import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
-import play.api.libs.json.{__, _}
+import play.api.libs.json._
+
+import java.time.LocalDate
 
 
 case class NonResidentTotalGainRequestModel(disposalValue: Double,
@@ -31,12 +30,12 @@ case class NonResidentTotalGainRequestModel(disposalValue: Double,
                                             improvements: Double,
                                             rebasedValue: Option[Double],
                                             rebasedCosts: Double,
-                                            disposalDate: Option[DateTime],
-                                            acquisitionDate: Option[DateTime],
+                                            disposalDate: Option[LocalDate],
+                                            acquisitionDate: Option[LocalDate],
                                             improvementsAfterTaxStarted: Double)
 
 object NonResidentTotalGainRequestModel {
-  implicit val writes =  Json.writes[NonResidentTotalGainRequestModel]
+  implicit val writes = Json.writes[NonResidentTotalGainRequestModel]
 
   implicit val reads: Reads[NonResidentTotalGainRequestModel] = (
     (__ \ "disposalValue").read[Double] and
@@ -46,9 +45,9 @@ object NonResidentTotalGainRequestModel {
       (__ \ "improvements").read[Double].or(Reads.pure[Double](0)) and
       (__ \ "rebasedValue").readNullable[Double] and
       (__ \ "rebasedCosts").read[Double].or(Reads.pure[Double](0)) and
-      (__ \ "disposalDate").readNullable[DateTime] and
-      (__ \ "acquisitionDate").readNullable[DateTime] and
+      (__ \ "disposalDate").readNullable[LocalDate] and
+      (__ \ "acquisitionDate").readNullable[LocalDate] and
       (__ \ "improvementsAfterTaxStarted").read[Double].or(Reads.pure[Double](0))
-    ) (NonResidentTotalGainRequestModel.apply _)
+    )(NonResidentTotalGainRequestModel.apply _)
 
 }

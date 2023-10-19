@@ -17,7 +17,7 @@
 package models
 
 import models.nonResident.NonResidentTotalGainRequestModel
-import org.joda.time.DateTime
+import java.time.LocalDate
 import play.api.libs.json.{JsSuccess, Json}
 import org.scalatestplus.play.PlaySpec
 
@@ -49,8 +49,8 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
         improvements = 9000,
         rebasedValue = Some(450000),
         rebasedCosts = 20000,
-        disposalDate = Some(DateTime.parse("2017-05-12")),
-        acquisitionDate = Some(DateTime.parse("2014-08-14")),
+        disposalDate = Some(LocalDate.parse("2017-05-12")),
+        acquisitionDate = Some(LocalDate.parse("2014-08-14")),
         improvementsAfterTaxStarted = 1000)
 
       inputJson.as[NonResidentTotalGainRequestModel] mustBe model

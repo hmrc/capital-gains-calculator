@@ -114,7 +114,7 @@ trait ResidentSharesBinders extends CommonBinders {
           previousTaxableGainEither <- optionDoubleBinder.bind(queryKeys.previousTaxableGain, params)
           previousIncomeEither <- doubleBinder.bind(queryKeys.previousIncome, params)
           personalAllowanceEither <- doubleBinder.bind(queryKeys.personalAllowance, params)
-          disposalDateEither <- dateTimeBinder.bind(queryKeys.disposalDate, params)
+          disposalDateEither <- localDateBinder.bind(queryKeys.disposalDate, params)
         } yield {
           val inputs = (chargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither,
             disposalDateEither)
@@ -140,7 +140,7 @@ trait ResidentSharesBinders extends CommonBinders {
           optionDoubleBinder.unbind(queryKeys.previousTaxableGain, calculateTaxOwedModel.previousTaxableGain),
           doubleBinder.unbind(queryKeys.previousIncome, calculateTaxOwedModel.previousIncome),
           doubleBinder.unbind(queryKeys.personalAllowance, calculateTaxOwedModel.personalAllowance),
-          dateTimeBinder.unbind(queryKeys.disposalDate, calculateTaxOwedModel.disposalDate)
+          localDateBinder.unbind(queryKeys.disposalDate, calculateTaxOwedModel.disposalDate)
         ).filter(!_.isEmpty).mkString("&")
 
     }

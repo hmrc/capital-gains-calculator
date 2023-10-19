@@ -59,8 +59,8 @@ trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders
           improvementsParam <- doubleBinder.bind(keys.improvementsAmount, params)
           reliefsParam <- doubleBinder.bind(keys.reliefsAmount, params)
           allowableLossesParam <- doubleBinder.bind(keys.allowableLosses, params)
-          acquisitionDateParam <- dateTimeBinder.bind(keys.acquisitionDate, params)
-          disposalDateParam <- dateTimeBinder.bind(keys.disposalDate, params)
+          acquisitionDateParam <- localDateBinder.bind(keys.acquisitionDate, params)
+          disposalDateParam <- localDateBinder.bind(keys.disposalDate, params)
           isClaimingPRRParam <- optionalStringBinder.bind(keys.isClaimingPRR, params)
           daysClaimedParam <- optionalDoubleBinder.bind(keys.daysClaimed, params)
         } yield {
@@ -154,8 +154,8 @@ trait NonResidentTimeApportionmentCalculationRequestBinder extends CommonBinders
           doubleBinder.unbind(keys.improvementsAmount, request.improvementsAmount),
           doubleBinder.unbind(keys.reliefsAmount, request.reliefsAmount),
           doubleBinder.unbind(keys.allowableLosses, request.allowableLosses),
-          dateTimeBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
-          dateTimeBinder.unbind(keys.disposalDate, request.disposalDate),
+          localDateBinder.unbind(keys.acquisitionDate, request.acquisitionDate),
+          localDateBinder.unbind(keys.disposalDate, request.disposalDate),
           optionalStringBinder.unbind(keys.isClaimingPRR, request.isClaimingPRR),
           optionalDoubleBinder.unbind(keys.daysClaimed, request.daysClaimed)
         ).filterNot(_.isEmpty).mkString("&")

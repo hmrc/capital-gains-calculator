@@ -17,11 +17,12 @@
 package config
 
 import common.Date
-import org.joda.time.DateTime
 
-case class PrivateResidenceReliefDateDetails(shortedPeriod: Boolean, months: Int, dateDeducted: DateTime)
+import java.time.LocalDate
 
-case class PrivateResidenceReliefDateUtils(date: DateTime) {
+case class PrivateResidenceReliefDateDetails(shortedPeriod: Boolean, months: Int, dateDeducted: LocalDate)
+
+case class PrivateResidenceReliefDateUtils(date: LocalDate) {
 
   /**
    * Should Private Residence Relief be 9 months or 18

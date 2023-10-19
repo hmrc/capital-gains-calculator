@@ -17,9 +17,8 @@
 package controllers
 
 import akka.actor.ActorSystem
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.MockitoSugar
-import play.api.libs.json.JodaWrites._
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
@@ -89,7 +88,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with the year after the valid tax year" must {
 
-      val result = controller.getMaxAEA(DateTime.now().getYear + 2)(fakeRequest)
+      val result = controller.getMaxAEA(LocalDate.now().getYear + 2)(fakeRequest)
 
       "return status 400" in {
         status(result) mustBe 400
@@ -236,7 +235,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with an invalid tax year (current year plus 2) and with BPA and MA" must {
 
-      val result = controller.getMaxPersonalAllowance(DateTime.now().getYear + 2, Some(true), Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(LocalDate.now().getYear + 2, Some(true), Some(true))(fakeRequest)
 
       "return status 400" in {
         status(result) mustBe 400
@@ -339,7 +338,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
     }
 
     "contain a body with the earliest date" in {
-      contentAsJson(result) mustBe Json.toJson(DateTime.parse("2015-04-05"))
+      contentAsJson(result) mustBe Json.toJson(LocalDate.parse("2015-04-05"))
     }
   }
 }

@@ -20,21 +20,22 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
+
 import javax.inject.{Inject, Singleton}
 import models.nonResident._
-import org.joda.time.DateTime
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.CalculationService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 @Singleton
 class CalculatorController @Inject()(val calculationService: CalculationService,
                                      val cc: ControllerComponents) extends BackendController(cc) {
 
-  def timeApportionedCalculationApplicable(disposalDate: Option[DateTime], acquisitionDate: Option[DateTime]): Boolean = {
+  def timeApportionedCalculationApplicable(disposalDate: Option[LocalDate], acquisitionDate: Option[LocalDate]): Boolean = {
     (disposalDate, acquisitionDate) match {
       case (Some(soldDate), Some(boughtDate)) => !Date.afterTaxStarted(boughtDate) && Date.afterTaxStarted(soldDate)
       case _ => false
@@ -48,8 +49,8 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
                            improvements: Double,
                            rebasedValue: Option[Double],
                            rebasedCosts: Double,
-                           disposalDate: Option[DateTime],
-                           acquisitionDate: Option[DateTime],
+                           disposalDate: Option[LocalDate],
+                           acquisitionDate: Option[LocalDate],
                            improvementsAfterTaxStarted: Double): TotalGainModel = {
 
     val totalImprovements = improvements + improvementsAfterTaxStarted
@@ -110,8 +111,8 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
                                    improvements: Double,
                                    rebasedValue: Option[Double],
                                    rebasedCosts: Double,
-                                   disposalDate: Option[DateTime],
-                                   acquisitionDate: Option[DateTime],
+                                   disposalDate: Option[LocalDate],
+                                   acquisitionDate: Option[LocalDate],
                                    improvementsAfterTaxStarted: Double,
                                    claimingPRR: Boolean,
                                    daysClaimed: Double,
@@ -179,8 +180,8 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
                        improvements: Double,
                        rebasedValue: Option[Double],
                        rebasedCosts: Double,
-                       disposalDate: DateTime,
-                       acquisitionDate: Option[DateTime],
+                       disposalDate: LocalDate,
+                       acquisitionDate: Option[LocalDate],
                        improvementsAfterTaxStarted: Double,
                        privateResidenceReliefModel: PrivateResidenceReliefModel,
                        currentIncome: Double,

@@ -17,7 +17,7 @@
 package common.validation
 
 import common.validation.TaxRatesAndBandsValidation._
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 
 class TaxRatesAndBandsValidationSpec extends PlaySpec{
@@ -48,7 +48,7 @@ class TaxRatesAndBandsValidationSpec extends PlaySpec{
     }
 
     "return false with a year greater than the current tax year band" in {
-      val result = checkValidTaxYear(DateTime.now().getYear + 2)
+      val result = checkValidTaxYear(LocalDate.now().getYear + 2)
 
       result mustBe false
     }
