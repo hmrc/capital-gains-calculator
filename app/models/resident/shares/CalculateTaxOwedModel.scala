@@ -17,12 +17,13 @@
 package models.resident.shares
 
 import common.binders.ResidentSharesBinders
-import org.joda.time.DateTime
 
-case class CalculateTaxOwedModel (chargeableGainModel: ChargeableGainModel,
-                                  previousTaxableGain: Option[Double],
-                                  previousIncome: Double,
-                                  personalAllowance: Double,
-                                  disposalDate: DateTime)
+import java.time.LocalDate
+
+case class CalculateTaxOwedModel(chargeableGainModel: ChargeableGainModel,
+                                 previousTaxableGain: Option[Double],
+                                 previousIncome: Double,
+                                 personalAllowance: Double,
+                                 disposalDate: LocalDate)
 
 object CalculateTaxOwedModel extends ResidentSharesBinders

@@ -18,8 +18,9 @@ package common.validation
 
 import common.Date
 import config.{TaxRatesAndBands, TaxRatesAndBands20152016}
-import org.joda.time.DateTime
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => sharesKeys}
+
+import java.time.LocalDate
 
 object CommonValidation {
 
@@ -62,7 +63,7 @@ object CommonValidation {
     else Left(s"$key has too many decimal places.")
   }
 
-  def validateResidentPersonalAllowance(input: Double, disposalDate: DateTime): Either[String, Double] = {
+  def validateResidentPersonalAllowance(input: Double, disposalDate: LocalDate): Either[String, Double] = {
     val closestTaxYear = TaxRatesAndBands.getClosestTaxYear(Date.getTaxYear(disposalDate))
     val taxBands = TaxRatesAndBands.getRates(closestTaxYear)
     val maxPersonalAllowance = taxBands.maxPersonalAllowance + taxBands.blindPersonsAllowance + taxBands.marriageAllowance
@@ -75,8 +76,8 @@ object CommonValidation {
     }
   }
 
-  def validateDisposalDate(disposalDate: DateTime): Either[String, DateTime] = {
-    if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxDateTime)) Right(disposalDate)
+  def validateDisposalDate(disposalDate: LocalDate): Either[String, LocalDate] = {
+    if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxLocalDate)) Right(disposalDate)
     else Left("disposalDate cannot be before 2015-04-06")
   }
 
@@ -102,7 +103,7 @@ object CommonValidation {
     else Left(s"$key must be either individual, trustee or personalRep")
   }
 
-  def validateOptionalAcquisitionDate(disposalDate: DateTime, acquisitionDate: Option[DateTime]): Either[String, Option[DateTime]] = {
+  def validateOptionalAcquisitionDate(disposalDate: LocalDate, acquisitionDate: Option[LocalDate]): Either[String, Option[LocalDate]] = {
     acquisitionDate match {
       case Some(data) if data.isBefore(disposalDate) => Right(Some(acquisitionDate.get))
       case None => Right(None)
@@ -110,7 +111,7 @@ object CommonValidation {
     }
   }
 
-  def validateAcquisitionDate(disposalDate: DateTime, acquisitionDate: DateTime): Either[String, Option[DateTime]] = {
+  def validateAcquisitionDate(disposalDate: LocalDate, acquisitionDate: LocalDate): Either[String, Option[LocalDate]] = {
     acquisitionDate match {
       case data if data.isBefore(disposalDate) => Right(Some(acquisitionDate))
       case _ => Left(s"The acquisitionDate must be before the disposalDate")

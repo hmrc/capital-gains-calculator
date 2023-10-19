@@ -16,26 +16,30 @@
 
 package common
 
-import org.joda.time.{DateTime, Days}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit._
 
 object Date {
 
   val taxYearEnd = "04-05"
   val taxYearStart = "04-06"
-  val taxStartDate = DateTime.parse("2015-04-05")
-  val PRRDeductionApplicableDate = DateTime.parse("2020-04-05")
+  val taxStartDate = LocalDate.parse("2015-04-05")
+  val PRRDeductionApplicableDate = LocalDate.parse("2020-04-05")
+
+  val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d")
 
   def daysBetween(start: String, end: String): Double = {
-    Days.daysBetween(DateTime.parse(start), DateTime.parse(end)).getDays + 1
+    DAYS.between(LocalDate.parse(start, dateFormatter), LocalDate.parse(end, dateFormatter)) + 1
   }
 
-  def daysBetween(start: DateTime, end: DateTime): Double = {
-    Days.daysBetween(start, end).getDays + 1
+  def daysBetween(start: LocalDate, end: LocalDate): Double = {
+    DAYS.between(start, end) + 1
   }
 
-  def getTaxYear(date: DateTime): Int = {
+  def getTaxYear(date: LocalDate): Int = {
     val year = date.getYear
-    if (date.isAfter(DateTime.parse(s"${year.toString}-$taxYearEnd"))) {
+    if (date.isAfter(LocalDate.parse(s"${year.toString}-$taxYearEnd"))) {
       year + 1
     }
     else {
@@ -49,11 +53,11 @@ object Date {
     s"$startYear/$endYear"
   }
 
-  def afterTaxStarted(date: DateTime): Boolean = {
+  def afterTaxStarted(date: LocalDate): Boolean = {
     date.isAfter(taxStartDate)
   }
 
-  def taxYearEndDate(input: Int): DateTime = DateTime.parse(
-    s"${input -1}-$taxYearEnd"
+  def taxYearEndDate(input: Int): LocalDate = LocalDate.parse(
+    s"${input - 1}-$taxYearEnd"
   )
 }

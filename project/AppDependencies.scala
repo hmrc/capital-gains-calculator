@@ -26,10 +26,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapVersion,
-    "joda-time"          % "joda-time"                 % "2.12.5",
-    "com.typesafe.play" %% "play-json-joda"            % "2.9.4",
-    "org.mockito"       %% "mockito-scala-scalatest"   % "1.17.12"
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapVersion
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -37,7 +34,8 @@ object AppDependencies {
     "org.mockito"             % "mockito-core"           % "3.12.4",
     "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestVersion,
     "com.typesafe.play"      %% "play-test"              % PlayVersion.current,
-    "org.jsoup"               % "jsoup"                  % jsoupVersion
+    "org.jsoup"               % "jsoup"                  % jsoupVersion,
+    "org.mockito"            %% "mockito-scala-scalatest"% "1.17.12"
   ).map(_ % "test")
 
   val integrationTest: Seq[ModuleID] = Seq(

@@ -78,7 +78,7 @@ trait ResidentPropertyBinders extends CommonBinders {
             allowableLossesEither <- optionDoubleBinder.bind(queryKeys.allowableLosses, params)
             broughtForwardLossesEither <- optionDoubleBinder.bind(queryKeys.broughtForwardLosses, params)
             annualExemptAmountEither <- doubleBinder.bind(queryKeys.annualExemptAmount, params)
-            disposalDateEither <- dateTimeBinder.bind(queryKeys.disposalDate, params)
+            disposalDateEither <- localDateBinder.bind(queryKeys.disposalDate, params)
           } yield {
 
             val inputs = (propertyTotalGainModelEither, prrValueEither, lettingReliefsEither, allowableLossesEither,
@@ -106,7 +106,7 @@ trait ResidentPropertyBinders extends CommonBinders {
           optionDoubleBinder.unbind(queryKeys.allowableLosses, propertyChargeableGainModel.allowableLosses),
           optionDoubleBinder.unbind(queryKeys.broughtForwardLosses, propertyChargeableGainModel.broughtForwardLosses),
           doubleBinder.unbind(queryKeys.annualExemptAmount, propertyChargeableGainModel.annualExemptAmount),
-          dateTimeBinder.unbind(queryKeys.disposalDate, propertyChargeableGainModel.disposalDate)
+          localDateBinder.unbind(queryKeys.disposalDate, propertyChargeableGainModel.disposalDate)
         ).filter(!_.isEmpty).mkString("&")
     }
   }

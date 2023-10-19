@@ -18,7 +18,7 @@ package controllers.nonresident
 
 import models.CalculationResultModel
 import models.nonResident._
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
 import org.scalatest.BeforeAndAfterEach
@@ -47,38 +47,38 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
   "Calling timeApportionedCalculationApplied" must {
 
     "return a true when provided with valid dates" in {
-      val acquisitionDate = DateTime.parse("2013-03-10")
-      val disposalDate = DateTime.parse("2016-01-14")
+      val acquisitionDate = LocalDate.parse("2013-03-10")
+      val disposalDate = LocalDate.parse("2016-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
       result mustBe true
     }
 
     "return a false when provided with an acquisition date after the tax start date" in {
-      val acquisitionDate = DateTime.parse("2015-07-10")
-      val disposalDate = DateTime.parse("2016-01-14")
+      val acquisitionDate = LocalDate.parse("2015-07-10")
+      val disposalDate = LocalDate.parse("2016-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
       result mustBe false
     }
 
     "return a false when provided a disposal date before the tax start date" in {
-      val acquisitionDate = DateTime.parse("2013-07-10")
-      val disposalDate = DateTime.parse("2013-01-14")
+      val acquisitionDate = LocalDate.parse("2013-07-10")
+      val disposalDate = LocalDate.parse("2013-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), Some(acquisitionDate))
 
       result mustBe false
     }
 
     "return a false when not provided with an acquisition date" in {
-      val disposalDate = DateTime.parse("2016-01-14")
+      val disposalDate = LocalDate.parse("2016-01-14")
       val result = controller.timeApportionedCalculationApplicable(Some(disposalDate), None)
 
       result mustBe false
     }
 
     "return a false when not provided with a disposal date" in {
-      val acquisitionDate = DateTime.parse("2013-07-10")
+      val acquisitionDate = LocalDate.parse("2013-07-10")
       val result = controller.timeApportionedCalculationApplicable(None, Some(acquisitionDate))
 
       result mustBe false
@@ -188,8 +188,8 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
     }
 
     "provided with the values for the time apportioned calculation" must {
-      val disposalDate = DateTime.parse("2016-05-08")
-      val acquisitionDate = DateTime.parse("2012-04-09")
+      val disposalDate = LocalDate.parse("2016-05-08")
+      val acquisitionDate = LocalDate.parse("2012-04-09")
 
       when(mockService.calculateGainFlat(any(), any(), any(),
         any(), any())).thenReturn(1.0)
@@ -244,7 +244,7 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
 
     "provided with a flat calculation with no acquisition date" must {
       val fakeRequest = FakeRequest("GET", "")
-      val disposalDate = DateTime.parse("2016-05-08")
+      val disposalDate = LocalDate.parse("2016-05-08")
 
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
@@ -310,8 +310,8 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       val claimingPRR = false
       val daysClaimed = 0
       val daysClaimedAfter = 1
-      val disposalDate = DateTime.parse("2016-05-08")
-      val acquisitionDate = DateTime.parse("2012-04-09")
+      val disposalDate = LocalDate.parse("2016-05-08")
+      val acquisitionDate = LocalDate.parse("2012-04-09")
 
       val result = controller.calculateTaxableGainAfterPRR(1, 1, 1, 1, 2.0, None, 0, Some(disposalDate), Some(acquisitionDate),
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
@@ -372,7 +372,7 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       val claimingPRR = true
       val daysClaimed = 2847
       val daysClaimedAfter = 1
-      val disposalDate = DateTime.parse("2017-01-02")
+      val disposalDate = LocalDate.parse("2017-01-02")
 
       val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), None,
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
@@ -437,8 +437,8 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       val claimingPRR = true
       val daysClaimed = 2847
       val daysClaimedAfter = 100
-      val disposalDate = DateTime.parse("2017-01-02")
-      val acquisitionDate = DateTime.parse("2005-10-16")
+      val disposalDate = LocalDate.parse("2017-01-02")
+      val acquisitionDate = LocalDate.parse("2005-10-16")
 
       val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
@@ -520,8 +520,8 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       val claimingPRR = true
       val daysClaimed = 2847
       val daysClaimedAfter = 1
-      val acquisitionDate = DateTime.parse("2005-10-16")
-      val disposalDate = DateTime.parse("2017-10-16")
+      val acquisitionDate = LocalDate.parse("2005-10-16")
+      val disposalDate = LocalDate.parse("2017-10-16")
 
       val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
         4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
@@ -584,7 +584,7 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
         any(), any(), any(), any()))
         .thenReturn(returnModel)
 
-      val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, DateTime.parse("2017-10-10"), None, 0,
+      val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, LocalDate.parse("2017-10-10"), None, 0,
         PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
@@ -653,7 +653,7 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
         any(), any(), any(), any()))
         .thenReturn(returnModel)
 
-      val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, DateTime.parse("2017-10-10"), Some(DateTime.parse("2011-01-05")),
+      val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, LocalDate.parse("2017-10-10"), Some(LocalDate.parse("2011-01-05")),
         0, PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {

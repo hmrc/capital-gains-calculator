@@ -20,12 +20,12 @@ import common.Date._
 import common.Math._
 import config.{PrivateResidenceReliefDateUtils, TaxRatesAndBands}
 import models.CalculationResultModel
-import org.joda.time.DateTime
+
+import java.time.LocalDate
 
 class CalculationService {
 
-  def calculateCapitalGainsTax(
-                                calculationType: String,
+  def calculateCapitalGainsTax(calculationType: String,
                                 priorDisposal: String,
                                 annualExemptAmount: Option[Double] = None,
                                 otherPropertiesAmt: Option[Double] = None,
@@ -40,8 +40,8 @@ class CalculationService {
                                 improvementsAmt: Double,
                                 reliefs: Double,
                                 allowableLossesAmt: Double,
-                                acquisitionDate: Option[DateTime] = None,
-                                disposalDate: DateTime,
+                                acquisitionDate: Option[LocalDate] = None,
+                                disposalDate: LocalDate,
                                 isClaimingPRR: Option[String] = None,
                                 daysClaimed: Option[Double] = None,
                                 daysClaimedAfter: Option[Double] = None,
@@ -140,8 +140,8 @@ class CalculationService {
                        acquisitionValueAmt: Double,
                        acquisitionCostsAmt: Double,
                        improvementsAmt: Double,
-                       acquisitionDate: Option[DateTime],
-                       disposalDate: DateTime
+                       acquisitionDate: Option[LocalDate],
+                       disposalDate: LocalDate
                      ): Double = {
 
     val taxYear = getTaxYear(disposalDate)
@@ -154,7 +154,7 @@ class CalculationService {
 
   }
 
-  def calculateAEA(priorDisposal: String, annualExemptAmount: Option[Double] = None, disposalDate: DateTime): Double = {
+  def calculateAEA(priorDisposal: String, annualExemptAmount: Option[Double] = None, disposalDate: LocalDate): Double = {
 
     priorDisposal match {
       case "No" => TaxRatesAndBands.getRates(TaxRatesAndBands.getClosestTaxYear(disposalDate.getYear)).maxAnnualExemptAmount
@@ -187,8 +187,8 @@ class CalculationService {
   }
 
   def calculateFlatPRR
-  (disposalDate: DateTime,
-   acquisitionDate: DateTime,
+  (disposalDate: LocalDate,
+   acquisitionDate: LocalDate,
    daysClaimed: Double,
    gain: Double): Double = {
 
@@ -203,7 +203,7 @@ class CalculationService {
   }
 
   def calculateRebasedPRR
-  (disposalDate: DateTime,
+  (disposalDate: LocalDate,
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
@@ -214,12 +214,12 @@ class CalculationService {
     val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
 
     min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
-      daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
+      daysBetween(taxRatesAndBands.startOfTaxLocalDate, disposalDate))), gain)
 
   }
 
   def calculateTimeApportionmentPRR
-  (disposalDate: DateTime,
+  (disposalDate: LocalDate,
    daysClaimedAfter: Double,
    gain: Double): Double = {
 
@@ -230,7 +230,7 @@ class CalculationService {
     val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
 
     min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
-      daysBetween(taxRatesAndBands.startOfTaxDateTime, disposalDate))), gain)
+      daysBetween(taxRatesAndBands.startOfTaxLocalDate, disposalDate))), gain)
 
   }
 

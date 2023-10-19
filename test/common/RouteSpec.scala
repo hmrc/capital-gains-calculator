@@ -19,7 +19,7 @@ package common
 import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
 import models.resident.properties.PropertyTotalGainModel
 import models.resident.shares.TotalGainModel
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers._
 import org.mockito.MockitoSugar
 import play.api.mvc.QueryStringBindable
@@ -28,7 +28,7 @@ import org.scalatestplus.play.PlaySpec
 class RouteSpec extends PlaySpec with MockitoSugar {
 
   "The route for calculate gain after prr for non-resident properties" must {
-    val testDate = Some(new DateTime("2001-01-01"))
+    val testDate = Some(LocalDate.parse("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.
       calculateTaxableGainAfterPRR(1, 1, 1, 1, 1, Some(1), 1, testDate, testDate, 1, true, 1, 1).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
@@ -91,7 +91,7 @@ class RouteSpec extends PlaySpec with MockitoSugar {
   }
 
   "The route for calculate tax owed for non-resident properties" must {
-    val testDate = Some(new DateTime("2001-01-01"))
+    val testDate = Some(LocalDate.parse("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1, 1, 1, 1, 1, Some(1), 1, testDate.get, testDate,
       1, PrivateResidenceReliefModel(claimingPRR = true, Some(1), Some(1)), 1, 1, 1, 1, 1, 1, OtherReliefsModel(1, 1, 1)).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))

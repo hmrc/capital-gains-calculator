@@ -16,8 +16,7 @@
 
 package config
 
-import org.joda.time.DateTime
-
+import java.time.LocalDate
 
 trait TaxRatesAndBands {
   val taxYear: Int
@@ -37,7 +36,7 @@ trait TaxRatesAndBands {
   val marriageAllowance = 1260
   val maxLettingsRelief: Double
   val startOfTax = "2015-04-06"
-  val startOfTaxDateTime: DateTime = DateTime.parse(startOfTax)
+  val startOfTaxLocalDate: LocalDate = LocalDate.parse(startOfTax)
 }
 
 object TaxRatesAndBands {

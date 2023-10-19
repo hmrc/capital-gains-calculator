@@ -16,7 +16,7 @@
 
 package services
 
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
@@ -25,12 +25,12 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
   "Calling CalculationService.annualExemptAmount" must {
 
     "return a value of 11100 when no prior disposal for the year has happened" in {
-      val result = calculationService.calculateAEA("No", disposalDate = DateTime.parse("2015-10-10"))
+      val result = calculationService.calculateAEA("No", disposalDate = LocalDate.parse("2015-10-10"))
       result mustEqual 11100
     }
 
     "return a value of 2000 (remaining AEA input) a prior disposal for year has resulted in gain" in {
-      val result = calculationService.calculateAEA("Yes", Some(2000), disposalDate = DateTime.parse("2015-10-10"))
+      val result = calculationService.calculateAEA("Yes", Some(2000), disposalDate = LocalDate.parse("2015-10-10"))
       result mustEqual 2000
     }
   }
@@ -48,14 +48,14 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
 
     "return 2500 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000," +
       "Incidental Acquisition Costs = 0, Enhancement Costs = 2000, Acquisition Date 05/04/2015, Disposal Date 06/04/2015" in {
-      val result = calculationService.calculateGainTA(10000.0, 2000.0, 1000.0, 0.0, 2000.0, Some(DateTime.parse("2015-04-05")), DateTime.parse("2015-04-06"))
+      val result = calculationService.calculateGainTA(10000.0, 2000.0, 1000.0, 0.0, 2000.0, Some(LocalDate.parse("2015-04-05")), LocalDate.parse("2015-04-06"))
       result mustEqual 2500
     }
 
     "return 206 where Disposal Proceeds = 12,645.77, Incidental Disposal Costs = 1954.66, Acquisition Cost = 1000.04," +
       "Incidental Acquisition Costs = 0.99, Enhancement Costs = 2000.65, Acquisition Date 05/04/1967, Disposal Date 31/07/2016" in {
-      val result = calculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, Some(DateTime.parse("1967-04-05")),
-        DateTime.parse("2016-07-31"))
+      val result = calculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, Some(LocalDate.parse("1967-04-05")),
+        LocalDate.parse("2016-07-31"))
       result mustEqual 206
     }
   }
@@ -199,7 +199,7 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           improvementsAmt = 12035.99,
           reliefs = 14000.11,
           allowableLossesAmt = 3000.01,
-          disposalDate = DateTime.parse("2016-10-06"),
+          disposalDate = LocalDate.parse("2016-10-06"),
           isProperty = true
         )
 
@@ -247,8 +247,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some(DateTime.parse("2015-04-05")),
-          disposalDate = DateTime.parse("2016-10-06"),
+          acquisitionDate = Some(LocalDate.parse("2015-04-05")),
+          disposalDate = LocalDate.parse("2016-10-06"),
           isClaimingPRR = Some("Yes"),
           daysClaimed = Some(5),
           isProperty = true
@@ -285,8 +285,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some(DateTime.parse("2013-04-20")),
-          disposalDate = DateTime.parse("2016-10-03"),
+          acquisitionDate = Some(LocalDate.parse("2013-04-20")),
+          disposalDate = LocalDate.parse("2016-10-03"),
           isClaimingPRR = Some("Yes"),
           daysClaimed = Some(0),
           isProperty = true
@@ -339,8 +339,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           reliefs = 14000.11,
           allowableLossesAmt = 3001,
           isClaimingPRR = Some("Yes"),
-          acquisitionDate = Some(DateTime.parse("2013-04-20")),
-          disposalDate = DateTime.parse("2016-10-03"),
+          acquisitionDate = Some(LocalDate.parse("2013-04-20")),
+          disposalDate = LocalDate.parse("2016-10-03"),
           daysClaimed = Some(3),
           isProperty = true
         )
@@ -391,7 +391,7 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           improvementsAmt = 12035.99,
           reliefs = 14000.11,
           allowableLossesAmt = 3000.01,
-          disposalDate = DateTime.parse("2016-10-06"),
+          disposalDate = LocalDate.parse("2016-10-06"),
           isProperty = true
         )
 
@@ -440,7 +440,7 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           reliefs = 0,
           allowableLossesAmt = 0,
           acquisitionDate = None,
-          disposalDate = DateTime.parse("2016-10-06"),
+          disposalDate = LocalDate.parse("2016-10-06"),
           isClaimingPRR = Some("Yes"),
           daysClaimedAfter = Some(0),
           isProperty = true
@@ -499,8 +499,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           improvementsAmt = 0,
           reliefs = 0,
           allowableLossesAmt = 0,
-          acquisitionDate = Some(DateTime.parse("2015-04-05")),
-          disposalDate = DateTime.parse("2016-10-06"),
+          acquisitionDate = Some(LocalDate.parse("2015-04-05")),
+          disposalDate = LocalDate.parse("2016-10-06"),
           isClaimingPRR = Some("Yes"),
           daysClaimedAfter = Some(3),
           isProperty = true
@@ -541,55 +541,55 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
 
     "return £2000 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "5 and Gain of £2000 " in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-05"), 5, 2000)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-05"), LocalDate.parse("2015-04-05"), 5, 2000)
       result mustEqual 2000
     }
 
     "return £4501 (capped at the Gain) for a Disposal Date of 20-01-2016, Acquisition Date of 01-04-2015, Days Eligible of " +
       "20 and Gain of £4501" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-01-20"), DateTime.parse("2015-04-01"), 20, 4501)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-01-20"), LocalDate.parse("2015-04-01"), 20, 4501)
       result mustEqual 4501
     }
 
     "return £2001 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
       "5 and Gain of £2000" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2015-04-06"), 5, 2001)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-05"), LocalDate.parse("2015-04-06"), 5, 2001)
       result mustEqual 2001
     }
 
     "return £4502 (capped at the Gain) for a Disposal Date of 05-10-2016, Acquisition Date of 01-04-2016, Days Eligible of " +
       "0 and Gain of £4502" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-05"), DateTime.parse("2016-04-01"), 0, 4502)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-05"), LocalDate.parse("2016-04-01"), 0, 4502)
       result mustEqual 4502
     }
 
     "return £2002 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "5 and Gain of £2000" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-05"), 5, 2002)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-06"), LocalDate.parse("2015-04-05"), 5, 2002)
       result mustEqual 2002
     }
 
     "return £4503 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 05-04-2015, Days Eligible of " +
       "20 and Gain of £4503" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-05"), 20, 4503)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-20"), LocalDate.parse("2015-04-05"), 20, 4503)
       result mustEqual 4503
     }
 
     "return £2003 (capped at the Gain) for a Disposal Date of 06-10-2016, Acquisition Date of 06-04-2015, Days Eligible of " +
       "5 and Gain of £2003" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-06"), DateTime.parse("2015-04-06"), 5, 2003)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-06"), LocalDate.parse("2015-04-06"), 5, 2003)
       result mustEqual 2003
     }
 
     "return £4504 (capped at the Gain) for a Disposal Date of 20-10-2016, Acquisition Date of 20-04-2015, Days Eligible of " +
       "20 and Gain of £4504" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-20"), DateTime.parse("2015-04-20"), 20, 4504)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-20"), LocalDate.parse("2015-04-20"), 20, 4504)
       result mustEqual 4504
     }
 
     "return a rounded up amount of £43,548 for a Disposal Date of 03-10-2016, Acquisition Date of 20-04-2013, " +
       "Days Eligible of 0 and Gain of £100,000 which results in a PRR of £43,547.11005[...]" in {
-      val result = calculationService.calculateFlatPRR(DateTime.parse("2016-10-03"), DateTime.parse("2013-04-20"), 0, 100000)
+      val result = calculationService.calculateFlatPRR(LocalDate.parse("2016-10-03"), LocalDate.parse("2013-04-20"), 0, 100000)
       result mustEqual 43548
     }
   }
@@ -597,36 +597,36 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
   "Calling CalculationService.calculateRebasedPRR" must {
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £100,000" in {
-      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 100000)
+      val result = calculationService.calculateRebasedPRR(LocalDate.parse("2016-10-06"), 0, 100000)
       result mustEqual 100000
     }
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 20 and gain of £100,000 resulting PRR of " +
       "£103,637 that is capped" in {
-      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 20, 100000)
+      val result = calculationService.calculateRebasedPRR(LocalDate.parse("2016-10-06"), 20, 100000)
       result mustEqual 100000
     }
 
     "return £75,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £75,000" in {
-      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-06"), 0, 75000)
+      val result = calculationService.calculateRebasedPRR(LocalDate.parse("2016-10-06"), 0, 75000)
       result mustEqual 75000
     }
 
     "return a rounded up amount of £30,899 for a Disposal date of 25-12-2016, days claimed after of 0 and gain of £56,000 " +
       "which results in a PRR of £30898.492[...]" in {
-      val result = calculationService.calculateRebasedPRR(DateTime.parse("2017-12-25"), 0, 56000)
+      val result = calculationService.calculateRebasedPRR(LocalDate.parse("2017-12-25"), 0, 56000)
       result mustEqual 30899
     }
 
     "return £45,000 for a Disposal date of 05-10-2016, days claimed after of 0 (the question was not asked) and gain of £45,000 " +
       "resulting in a PRR of £45082 that is capped" in {
-      val result = calculationService.calculateRebasedPRR(DateTime.parse("2016-10-05"), 0, 45000)
+      val result = calculationService.calculateRebasedPRR(LocalDate.parse("2016-10-05"), 0, 45000)
       result mustEqual 45000
     }
 
     "return £35000 for a Disposal date of 25-12-2015, days claimed after of 0 (the question was not asked) and gain of £35,000 " +
       "resulting in a PRR of £72785 that is capped" in {
-      val result = calculationService.calculateRebasedPRR(DateTime.parse("2015-12-25"), 0, 35000)
+      val result = calculationService.calculateRebasedPRR(LocalDate.parse("2015-12-25"), 0, 35000)
       result mustEqual 35000
     }
 
@@ -635,36 +635,36 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
   "Calling CalculationService.calculateTimeApportionmentPRR" must {
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £100,000" in {
-      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 100000)
+      val result = calculationService.calculateTimeApportionmentPRR(LocalDate.parse("2016-10-06"), 0, 100000)
       result mustEqual 100000
     }
 
     "return £100,000 for a Disposal date of 06-10-2016, days claimed after of 20 and gain of £100,000 resulting PRR of " +
       "£103,637 that is capped" in {
-      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 20, 100000)
+      val result = calculationService.calculateTimeApportionmentPRR(LocalDate.parse("2016-10-06"), 20, 100000)
       result mustEqual 100000
     }
 
     "return £75,000 for a Disposal date of 06-10-2016, days claimed after of 0 and gain of £75,000" in {
-      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-06"), 0, 75000)
+      val result = calculationService.calculateTimeApportionmentPRR(LocalDate.parse("2016-10-06"), 0, 75000)
       result mustEqual 75000
     }
 
     "return a rounded up amount of £30,899 for a Disposal date of 25-12-2016, days claimed after of 0 and gain of £56,000 " +
       "which results in a PRR of £30898.492[...]" in {
-      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2017-12-25"), 0, 56000)
+      val result = calculationService.calculateTimeApportionmentPRR(LocalDate.parse("2017-12-25"), 0, 56000)
       result mustEqual 30899
     }
 
     "return £45,000 for a Disposal date of 05-10-2016, days claimed after of 0 (the question was not asked) and gain of £45,000 " +
       "resulting in a PRR of £45082 that is capped" in {
-      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2016-10-05"), 0, 45000)
+      val result = calculationService.calculateTimeApportionmentPRR(LocalDate.parse("2016-10-05"), 0, 45000)
       result mustEqual 45000
     }
 
     "return £35000 for a Disposal date of 25-12-2015, days claimed after of 0 (the question was not asked) and gain of £35,000 " +
       "resulting in a PRR of £72785 that is capped" in {
-      val result = calculationService.calculateTimeApportionmentPRR(DateTime.parse("2015-12-25"), 0, 35000)
+      val result = calculationService.calculateTimeApportionmentPRR(LocalDate.parse("2015-12-25"), 0, 35000)
       result mustEqual 35000
     }
   }
@@ -683,12 +683,12 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
 
         override def calculateGainTA(disposalValue: Double, disposalCosts: Double, acquisitionValueAmt: Double,
                                      acquisitionCostsAmt: Double, improvementsAmt: Double,
-                                     acquisitionDate: Option[DateTime], disposalDate: DateTime) = 0.00
+                                     acquisitionDate: Option[LocalDate], disposalDate: LocalDate) = 0.00
 
       }
 
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
       result.taxOwed mustEqual 0.0
       result.totalGain mustEqual 0.0
       result.baseTaxGain mustEqual 0.0
@@ -705,7 +705,7 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
 
     "for an individual performing flat who is not claiming ER resulting in a £200 loss" must {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
 
       "return -200 for total gain" in {
         result.totalGain mustEqual -200.0
@@ -718,7 +718,7 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
 
     "for an individual performing flat who is claiming ER resulting in a £200 loss" must {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), -200.0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
 
       "return -200 for total gain" in {
         result.totalGain mustEqual -200.0
@@ -740,35 +740,35 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain to zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 200.00, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
       result.totalGain mustEqual 200.00
       result.baseTaxGain mustEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the reliefs reduce the gain beyond zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 400.00, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
       result.totalGain mustEqual 200.00
       result.baseTaxGain mustEqual 0.0
     }
 
     "return a calculation result model with 0 taxable gain if the allowable losses reduce the gain to zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 200.0, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
       result.totalGain mustEqual 200.00
       result.baseTaxGain mustEqual 0.0
     }
 
     "return a calculation result model with -200.00 taxable gain if the allowable losses reduce the gain beyond zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 400.0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
       result.totalGain mustEqual 200.0
       result.baseTaxGain mustEqual -200.0
     }
 
     "return a calculation result model with 0 taxable gain if the AEA can reduce the gain too or beyond zero" in {
       val result = testService.calculateCapitalGainsTax("flat", "No", Some(0), Some(0), 0, Some(0), 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        disposalDate = DateTime.parse("2016-10-10"), isProperty = true)
+        disposalDate = LocalDate.parse("2016-10-10"), isProperty = true)
       result.totalGain mustEqual 200.00
       result.baseTaxGain mustEqual 0.0
 

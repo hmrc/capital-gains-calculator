@@ -16,13 +16,13 @@
 
 package common.binders
 
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
 class CommonBindersSpec extends PlaySpec with MockitoSugar {
 
-  val binder = new CommonBinders{}.dateTimeBinder
+  val binder = new CommonBinders{}.localDateBinder
 
   "Binding to a localDateBinder" must {
 
@@ -30,14 +30,14 @@ class CommonBindersSpec extends PlaySpec with MockitoSugar {
       val map = Map("disposalDate" -> Seq("2016-05-04"))
       val result = binder.bind("disposalDate", map)
 
-      result mustBe Some(Right(DateTime.parse("2016-05-04")))
+      result mustBe Some(Right(LocalDate.parse("2016-05-04")))
     }
 
     "return an error message with a valid map but invalid date" in {
       val map = Map("disposalDate" -> Seq("not-a-date"))
       val result = binder.bind("disposalDate", map)
 
-      result mustBe Some(Left("""Cannot parse parameter disposalDate as DateTime: For input string: "not-a-date""""))
+      result mustBe Some(Left("""Cannot parse parameter disposalDate as LocalDate: For input string: "not-a-date""""))
     }
 
     "return an error message with an invalid map with empty value" in {
@@ -58,7 +58,7 @@ class CommonBindersSpec extends PlaySpec with MockitoSugar {
   "Unbinding using the localDateBinder" must {
 
     "return a valid String from a LocalDate" in {
-      val date = DateTime.parse("2015-06-04")
+      val date = LocalDate.parse("2015-06-04")
       val result = binder.unbind("disposalDate", date)
 
       result mustBe "disposalDate=2015-6-4"

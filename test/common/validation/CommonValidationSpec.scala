@@ -16,7 +16,7 @@
 
 package common.validation
 
-import org.joda.time.DateTime
+import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 
 class CommonValidationSpec extends PlaySpec {
@@ -181,31 +181,31 @@ class CommonValidationSpec extends PlaySpec {
   "Calling validatePersonalAllowance" must {
 
     "return a Right with a value of 13290.0 in 2016/17" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(13290.0, DateTime.parse("2016-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(13290.0, LocalDate.parse("2016-08-08"))
 
       result mustBe Right(13290.0)
     }
 
     "return a Left with a value of 13890.0 in 2015/16" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(15290.0, DateTime.parse("2015-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(15290.0, LocalDate.parse("2015-08-08"))
 
       result mustBe Left("personalAllowance cannot exceed 14150")
     }
 
     "return a Right with a value of 12890 in 2015/16" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(14150.0, DateTime.parse("2015-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(14150.0, LocalDate.parse("2015-08-08"))
 
       result mustBe Right(14150.0)
     }
 
     "return a Left with a value of 13291 in 2016/17" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(14550.1, DateTime.parse("2016-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(14550.1, LocalDate.parse("2016-08-08"))
 
       result mustBe Left("personalAllowance cannot exceed 14550")
     }
 
     "return a Left with an error message when the double fails validation" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(-1000.0, DateTime.parse("2016-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(-1000.0, LocalDate.parse("2016-08-08"))
 
       result mustBe Left("personalAllowance cannot be negative.")
     }
@@ -214,21 +214,21 @@ class CommonValidationSpec extends PlaySpec {
   "Calling validateSharesDisposalDate" must {
 
     "return a Right when providing a date after the start of the 2015/16 tax year" in {
-      val date = DateTime.parse("2015-08-10")
+      val date = LocalDate.parse("2015-08-10")
       val result = CommonValidation.validateDisposalDate(date)
 
       result mustBe Right(date)
     }
 
     "return a Right when providing a date on the start of the 2015/16 tax year" in {
-      val date = DateTime.parse("2015-04-06")
+      val date = LocalDate.parse("2015-04-06")
       val result = CommonValidation.validateDisposalDate(date)
 
       result mustBe Right(date)
     }
 
     "return a Left when providing a date before the start of the 2015/16 tax year" in {
-      val date = DateTime.parse("2015-04-05")
+      val date = LocalDate.parse("2015-04-05")
       val result = CommonValidation.validateDisposalDate(date)
 
       result mustBe Left("disposalDate cannot be before 2015-04-06")
@@ -283,10 +283,10 @@ class CommonValidationSpec extends PlaySpec {
 
   "Calling validateOptionalAcquisitionDate" must {
 
-    val disposalDate = DateTime.parse("2016-12-12")
+    val disposalDate = LocalDate.parse("2016-12-12")
 
     "return a Left when given an AcquisitionDate after the disposal date" in {
-      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(DateTime.parse("2016-12-20"))) mustBe
+      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(LocalDate.parse("2016-12-20"))) mustBe
         Left("The acquisitionDate must be before the disposalDate")
     }
 
@@ -296,17 +296,17 @@ class CommonValidationSpec extends PlaySpec {
     }
 
     "return a Right when given an acquisition date that is before the disposal date" in {
-      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(DateTime.parse("2016-11-11"))) mustBe
-        Right(Some(DateTime.parse("2016-11-11")))
+      CommonValidation.validateOptionalAcquisitionDate(disposalDate, Some(LocalDate.parse("2016-11-11"))) mustBe
+        Right(Some(LocalDate.parse("2016-11-11")))
     }
   }
 
   "Calling validateAcquisitionDate" must {
 
-    val disposalDate = DateTime.parse("2016-12-12")
+    val disposalDate = LocalDate.parse("2016-12-12")
 
     "return a Left when given an AcquisitionDate after the disposal date" in {
-      CommonValidation.validateAcquisitionDate(disposalDate, DateTime.parse("2016-12-20")) mustBe
+      CommonValidation.validateAcquisitionDate(disposalDate, LocalDate.parse("2016-12-20")) mustBe
         Left("The acquisitionDate must be before the disposalDate")
     }
 
@@ -316,8 +316,8 @@ class CommonValidationSpec extends PlaySpec {
     }
 
     "return a Right when given an acquisition date that is before the disposal date" in {
-      CommonValidation.validateAcquisitionDate(disposalDate, DateTime.parse("2016-11-11")) mustBe
-        Right(Some(DateTime.parse("2016-11-11")))
+      CommonValidation.validateAcquisitionDate(disposalDate, LocalDate.parse("2016-11-11")) mustBe
+        Right(Some(LocalDate.parse("2016-11-11")))
     }
   }
 }
