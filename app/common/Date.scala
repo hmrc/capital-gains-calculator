@@ -30,11 +30,11 @@ object Date {
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d")
 
   def daysBetween(start: String, end: String): Double = {
-    DAYS.between(LocalDate.parse(start, dateFormatter), LocalDate.parse(end, dateFormatter)) + 1
+    (DAYS.between(LocalDate.parse(start, dateFormatter), LocalDate.parse(end, dateFormatter)) + 1).toDouble
   }
 
   def daysBetween(start: LocalDate, end: LocalDate): Double = {
-    DAYS.between(start, end) + 1
+    (DAYS.between(start, end) + 1).toDouble
   }
 
   def getTaxYear(date: LocalDate): Int = {
