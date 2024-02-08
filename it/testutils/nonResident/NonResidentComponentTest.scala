@@ -16,13 +16,13 @@
 
 package testutils.nonResident
 
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import play.api.test.Helpers._
 import play.api.libs.ws.{WSClient, WSResponse}
-import org.scalatestplus.play.PlaySpec
+import play.api.test.Helpers._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}

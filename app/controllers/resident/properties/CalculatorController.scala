@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-import javax.inject.{Inject, Singleton}
 import models.CalculationResultModel
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
@@ -29,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.CalculationService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

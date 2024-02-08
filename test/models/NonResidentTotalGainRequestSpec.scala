@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package models
 
 import models.nonResident.NonResidentTotalGainRequestModel
-import java.time.LocalDate
-import play.api.libs.json.{JsSuccess, Json}
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsSuccess, Json}
+
+import java.time.LocalDate
 
 class NonResidentTotalGainRequestSpec extends PlaySpec {
 

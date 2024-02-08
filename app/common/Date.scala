@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ object Date {
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d")
 
   def daysBetween(start: String, end: String): Double = {
-    DAYS.between(LocalDate.parse(start, dateFormatter), LocalDate.parse(end, dateFormatter)) + 1
+    (DAYS.between(LocalDate.parse(start, dateFormatter), LocalDate.parse(end, dateFormatter)) + 1).toDouble
   }
 
   def daysBetween(start: LocalDate, end: LocalDate): Double = {
-    DAYS.between(start, end) + 1
+    (DAYS.between(start, end) + 1).toDouble
   }
 
   def getTaxYear(date: LocalDate): Int = {

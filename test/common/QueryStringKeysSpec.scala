@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package common
 import org.scalatestplus.play.PlaySpec
 
 class QueryStringKeysSpec extends PlaySpec {
-  import common.QueryStringKeys.{NonResidentCalculationKeys => target}
-  import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => propertyTarget}
+  import common.QueryStringKeys.{NonResidentCalculationKeys => target, ResidentPropertiesCalculationKeys => propertyTarget}
 
   "NonResidentCalculationKeys" must {
 

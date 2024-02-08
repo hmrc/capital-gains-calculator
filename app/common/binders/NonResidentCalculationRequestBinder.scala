@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package common.binders
 
-import models.nonResident.CalculationRequestModel
-import play.api.mvc.QueryStringBindable
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import common.validation.{CommonValidation, NonResidentValidation}
+import models.nonResident.CalculationRequestModel
+import play.api.mvc.QueryStringBindable
 
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 
