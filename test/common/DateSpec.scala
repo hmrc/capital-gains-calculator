@@ -17,8 +17,9 @@
 package common
 
 import common.Date._
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class DateSpec extends PlaySpec {
 

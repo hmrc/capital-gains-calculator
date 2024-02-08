@@ -16,11 +16,12 @@
 
 package common.binders
 
+import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import models.nonResident.TimeApportionmentCalculationRequestModel
 import org.mockito.MockitoSugar
-import play.api.mvc.QueryStringBindable
 import org.scalatestplus.play.PlaySpec
-import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
+import play.api.mvc.QueryStringBindable
+
 import java.time.LocalDate
 
 class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with MockitoSugar {

@@ -16,9 +16,9 @@
 
 package common.validation
 
-import java.time.{ZoneId, ZonedDateTime}
-
 import config.TaxRatesAndBands
+
+import java.time.{ZoneId, ZonedDateTime}
 
 object TaxRatesAndBandsValidation {
 

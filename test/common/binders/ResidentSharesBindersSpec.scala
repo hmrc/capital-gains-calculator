@@ -17,9 +17,10 @@
 package common.binders
 
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
-import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 
 class ResidentSharesBindersSpec extends PlaySpec with MockitoSugar {

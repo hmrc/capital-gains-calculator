@@ -16,8 +16,9 @@
 
 package config
 
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class TaxRatesAndBandsSpec extends PlaySpec {
 

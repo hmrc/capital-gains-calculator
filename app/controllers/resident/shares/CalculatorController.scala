@@ -20,7 +20,6 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-import javax.inject.{Inject, Singleton}
 import models.CalculationResultModel
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
@@ -29,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.CalculationService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

@@ -18,15 +18,16 @@ package controllers.resident.properties
 
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.shares.TotalGainModel
-import java.time.LocalDate
-import play.api.libs.json.Json
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import org.mockito.MockitoSugar
-import play.api.mvc.ControllerComponents
-import services.CalculationService
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import services.CalculationService
+
+import java.time.LocalDate
 
 class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 

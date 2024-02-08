@@ -19,8 +19,7 @@ package common
 import org.scalatestplus.play.PlaySpec
 
 class QueryStringKeysSpec extends PlaySpec {
-  import common.QueryStringKeys.{NonResidentCalculationKeys => target}
-  import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => propertyTarget}
+  import common.QueryStringKeys.{NonResidentCalculationKeys => target, ResidentPropertiesCalculationKeys => propertyTarget}
 
   "NonResidentCalculationKeys" must {
 

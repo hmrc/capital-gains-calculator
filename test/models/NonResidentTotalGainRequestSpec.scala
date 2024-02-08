@@ -17,9 +17,10 @@
 package models
 
 import models.nonResident.NonResidentTotalGainRequestModel
-import java.time.LocalDate
-import play.api.libs.json.{JsSuccess, Json}
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsSuccess, Json}
+
+import java.time.LocalDate
 
 class NonResidentTotalGainRequestSpec extends PlaySpec {
 

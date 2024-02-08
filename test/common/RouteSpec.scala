@@ -19,11 +19,12 @@ package common
 import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
 import models.resident.properties.PropertyTotalGainModel
 import models.resident.shares.TotalGainModel
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers._
 import org.mockito.MockitoSugar
-import play.api.mvc.QueryStringBindable
 import org.scalatestplus.play.PlaySpec
+import play.api.mvc.QueryStringBindable
+
+import java.time.LocalDate
 
 class RouteSpec extends PlaySpec with MockitoSugar {
 

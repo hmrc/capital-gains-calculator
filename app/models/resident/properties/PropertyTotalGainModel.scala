@@ -16,8 +16,8 @@
 
 package models.resident.properties
 
-import models.resident.shares.TotalGainModel
 import common.binders._
+import models.resident.shares.TotalGainModel
 
 case class PropertyTotalGainModel (totalGainModel: TotalGainModel, improvements: Double)
 

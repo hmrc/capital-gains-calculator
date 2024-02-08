@@ -17,8 +17,9 @@
 package common.validation
 
 import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class NonResidentValidationSpec extends PlaySpec {
 

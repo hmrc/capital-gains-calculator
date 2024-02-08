@@ -16,9 +16,10 @@
 
 package services
 
-import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class CalculationServiceSpec extends PlaySpec with MockitoSugar {
  val calculationService = new CalculationService

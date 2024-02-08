@@ -18,19 +18,19 @@ package controllers.nonresident
 
 import models.CalculationResultModel
 import models.nonResident._
-import java.time.LocalDate
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
+import org.mockito.{ArgumentMatchers, MockitoSugar}
 import org.scalatest.BeforeAndAfterEach
-import org.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, ControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CalculationService
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
+import java.time.LocalDate
 
 class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with BeforeAndAfterEach {
 

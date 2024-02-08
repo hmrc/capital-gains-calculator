@@ -17,8 +17,9 @@
 package common.validation
 
 import common.validation.TaxRatesAndBandsValidation._
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class TaxRatesAndBandsValidationSpec extends PlaySpec{
 

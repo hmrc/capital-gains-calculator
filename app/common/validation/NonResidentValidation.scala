@@ -16,9 +16,9 @@
 
 package common.validation
 
-import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
-import common.validation.CommonValidation._
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
+import common.validation.CommonValidation._
+import models.nonResident.{CalculationRequestModel, TimeApportionmentCalculationRequestModel}
 
 object NonResidentValidation {
 

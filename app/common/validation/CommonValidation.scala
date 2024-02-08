@@ -17,8 +17,8 @@
 package common.validation
 
 import common.Date
-import config.{TaxRatesAndBands, TaxRatesAndBands20152016}
 import common.QueryStringKeys.{ResidentSharesCalculationKeys => sharesKeys}
+import config.{TaxRatesAndBands, TaxRatesAndBands20152016}
 
 import java.time.LocalDate
 

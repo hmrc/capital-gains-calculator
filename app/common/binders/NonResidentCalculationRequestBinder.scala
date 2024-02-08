@@ -16,10 +16,10 @@
 
 package common.binders
 
-import models.nonResident.CalculationRequestModel
-import play.api.mvc.QueryStringBindable
 import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import common.validation.{CommonValidation, NonResidentValidation}
+import models.nonResident.CalculationRequestModel
+import play.api.mvc.QueryStringBindable
 
 trait NonResidentCalculationRequestBinder extends CommonBinders {
 

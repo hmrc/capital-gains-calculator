@@ -17,8 +17,9 @@
 package common.validation
 
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class SharesValidationSpec extends PlaySpec {
 

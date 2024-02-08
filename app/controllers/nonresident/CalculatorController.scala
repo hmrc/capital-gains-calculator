@@ -20,8 +20,6 @@ import common.Date
 import common.Date._
 import common.Math._
 import config.TaxRatesAndBands
-
-import javax.inject.{Inject, Singleton}
 import models.nonResident._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
@@ -29,6 +27,7 @@ import services.CalculationService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

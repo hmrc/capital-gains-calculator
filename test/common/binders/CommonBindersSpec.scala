@@ -16,9 +16,10 @@
 
 package common.binders
 
-import java.time.LocalDate
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class CommonBindersSpec extends PlaySpec with MockitoSugar {
 

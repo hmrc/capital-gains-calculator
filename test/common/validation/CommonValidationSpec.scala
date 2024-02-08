@@ -16,8 +16,9 @@
 
 package common.validation
 
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+
+import java.time.LocalDate
 
 class CommonValidationSpec extends PlaySpec {
 
