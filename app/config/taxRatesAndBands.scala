@@ -41,25 +41,47 @@ trait TaxRatesAndBands {
 
 object TaxRatesAndBands {
 
-  val rates: List[TaxRatesAndBands] = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 ::
+  val allRates: List[TaxRatesAndBands] = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 ::
     TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: TaxRatesAndBands20202021 :: TaxRatesAndBands20212022 ::
-    TaxRatesAndBands20222023 :: TaxRatesAndBands20232024 :: Nil
+    TaxRatesAndBands20222023 :: TaxRatesAndBands20232024 :: TaxRatesAndBands20242025 :: Nil
 
-  def getRates(year: Int): TaxRatesAndBands = rates.filter(_.taxYear == year) match {
+  val liveTaxRates: List[TaxRatesAndBands] = if (LocalDate.now.isBefore(getLatestTaxYearLiveDate)) allRates.dropRight(1) else allRates
+
+  def getRates(year: Int): TaxRatesAndBands = liveTaxRates.filter(_.taxYear == year) match {
     case params if params.nonEmpty => params.head
-    case _ => rates.maxBy(_.taxYear)
+    case _ => liveTaxRates.maxBy(_.taxYear)
   }
 
   def filterRatesByTaxYear (taxYear: Int): List[TaxRatesAndBands] = {
-    rates.filter(_.taxYear == taxYear)
+    liveTaxRates.filter(_.taxYear == taxYear)
   }
 
   def getClosestTaxYear (taxYear: Int): Int = {
-    val validYears = rates.map(_.taxYear)
+    val validYears = liveTaxRates.map(_.taxYear)
     validYears.minBy(year => math.abs(year - taxYear))
   }
 
-  def getEarliestTaxYear: TaxRatesAndBands = rates.minBy(_.taxYear)
+  def getEarliestTaxYear: TaxRatesAndBands = liveTaxRates.minBy(_.taxYear)
+
+  def getLatestTaxYearLiveDate: LocalDate = LocalDate.parse(s"${allRates.last.taxYear}-04-06")
+}
+
+object TaxRatesAndBands20242025 extends TaxRatesAndBands {
+  override val taxYear = 2025
+  override val maxAnnualExemptAmount = 3000
+  override val notVulnerableMaxAnnualExemptAmount = 3000
+  override val basicRatePercentage = 18
+  override val higherRatePercentage = 24
+  override val shareBasicRatePercentage = 10
+  override val shareHigherRatePercentage = 20
+  override val maxPersonalAllowance = 12570
+  override val basicRate = basicRatePercentage / 100.toDouble
+  override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
+  override val basicRateBand = 37700
+  override val blindPersonsAllowance = 2870
+  override val maxLettingsRelief = 40000.0
 }
 
 object TaxRatesAndBands20232024 extends TaxRatesAndBands {
