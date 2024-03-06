@@ -22,18 +22,18 @@ import java.time.LocalDate
 
 case class PrivateResidenceReliefDateDetails(shortedPeriod: Boolean, months: Int, dateDeducted: LocalDate)
 
-case class PrivateResidenceReliefDateUtils(date: LocalDate) {
+case class PrivateResidenceReliefDateUtils(disposalDate: LocalDate) {
 
   /**
    * Should Private Residence Relief be 9 months or 18
    */
   def pRRMonthDeductionApplicable(): PrivateResidenceReliefDateDetails = {
-    val dateAfter = date.isAfter(Date.PRRDeductionApplicableDate)
+    val dateAfter = disposalDate.isAfter(Date.PRRDeductionApplicableDate)
     val monthsToDeduct = dateAfter match {
       case true => 9
       case false => 18
     }
-    val dateWithDeduction = date.minusMonths(monthsToDeduct)
+    val dateWithDeduction = disposalDate.minusMonths(monthsToDeduct)
     PrivateResidenceReliefDateDetails(dateAfter, monthsToDeduct, dateWithDeduction)
   }
 }

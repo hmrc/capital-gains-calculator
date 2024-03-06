@@ -35,7 +35,8 @@ object AppDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestVersion,
     "com.typesafe.play"      %% "play-test"              % PlayVersion.current,
     "org.jsoup"               % "jsoup"                  % jsoupVersion,
-    "org.mockito"            %% "mockito-scala-scalatest"% "1.17.12"
+    "org.mockito"            %% "mockito-scala-scalatest"% "1.17.12",
+    "org.scalatestplus"      %% "scalacheck-1-17"        % "3.2.17.0"
   ).map(_ % "test")
 
   val integrationTest: Seq[ModuleID] = Seq(

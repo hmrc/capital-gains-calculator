@@ -23,8 +23,8 @@ import java.time.{ZoneId, ZonedDateTime}
 object TaxRatesAndBandsValidation {
 
   def checkValidTaxYear(year: Int): Boolean = {
-    if(TaxRatesAndBands.rates.map(_.taxYear).contains(year) || (year <= ZonedDateTime.now(ZoneId.of("Europe/London")).getYear + 1 && year >= TaxRatesAndBands.rates.map(_.taxYear).min)) true
-    else false
+    TaxRatesAndBands.liveTaxRates.map(_.taxYear).contains(year) ||
+      (year <= ZonedDateTime.now(ZoneId.of("Europe/London")).getYear + 1 && year >= TaxRatesAndBands.liveTaxRates.map(_.taxYear).min)
   }
 
 }
