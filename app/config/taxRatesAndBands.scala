@@ -16,6 +16,8 @@
 
 package config
 
+import com.typesafe.config.ConfigFactory
+
 import java.time.LocalDate
 
 trait TaxRatesAndBands {
@@ -41,11 +43,13 @@ trait TaxRatesAndBands {
 
 object TaxRatesAndBands {
 
+  val latestTaxYearGoLiveDate: LocalDate = LocalDate.parse(ConfigFactory.load().getString("latest-tax-year-go-live-date"))
+
   val allRates: List[TaxRatesAndBands] = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 ::
     TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: TaxRatesAndBands20202021 :: TaxRatesAndBands20212022 ::
     TaxRatesAndBands20222023 :: TaxRatesAndBands20232024 :: TaxRatesAndBands20242025 :: Nil
 
-  val liveTaxRates: List[TaxRatesAndBands] = if (LocalDate.now.isBefore(getLatestTaxYearLiveDate)) allRates.dropRight(1) else allRates
+  val liveTaxRates: List[TaxRatesAndBands] = if (LocalDate.now.isBefore(latestTaxYearGoLiveDate)) allRates.dropRight(1) else allRates
 
   def getRates(year: Int): TaxRatesAndBands = liveTaxRates.filter(_.taxYear == year) match {
     case params if params.nonEmpty => params.head
@@ -63,7 +67,6 @@ object TaxRatesAndBands {
 
   def getEarliestTaxYear: TaxRatesAndBands = liveTaxRates.minBy(_.taxYear)
 
-  def getLatestTaxYearLiveDate: LocalDate = LocalDate.parse(s"${allRates.last.taxYear}-04-06")
 }
 
 object TaxRatesAndBands20242025 extends TaxRatesAndBands {
