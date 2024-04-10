@@ -21,28 +21,28 @@ import sbt.*
 object AppDependencies {
 
   val jsoupVersion     = "1.15.4"
-  val bootstrapVersion = "7.19.0"
-  val scalaTestVersion = "5.1.0"
+  val bootstrapVersion = "8.3.0"
+  val scalaTestVersion = "7.0.0"
+  private val playSuffix = "-play-30"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapVersion
+    "uk.gov.hmrc"       %% s"bootstrap-backend$playSuffix" % bootstrapVersion
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapVersion,
-    "org.mockito"             % "mockito-core"           % "3.12.4",
-    "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestVersion,
-    "com.typesafe.play"      %% "play-test"              % PlayVersion.current,
-    "org.jsoup"               % "jsoup"                  % jsoupVersion,
-    "org.mockito"            %% "mockito-scala-scalatest"% "1.17.12",
-    "org.scalatestplus"      %% "scalacheck-1-17"        % "3.2.17.0"
+    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.30",
+    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion,
+    "org.jsoup"               % "jsoup"                      % jsoupVersion,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.12",
+    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.16.0"
   ).map(_ % "test")
 
   val integrationTest: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapVersion,
-    "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestVersion,
-    "com.typesafe.play"      %% "play-test"              % PlayVersion.current
+    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion,
+    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion,
+
   ).map(_ % "it")
 
   def apply(): Seq[ModuleID] = compile ++ test ++ integrationTest
