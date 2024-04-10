@@ -41,7 +41,8 @@ object AppDependencies {
 
   val integrationTest: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion,
-    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion
+    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion,
+
   ).map(_ % "it")
 
   def apply(): Seq[ModuleID] = compile ++ test ++ integrationTest
