@@ -16,7 +16,7 @@
 
 package controllers
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
