@@ -14,44 +14,29 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
+import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val appName = "capital-gains-calculator"
-lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala)
-lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins : _*)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
-  .settings(CodeCoverageSettings.settings : _*)
+  .settings(CodeCoverageSettings.settings *)
   .settings(majorVersion := 2)
-  .settings(playSettings : _*)
   .settings(PlayKeys.playDefaultPort := 9985)
-  .settings(scalaSettings: _*)
-  .settings(defaultSettings(): _*)
   .settings(
     scalaVersion := "2.13.12",
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.integrationTest,
-
-    retrieveManaged := true,
-    update / evictionWarningOptions :=
-      EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    scalacOptions += "-P:silencer:pathFilters=routes",
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.14" cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % "1.7.14" % Provided cross CrossVersion.full
-    ),
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
+  )
+  .settings(
+    scalacOptions += "-Wconf:src=routes/.*:s"
   )
   .configs(IntegrationTest)
   .settings(integrationTestSettings())
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings) *)
   .settings(
-    IntegrationTest / fork := false,
-    IntegrationTest / unmanagedResourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it" / "resources")).value,
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
-    IntegrationTest / parallelExecution := false)
-  .settings(
-    resolvers += Resolver.jcenterRepo)
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value
+  )
   .settings(routesImport += "models.nonResident._")
   .settings(routesImport += "common.binders._")
   .settings(routesImport += "common.binders.CommonBinders._")
