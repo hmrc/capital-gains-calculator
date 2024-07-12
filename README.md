@@ -30,9 +30,9 @@ This code is open source software licensed under the [Apache 2.0 License]("http:
 ## Running locally
 
 Start microservices using service manager
-<code>sm --start CGT_ALL -r</code></br>
+<code>sm2 --start CGT_ALL</code></br>
 Stop capital-gains-calculator on service manager
-<code>sm --stop CGT_CALC</code></br>
+<code>sm2 --stop CGT_CALC</code></br>
 From the root directory execute
 <code>sbt "run 9985"</code></br>
 
