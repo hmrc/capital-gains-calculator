@@ -14,36 +14,24 @@
  * limitations under the License.
  */
 
-import play.core.PlayVersion
-import play.sbt.PlayImport.*
 import sbt.*
 
 object AppDependencies {
-
-  val jsoupVersion     = "1.15.4"
-  val bootstrapVersion = "8.3.0"
-  val scalaTestVersion = "7.0.0"
+  private val jsoupVersion     = "1.15.4"
+  private val bootstrapVersion = "8.3.0"
+  private val scalaTestVersion = "7.0.0"
   private val playSuffix = "-play-30"
 
   val compile: Seq[ModuleID] = Seq(
-    ws,
     "uk.gov.hmrc"       %% s"bootstrap-backend$playSuffix" % bootstrapVersion
   )
 
-  val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion,
-    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.30",
-    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion,
-    "org.jsoup"               % "jsoup"                      % jsoupVersion,
-    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.12",
-    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.16.0"
-  ).map(_ % "test")
-
-  val integrationTest: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion,
-    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion,
-
-  ).map(_ % "it")
-
-  def apply(): Seq[ModuleID] = compile ++ test ++ integrationTest
+  def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
+    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion % scope,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.30" % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion % scope,
+    "org.jsoup"               % "jsoup"                      % jsoupVersion % scope,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.12" % scope,
+    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.16.0" % scope
+  )
 }

@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import sbt.Def
+import sbt.Setting
 import scoverage.ScoverageKeys
 
 object CodeCoverageSettings {
-
-  val settings: Seq[Def.Setting[_ >: String with Double with Boolean]] = Seq(
+  val settings: Seq[Setting[?]] = Seq(
     // Semicolon-separated list of regexs matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;uk.gov.hmrc.BuildInfo;app.*;prod.*;config.*;com.*",
     ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
-
 }
