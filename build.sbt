@@ -18,6 +18,8 @@ import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val appName = "capital-gains-calculator"
 
+lazy val ItTest = config("it") extend Test
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
@@ -31,11 +33,10 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     scalacOptions += "-Wconf:src=routes/.*:s"
   )
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings())
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings) *)
+  .configs(ItTest)
+  .settings(inConfig(ItTest)(Defaults.testSettings) *)
   .settings(
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value
+    ItTest / unmanagedSourceDirectories := (ItTest / baseDirectory)(base => Seq(base / "it")).value
   )
   .settings(routesImport += "models.nonResident._")
   .settings(routesImport += "common.binders._")
