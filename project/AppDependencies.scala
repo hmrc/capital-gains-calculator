@@ -26,12 +26,12 @@ object AppDependencies {
     "uk.gov.hmrc"       %% s"bootstrap-backend$playSuffix" % bootstrapVersion
   )
 
-  val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion,
-    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.30",
-    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion,
-    "org.jsoup"               % "jsoup"                      % jsoupVersion,
-    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.12",
-    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.16.0"
+  def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
+    "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion % scope,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.30" % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion % scope,
+    "org.jsoup"               % "jsoup"                      % jsoupVersion % scope,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.12" % scope,
+    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.16.0" % scope
   )
 }
