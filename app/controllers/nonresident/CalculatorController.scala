@@ -171,7 +171,6 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  //scalastyle:off
   def calculateTaxOwed(disposalValue: Double,
                        disposalCosts: Double,
                        acquisitionValue: Double,
