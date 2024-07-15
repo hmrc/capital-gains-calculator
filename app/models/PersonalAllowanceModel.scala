@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class PersonalAllowanceModel(personalAllowanceAmt: Int)
 
 object PersonalAllowanceModel {
-  implicit val formats = Json.format[PersonalAllowanceModel]
+  implicit val formats: Format[models.PersonalAllowanceModel] = Json.format[PersonalAllowanceModel]
 }

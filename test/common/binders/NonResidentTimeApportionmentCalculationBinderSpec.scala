@@ -27,7 +27,7 @@ import java.time.LocalDate
 class NonResidentTimeApportionmentCalculationBinderSpec extends PlaySpec with MockitoSugar {
 
   val target = new NonResidentTimeApportionmentCalculationRequestBinder {}.requestBinder
-  implicit val mockStringBinder = mock[QueryStringBindable[String]]
+  implicit val mockStringBinder: play.api.mvc.QueryStringBindable[String] = mock[QueryStringBindable[String]]
 
   // the values to bind to a valid request
   val validRequest: Map[String, Seq[String]] = Map(

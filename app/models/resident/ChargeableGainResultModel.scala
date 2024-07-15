@@ -16,7 +16,7 @@
 
 package models.resident
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class ChargeableGainResultModel
 (
@@ -34,5 +34,5 @@ case class ChargeableGainResultModel
 )
 
 object ChargeableGainResultModel {
-  implicit val formats = Json.format[ChargeableGainResultModel]
+  implicit val formats: Format[models.resident.ChargeableGainResultModel] = Json.format[ChargeableGainResultModel]
 }

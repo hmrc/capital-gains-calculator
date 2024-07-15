@@ -35,7 +35,7 @@ case class NonResidentTotalGainRequestModel(disposalValue: Double,
                                             improvementsAfterTaxStarted: Double)
 
 object NonResidentTotalGainRequestModel {
-  implicit val writes = Json.writes[NonResidentTotalGainRequestModel]
+  implicit val writes: Writes[NonResidentTotalGainRequestModel] = Json.writes[NonResidentTotalGainRequestModel]
 
   implicit val reads: Reads[NonResidentTotalGainRequestModel] = (
     (__ \ "disposalValue").read[Double] and

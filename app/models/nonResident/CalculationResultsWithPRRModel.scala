@@ -16,12 +16,12 @@
 
 package models.nonResident
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class CalculationResultsWithPRRModel(flatResult: GainsAfterPRRModel,
                                           rebasedResult: Option[GainsAfterPRRModel],
                                           timeApportionedResult: Option[GainsAfterPRRModel])
 
 object CalculationResultsWithPRRModel{
-  implicit val format = Json.format[CalculationResultsWithPRRModel]
+  implicit val format: Format[models.nonResident.CalculationResultsWithPRRModel] = Json.format[CalculationResultsWithPRRModel]
 }
