@@ -250,12 +250,8 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
 
-      val claimingPRR = false
-      val daysClaimed = 0
-      val daysClaimedAfter = 0
-
       val result = controller.calculateTaxableGainAfterPRR(10.0, 1, 1, 1, 1, None, 0, Some(disposalDate), None,
-        0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+        0, None)(fakeRequest)
 
       "return a status of 200" in {
         status(result) mustBe 200
@@ -302,19 +298,14 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(6.0)
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-      when(mockService.calculateFlatPRR(any(), any(), any(), any()))
-        .thenReturn(5.0)
       when(mockService.determineReliefsUsed(any(), any()))
         .thenReturn(100.0)
 
-      val claimingPRR = false
-      val daysClaimed = 0
-      val daysClaimedAfter = 1
       val disposalDate = LocalDate.parse("2016-05-08")
       val acquisitionDate = LocalDate.parse("2012-04-09")
 
       val result = controller.calculateTaxableGainAfterPRR(1, 1, 1, 1, 2.0, None, 0, Some(disposalDate), Some(acquisitionDate),
-        4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+        4.0, None)(fakeRequest)
 
       "return a status of 200" in {
         status(result) mustBe 200
@@ -362,20 +353,11 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.calculateGainRebased(any(), any(), any(), any(), any())).thenReturn(100.0)
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-      when(mockService.calculateFlatPRR(any(), any(), any(), any()))
-        .thenReturn(5.0)
-      when(mockService.calculateRebasedPRR(any(), any(), any()))
-        .thenReturn(87.0)
-      when(mockService.determineReliefsUsed(any(), any()))
-        .thenReturn(100.0)
 
-      val claimingPRR = true
-      val daysClaimed = 2847
-      val daysClaimedAfter = 1
       val disposalDate = LocalDate.parse("2017-01-02")
 
       val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), None,
-        4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+        4.0, Some(2847))(fakeRequest)
 
       "return a status of 200" in {
         status(result) mustBe 200
@@ -425,23 +407,14 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
         any(), any(), any())).thenReturn(50.0)
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any()))
         .thenReturn(6.0)
-      when(mockService.calculateFlatPRR(any(), any(), any(), any()))
-        .thenReturn(5.0)
-      when(mockService.calculateRebasedPRR(any(), any(), any()))
-        .thenReturn(87.0)
-      when(mockService.calculateTimeApportionmentPRR(any(), any(), any()))
-        .thenReturn(44.0)
       when(mockService.determineReliefsUsed(any(), any()))
         .thenReturn(100.0)
 
-      val claimingPRR = true
-      val daysClaimed = 2847
-      val daysClaimedAfter = 100
       val disposalDate = LocalDate.parse("2017-01-02")
       val acquisitionDate = LocalDate.parse("2005-10-16")
 
       val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
-        4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+        4.0, Some(2847))(fakeRequest)
 
       "return a status of 200" in {
         status(result) mustBe 200
@@ -517,14 +490,11 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any())).thenReturn(6.0)
       when(mockService.determineReliefsUsed(any(), any())).thenReturn(0.0)
 
-      val claimingPRR = true
-      val daysClaimed = 2847
-      val daysClaimedAfter = 1
       val acquisitionDate = LocalDate.parse("2005-10-16")
       val disposalDate = LocalDate.parse("2017-10-16")
 
       val result = controller.calculateTaxableGainAfterPRR(1000.0, 55.0, 750.0, 50.0, 2.0, Some(150.0), 5.0, Some(disposalDate), Some(acquisitionDate),
-        4.0, claimingPRR, daysClaimed, daysClaimedAfter)(fakeRequest)
+        4.0, Some(2847))(fakeRequest)
 
       "return a status of 200" in {
         status(result) mustBe 200
@@ -580,12 +550,11 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.annualExemptAmountUsed(any(), any(), any(), any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(any(), any())).thenReturn(6.0)
       when(mockService.determineLossLeft(any(), any())).thenReturn(7.0)
-      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(),
-        any(), any(), any(), any()))
+      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(returnModel)
 
       val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, LocalDate.parse("2017-10-10"), None, 0,
-        PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
+        None, 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
         status(result) mustBe 200
@@ -649,12 +618,11 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.annualExemptAmountUsed(any(), any(), any(), any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(any(), any())).thenReturn(6.0)
       when(mockService.determineLossLeft(any(), any())).thenReturn(7.0)
-      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(),
-        any(), any(), any(), any()))
+      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(returnModel)
 
       val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, LocalDate.parse("2017-10-10"), Some(LocalDate.parse("2011-01-05")),
-        0, PrivateResidenceReliefModel(claimingPRR = false, None, None), 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
+        0, None, 1, 1, 0, 0, 0, 0, OtherReliefsModel(1, 1, 1))(fakeRequest)
 
       "should have a status of 200" in {
         status(result) mustBe 200
