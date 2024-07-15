@@ -110,7 +110,7 @@ class CalculatorController @Inject()(
       calculationService.brRemaining(calculateTaxOwedModel.previousIncome,
         calculateTaxOwedModel.personalAllowance, calculateTaxOwedModel.previousTaxableGain.getOrElse(0.0),
         Date.getTaxYear(calculateTaxOwedModel.disposalDate)),
-      0.0, "No", aeaUsed, 0.0, calcTaxYear, isProperty = false
+      None, aeaUsed, 0.0, calcTaxYear, isProperty = false
     )
     val result: TaxOwedResultModel = TaxOwedResultModel(
       gain,

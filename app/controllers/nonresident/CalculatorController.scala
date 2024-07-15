@@ -171,7 +171,7 @@ class CalculatorController @Inject()(val calculationService: CalculationService,
 
     val taxYear = getTaxYear(disposalDate)
     val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val prrValue = prrClaimed.getOrElse(0)
+    val prrValue: Double = prrClaimed.getOrElse(0)
 
     val flatModel = {
       val brRemaining = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
