@@ -19,7 +19,7 @@ package models.nonResident
 import common.validation.CommonValidation
 import play.api.mvc.QueryStringBindable
 
-case class PrivateResidenceReliefModel (claimingPRR: Boolean, daysClaimed: Option[Double], daysClaimedAfter: Option[Double])
+case class PrivateResidenceReliefModel(prrClaimed: Option[Double])
 
 object PrivateResidenceReliefModel {
   implicit def prrBinder(implicit optionDoubleBinder: QueryStringBindable[Option[Double]],

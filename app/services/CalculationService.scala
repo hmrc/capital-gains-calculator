@@ -18,68 +18,15 @@ package services
 
 import common.Date._
 import common.Math._
-import config.{PrivateResidenceReliefDateUtils, TaxRatesAndBands}
+import config.TaxRatesAndBands
 import models.CalculationResultModel
 
 import java.time.LocalDate
 
 class CalculationService {
 
-  def calculateCapitalGainsTax(calculationType: String,
-                                priorDisposal: String,
-                                annualExemptAmount: Option[Double] = None,
-                                otherPropertiesAmt: Option[Double] = None,
-                                currentIncome: Double,
-                                personalAllowanceAmt: Option[Double] = None,
-                                disposalValue: Double,
-                                disposalCosts: Double,
-                                acquisitionValueAmt: Double,
-                                acquisitionCostsAmt: Double,
-                                revaluedAmount: Double,
-                                revaluationCost: Double,
-                                improvementsAmt: Double,
-                                reliefs: Double,
-                                allowableLossesAmt: Double,
-                                acquisitionDate: Option[LocalDate] = None,
-                                disposalDate: LocalDate,
-                                isClaimingPRR: Option[String] = None,
-                                daysClaimed: Option[Double] = None,
-                                daysClaimedAfter: Option[Double] = None,
-                                isProperty: Boolean
-                              ): CalculationResultModel = {
-
-    val taxYear = getTaxYear(disposalDate)
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-
-    val gain: Double = calculationType match {
-      case "flat" => calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
-      case "rebased" => calculateGainRebased(disposalValue, disposalCosts, revaluedAmount, revaluationCost, improvementsAmt)
-      case "time" => calculateGainTA(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt,
-        acquisitionDate, disposalDate)
-    }
-
-    val prrAmount: Double = isClaimingPRR match {
-      case Some("Yes") => calculationType match {
-        case "flat" => calculateFlatPRR(disposalDate, acquisitionDate.get,
-          daysClaimed.getOrElse(0), gain)
-        case "rebased" => calculateRebasedPRR(disposalDate, daysClaimedAfter.getOrElse(0), gain)
-        case "time" => calculateTimeApportionmentPRR(disposalDate, daysClaimedAfter.getOrElse(0), gain)
-      }
-      case _ => 0
-    }
-
-    val calculatedAEA = calculateAEA(priorDisposal, annualExemptAmount, disposalDate)
-    val calculatedChargeableGain = calculateChargeableGain(gain, reliefs + prrAmount, allowableLossesAmt, calculatedAEA)
-    val usedAEA = annualExemptAmountUsed(calculatedAEA, gain, reliefs + prrAmount, allowableLossesAmt)
-    val aeaRemaining = annualExemptAmountLeft(calculatedAEA, usedAEA)
-    val taxableGain = negativeToZero(calculatedChargeableGain)
-    val basicRateRemaining = brRemaining(currentIncome, personalAllowanceAmt.getOrElse(0), otherPropertiesAmt.getOrElse(0), calcTaxYear)
-
-    calculationResult(gain, taxableGain, calculatedChargeableGain, basicRateRemaining, prrAmount, isClaimingPRR.getOrElse("No"), usedAEA, aeaRemaining, calcTaxYear, isProperty)
-  }
-
   def calculationResult(gain: Double, taxableGain: Double, chargeableGain: Double,
-                        basicRateRemaining: Double, prrAmount: Double, isClaimingPRR: String, usedAEA: Double,
+                        basicRateRemaining: Double, prrClaimed: Option[Double], usedAEA: Double,
                         aeaLeft: Double, taxYear: Int, isProperty: Boolean): CalculationResultModel = {
     val taxRates = TaxRatesAndBands.getRates(taxYear)
     val basicRate = if (isProperty) taxRates.basicRate else taxRates.shareBasicRate
@@ -106,7 +53,7 @@ class CalculationService {
       aeaRemaining = aeaLeft,
       upperTaxGain = negativeToNone(round("result", taxableGain - basicRateRemaining)), //rounding to be removed when refactored into BigDecimals
       upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None,
-      simplePRR = if (isClaimingPRR == "Yes") Some(prrAmount) else None,
+      simplePRR = prrClaimed,
       baseRateTotal = basicRateOwed,
       upperRateTotal = upperRateOwed)
   }
@@ -154,14 +101,6 @@ class CalculationService {
 
   }
 
-  def calculateAEA(priorDisposal: String, annualExemptAmount: Option[Double] = None, disposalDate: LocalDate): Double = {
-
-    priorDisposal match {
-      case "No" => TaxRatesAndBands.getRates(TaxRatesAndBands.getClosestTaxYear(disposalDate.getYear)).maxAnnualExemptAmount
-      case _ => annualExemptAmount.getOrElse(0)
-    }
-  }
-
   def calculateChargeableGain
   (
     gain: Double,
@@ -184,54 +123,6 @@ class CalculationService {
 
   def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int): Double = {
     negativeToZero(TaxRatesAndBands.getRates(taxYear).basicRateBand - negativeToZero(round("down", currentIncome) - round("up", personalAllowanceAmt)) - round("down", otherPropertiesAmt))
-  }
-
-  def calculateFlatPRR
-  (disposalDate: LocalDate,
-   acquisitionDate: LocalDate,
-   daysClaimed: Double,
-   gain: Double): Double = {
-
-    //val taxYear = getTaxYear(disposalDate)
-    //val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    //val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
-
-    val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
-
-    min(round("up", gain * ((daysClaimed + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
-      daysBetween(acquisitionDate, disposalDate))), gain)
-  }
-
-  def calculateRebasedPRR
-  (disposalDate: LocalDate,
-   daysClaimedAfter: Double,
-   gain: Double): Double = {
-
-    val taxYear = getTaxYear(disposalDate)
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
-
-    val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
-
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
-      daysBetween(taxRatesAndBands.startOfTaxLocalDate, disposalDate))), gain)
-
-  }
-
-  def calculateTimeApportionmentPRR
-  (disposalDate: LocalDate,
-   daysClaimedAfter: Double,
-   gain: Double): Double = {
-
-    val taxYear = getTaxYear(disposalDate)
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val taxRatesAndBands = TaxRatesAndBands.getRates(calcTaxYear)
-
-    val pRRDateDetails = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable()
-
-    min(round("up", gain * ((daysClaimedAfter + daysBetween(disposalDate.minusMonths(pRRDateDetails.months), disposalDate)) /
-      daysBetween(taxRatesAndBands.startOfTaxLocalDate, disposalDate))), gain)
-
   }
 
   def determineReliefsUsed(gain: Double, prrValueOpt: Option[Double]): Double = {
