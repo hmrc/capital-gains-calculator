@@ -59,7 +59,7 @@ These are the available end points for the service. The table below gives detail
         <td>Returns a JSON object which contains the results for the flat, rebased and time apportioned gains with prr applied. This requires the following parameters:
             disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double],
             rebasedCosts: Double, disposalDate: Option[org.joda.time.DateTime], acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double,
-            claimingPRR: Boolean, daysClaimed: Double, daysClaimedAfter: Double</td>
+            claimingPRR: Boolean, prrClaimed: Option[Double]</td>
     </tr>
     <tr>
         <td><code>/non-resident/calculate-tax-owed</code></td>
@@ -67,7 +67,7 @@ These are the available end points for the service. The table below gives detail
         <td>Returns a JSON object which contains the results for the flat, rebased and time apportioned tax owed values. This requires the following parameters:
             disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double, improvements: Double, rebasedValue: Option[Double],
             rebasedCosts: Double, disposalDate: org.joda.time.DateTime, acquisitionDate: Option[org.joda.time.DateTime], improvementsAfterTaxStarted: Double,
-            claimingPRR: Boolean, daysClaimed: Double, daysClaimedAfter: Double, customerType: String, isVulnerable: Option[String], currentIncome: Option[Double],
+            claimingPRR: Boolean, prrClaimed: Double, customerType: String, isVulnerable: Option[String], currentIncome: Option[Double],
             personalAllowanceAmt: Option[Double], allowableLoss: Option[Double], previousGain: Option[Double], annualExemptAmount: Double, broughtForwardLoss: Option[Double]</td>
     </tr>
     <tr>
@@ -213,8 +213,7 @@ Calculates the basic amount of gain for a non-resident capital gains user includ
     "acquisitionDate":"2005-10-16",
     "improvementsAfterTaxStarted":4.0,
     "claimingPRR":true,
-    "daysClaimed":2847,
-    "daysClaimedAfter":1
+    "prrClaimed":2847
 }
 ```
 
@@ -261,8 +260,7 @@ Calculates the tax owed for a non-resident capital gains user
     "acquisitionDate":"2005-10-16",
     "improvementsAfterTaxStarted":4.0,
     "claimingPRR":true,
-    "daysClaimed":2847,
-    "daysClaimedAfter":1,
+    "prrClaimed":2847,
     "customerType":"individual",
     "currentIncome":25000,
     "personalAllowanceAmt":11000,
