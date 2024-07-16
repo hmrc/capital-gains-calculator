@@ -131,7 +131,7 @@ class RouteSpec extends PlaySpec with MockitoSugar {
       queryStringParameters must include("improvementsAfterTaxStarted=1.0")
     }
 
-    "include the days claimed query string parameter" in {
+    "include the PRR claimed query string parameter" in {
       queryStringParameters must include("prrClaimed=1.0")
     }
 
