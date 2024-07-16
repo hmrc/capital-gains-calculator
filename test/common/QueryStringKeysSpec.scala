@@ -19,74 +19,7 @@ package common
 import org.scalatestplus.play.PlaySpec
 
 class QueryStringKeysSpec extends PlaySpec {
-  import common.QueryStringKeys.{NonResidentCalculationKeys => target, ResidentPropertiesCalculationKeys => propertyTarget}
-
-  "NonResidentCalculationKeys" must {
-
-    s"have a prior disposal key with the value ${target.priorDisposal}" in {
-      target.priorDisposal mustBe "priorDisposal"
-    }
-
-    s"have an annual exempt amount key with the value ${target.annualExemptAmount}" in {
-      target.annualExemptAmount mustBe "annualExemptAmount"
-    }
-
-    s"have an other properties amount key with the value ${target.otherPropertiesAmount}" in {
-      target.otherPropertiesAmount mustBe "otherPropertiesAmt"
-    }
-
-    s"have a current income key with the value ${target.currentIncome}" in {
-      target.currentIncome mustBe "currentIncome"
-    }
-
-    s"have a personal allowance key with the value ${target.personalAllowanceAmount}" in {
-      target.personalAllowanceAmount mustBe "personalAllowanceAmt"
-    }
-
-    s"have a disposal value key with the value ${target.disposalValue}" in {
-      target.disposalValue mustBe "disposalValue"
-    }
-
-    s"have a disposal costs key with the value ${target.disposalCosts}" in {
-      target.disposalCosts mustBe "disposalCosts"
-    }
-
-    s"have an acquisition value key with the value ${target.initialValue}" in {
-      target.initialValue mustBe "initialValueAmt"
-    }
-
-    s"have an acquisition costs key with the value ${target.initialCosts}" in {
-      target.initialCosts mustBe "initialCostsAmt"
-    }
-
-    s"have an improvements amount key with the value ${target.improvementsAmount}" in {
-      target.improvementsAmount mustBe "improvementsAmt"
-    }
-
-    s"have a reliefs amount key with the value ${target.reliefsAmount}" in {
-      target.reliefsAmount mustBe "reliefs"
-    }
-
-    s"have an allowable losses amount key with the value ${target.allowableLosses}" in {
-      target.allowableLosses mustBe "allowableLossesAmt"
-    }
-
-    s"have an acquisition date key with the value ${target.acquisitionDate}" in {
-      target.acquisitionDate mustBe "acquisitionDate"
-    }
-
-    s"have an disposal date key with the value ${target.disposalDate}" in {
-      target.disposalDate mustBe "disposalDate"
-    }
-
-    s"have an is claiming private residence relief key with the value ${target.isClaimingPRR}" in {
-      target.isClaimingPRR mustBe "isClaimingPRR"
-    }
-
-    s"have an days claiming key with the value ${target.daysClaimed}" in {
-      target.daysClaimed mustBe "daysClaimed"
-    }
-  }
+  import common.QueryStringKeys.{ResidentPropertiesCalculationKeys => propertyTarget}
 
   "ResidentPropertiesCalculationKeys" must {
 

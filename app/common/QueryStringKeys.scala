@@ -18,25 +18,6 @@ package common
 
 object QueryStringKeys {
 
-  object NonResidentCalculationKeys {
-    val priorDisposal = "priorDisposal"
-    val annualExemptAmount = "annualExemptAmount"
-    val otherPropertiesAmount = "otherPropertiesAmt"
-    val currentIncome = "currentIncome"
-    val personalAllowanceAmount = "personalAllowanceAmt"
-    val disposalValue = "disposalValue"
-    val disposalCosts = "disposalCosts"
-    val initialValue = "initialValueAmt"
-    val initialCosts = "initialCostsAmt"
-    val improvementsAmount = "improvementsAmt"
-    val reliefsAmount = "reliefs"
-    val allowableLosses = "allowableLossesAmt"
-    val acquisitionDate = "acquisitionDate"
-    val disposalDate = "disposalDate"
-    val isClaimingPRR = "isClaimingPRR"
-    val daysClaimed = "daysClaimed"
-  }
-
   object ResidentSharesCalculationKeys {
     val disposalValue = "disposalValue"
     val disposalCosts = "disposalCosts"
