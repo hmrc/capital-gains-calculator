@@ -23,5 +23,5 @@ case class CalculationResultsWithPRRModel(flatResult: GainsAfterPRRModel,
                                           timeApportionedResult: Option[GainsAfterPRRModel])
 
 object CalculationResultsWithPRRModel{
-  implicit val format: Format[models.nonResident.CalculationResultsWithPRRModel] = Json.format[CalculationResultsWithPRRModel]
+  implicit val format: Format[CalculationResultsWithPRRModel] = Json.format
 }
