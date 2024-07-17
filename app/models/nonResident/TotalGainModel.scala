@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 case class TotalGainModel (flatGain: Double, rebasedGain: Option[Double], timeApportionedGain: Option[Double])
 
 object TotalGainModel {
-  implicit val format: Format[models.nonResident.TotalGainModel] = Json.format[TotalGainModel]
+  implicit val format: Format[TotalGainModel] = Json.format
 }

@@ -38,5 +38,5 @@ case class TaxOwedResultModel
 )
 
 object TaxOwedResultModel {
-  implicit val formats: Format[models.resident.TaxOwedResultModel] = Json.format[TaxOwedResultModel]
+  implicit val formats: Format[TaxOwedResultModel] = Json.format
 }

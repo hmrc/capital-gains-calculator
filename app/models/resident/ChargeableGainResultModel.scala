@@ -34,5 +34,5 @@ case class ChargeableGainResultModel
 )
 
 object ChargeableGainResultModel {
-  implicit val formats: Format[models.resident.ChargeableGainResultModel] = Json.format[ChargeableGainResultModel]
+  implicit val formats: Format[ChargeableGainResultModel] = Json.format
 }
