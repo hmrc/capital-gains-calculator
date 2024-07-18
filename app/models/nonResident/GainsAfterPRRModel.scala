@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 case class GainsAfterPRRModel (totalGain: BigDecimal, taxableGain: Double, prrUsed: Double)
 
 object GainsAfterPRRModel {
-  implicit val format: Format[models.nonResident.GainsAfterPRRModel] = Json.format[GainsAfterPRRModel]
+  implicit val format: Format[GainsAfterPRRModel] = Json.format
 }

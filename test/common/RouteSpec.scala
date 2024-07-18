@@ -16,13 +16,11 @@
 
 package common
 
-import models.nonResident.{OtherReliefsModel, PrivateResidenceReliefModel}
+import models.nonResident.OtherReliefsModel
 import models.resident.properties.PropertyTotalGainModel
 import models.resident.shares.TotalGainModel
-import org.mockito.ArgumentMatchers._
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.mvc.QueryStringBindable
 
 import java.time.LocalDate
 
@@ -31,7 +29,7 @@ class RouteSpec extends PlaySpec with MockitoSugar {
   "The route for calculate gain after prr for non-resident properties" must {
     val testDate = Some(LocalDate.parse("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.
-      calculateTaxableGainAfterPRR(1, 1, 1, 1, 1, Some(1), 1, testDate, testDate, 1, true, 1, 1).url
+      calculateTaxableGainAfterPRR(1, 1, 1, 1, 1, Some(1), 1, testDate, testDate, 1, Some(1)).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -79,22 +77,14 @@ class RouteSpec extends PlaySpec with MockitoSugar {
     }
 
     "include the claiming PRR query string parameter" in {
-      queryStringParameters must include("claimingPRR=true")
-    }
-
-    "include the days claimed query string parameter" in {
-      queryStringParameters must include("daysClaimed=1.0")
-    }
-
-    "include the days claimed after the tax started query string parameter" in {
-      queryStringParameters must include("daysClaimedAfter=1.0")
+      queryStringParameters must include("prrClaimed=1.0")
     }
   }
 
   "The route for calculate tax owed for non-resident properties" must {
     val testDate = Some(LocalDate.parse("2001-01-01"))
     lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1, 1, 1, 1, 1, Some(1), 1, testDate.get, testDate,
-      1, PrivateResidenceReliefModel(claimingPRR = true, Some(1), Some(1)), 1, 1, 1, 1, 1, 1, OtherReliefsModel(1, 1, 1)).url
+      1, Some(1), 1, 1, 1, 1, 1, 1, OtherReliefsModel(1, 1, 1)).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -141,16 +131,8 @@ class RouteSpec extends PlaySpec with MockitoSugar {
       queryStringParameters must include("improvementsAfterTaxStarted=1.0")
     }
 
-    "include the claiming PRR query string parameter" in {
-      queryStringParameters must include("claimingPRR=true")
-    }
-
-    "include the days claimed query string parameter" in {
-      queryStringParameters must include("daysClaimed=1.0")
-    }
-
-    "include the days claimed after the tax started query string parameter" in {
-      queryStringParameters must include("daysClaimedAfter=1.0")
+    "include the PRR claimed query string parameter" in {
+      queryStringParameters must include("prrClaimed=1.0")
     }
 
     "include the current income query string parameter" in {
@@ -271,43 +253,4 @@ class RouteSpec extends PlaySpec with MockitoSugar {
       reliefsBinder mustBe Some(Right(OtherReliefsModel(0.0, 0.0, 0.0)))
     }
   }
-
-  "The Private Residence Relief Model" must {
-
-    "unbind no values defined" in {
-      val reliefModel = PrivateResidenceReliefModel(false, None, None)
-      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.unbind("key", reliefModel)
-      reliefsBinder mustBe "claimingPRR=false&daysClaimed=0&daysClaimedAfter=0"
-    }
-
-    "unbind no one value defined" in {
-      val reliefModel = PrivateResidenceReliefModel(true, Some(1.1), None)
-      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.unbind("key", reliefModel)
-      reliefsBinder mustBe "claimingPRR=true&daysClaimed=1.1&daysClaimedAfter=0"
-    }
-
-    "unbind all values defined" in {
-      val reliefModel = PrivateResidenceReliefModel(true, None, Some(2.2))
-      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.unbind("key", reliefModel)
-      reliefsBinder mustBe "claimingPRR=true&daysClaimed=0&daysClaimedAfter=2.2"
-    }
-
-    "bind with empty seq of config" in {
-      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.bind("key", Map.empty[String, Seq[String]])
-      reliefsBinder mustBe None
-    }
-
-    "bind with seq of settings" in {
-      implicit val booleanBinder = mock[QueryStringBindable[Boolean]]
-      implicit val optionDoubleBinder = mock[QueryStringBindable[Option[Double]]]
-
-      when(booleanBinder.bind(any(), any())).thenReturn(Some(Right(true)))
-      when(optionDoubleBinder.bind(any(), any())).thenReturn(Some(Right(Some(0.0))))
-
-      val params = Map("param-1" -> Seq("seq1", "value1"))
-      val reliefsBinder = PrivateResidenceReliefModel.prrBinder.bind("key", params)
-      reliefsBinder mustBe Some(Right(PrivateResidenceReliefModel(true,Some(0.0),Some(0.0))))
-    }
-  }
-
 }

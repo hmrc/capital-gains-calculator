@@ -39,5 +39,5 @@ case class TaxOwedModel (taxOwed: BigDecimal,
                          taxOwedAtUpperRate: Option[Double])
 
 object TaxOwedModel {
-  implicit val formats: Format[models.nonResident.TaxOwedModel] = Json.format[TaxOwedModel]
+  implicit val formats: Format[TaxOwedModel] = Json.format[TaxOwedModel]
 }

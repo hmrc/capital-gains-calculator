@@ -16,9 +16,8 @@
 
 package config
 
-import common.Date
-import org.scalacheck.{Gen, Prop}
 import org.scalacheck.Prop.propBoolean
+import org.scalacheck.{Gen, Prop}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.scalacheck.{Checkers, ScalaCheckPropertyChecks}
@@ -32,19 +31,6 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
     "return date formatted start of tax" in {
       TaxRatesAndBands.getRates(0).startOfTax mustEqual "2015-04-06"
       TaxRatesAndBands.getRates(0).startOfTaxLocalDate mustEqual LocalDate.parse("2015-04-06")
-    }
-
-    "return correct prr months for given disposal date" in {
-      check {
-        Prop.forAll(Gen.choose(LocalDate.MIN, LocalDate.MAX))(disposalDate => {
-          val prrMonths = PrivateResidenceReliefDateUtils(disposalDate).pRRMonthDeductionApplicable().months
-          if (disposalDate.isAfter(Date.PRRDeductionApplicableDate)) {
-            prrMonths == 9
-          } else {
-            prrMonths == 18
-          }
-        })
-      }
     }
   }
 
