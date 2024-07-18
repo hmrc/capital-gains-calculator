@@ -16,13 +16,13 @@
 
 package models.nonResident
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.QueryStringBindable
 
 case class OtherReliefsModel(flatReliefs: Double, rebasedReliefs: Double, timeApportionedReliefs: Double)
 
 object OtherReliefsModel {
-  implicit val formats = Json.format[OtherReliefsModel]
+  implicit val formats: Format[models.nonResident.OtherReliefsModel] = Json.format[OtherReliefsModel]
 
   implicit def otherReliefsBinder(implicit doubleBinder: QueryStringBindable[Double]): QueryStringBindable[OtherReliefsModel] = {
     new QueryStringBindable[OtherReliefsModel] {

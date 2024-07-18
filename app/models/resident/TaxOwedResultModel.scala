@@ -16,7 +16,7 @@
 
 package models.resident
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class TaxOwedResultModel
 (
@@ -38,5 +38,5 @@ case class TaxOwedResultModel
 )
 
 object TaxOwedResultModel {
-  implicit val formats = Json.format[TaxOwedResultModel]
+  implicit val formats: Format[models.resident.TaxOwedResultModel] = Json.format[TaxOwedResultModel]
 }

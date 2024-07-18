@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class DateModel (day: Int, month: Int, year: Int)
 
 object DateModel {
-  implicit val formats = Json.format[DateModel]
+  implicit val formats: Format[models.DateModel] = Json.format[DateModel]
 }

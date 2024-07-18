@@ -16,7 +16,7 @@
 
 package models.nonResident
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class TaxOwedModel (taxOwed: BigDecimal,
                          taxGain: Double,
@@ -39,5 +39,5 @@ case class TaxOwedModel (taxOwed: BigDecimal,
                          taxOwedAtUpperRate: Option[Double])
 
 object TaxOwedModel {
-  implicit val formats = Json.format[TaxOwedModel]
+  implicit val formats: Format[models.nonResident.TaxOwedModel] = Json.format[TaxOwedModel]
 }

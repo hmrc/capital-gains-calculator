@@ -20,14 +20,12 @@ import common.QueryStringKeys.{NonResidentCalculationKeys => keys}
 import models.nonResident.CalculationRequestModel
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.mvc.QueryStringBindable
 
 import java.time.LocalDate
 
 class NonResidentCalculationBinderSpec extends PlaySpec with MockitoSugar {
 
   val target = new NonResidentCalculationRequestBinder {}.requestBinder
-  implicit val mockStringBinder = mock[QueryStringBindable[String]]
 
   // the values to bind to a valid request
   val validRequest: Map[String, Seq[String]] = Map(

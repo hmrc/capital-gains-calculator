@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 case class TaxYearModel (taxYearSupplied: String, isValidYear: Boolean, calculationTaxYear: String)
 
 object TaxYearModel {
-  implicit val formats = Json.format[TaxYearModel]
+  implicit val formats: Format[models.TaxYearModel] = Json.format[TaxYearModel]
 }

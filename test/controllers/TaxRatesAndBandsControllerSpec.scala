@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext.global
 class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 
   val fakeRequest = FakeRequest()
-  implicit val system = ActorSystem("QuickStart")
+  implicit val system: ActorSystem = ActorSystem("QuickStart")
   val components = app.injector.instanceOf[ControllerComponents]
   val controller = new TaxRatesAndBandsController(components)(global)
 
