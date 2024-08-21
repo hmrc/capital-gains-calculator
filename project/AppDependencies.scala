@@ -17,9 +17,9 @@
 import sbt.*
 
 object AppDependencies {
-  private val jsoupVersion     = "1.15.4"
-  private val bootstrapVersion = "8.3.0"
-  private val scalaTestVersion = "7.0.0"
+  private val jsoupVersion     = "1.18.1"
+  private val bootstrapVersion = "9.3.0"
+  private val scalaTestVersion = "7.0.1"
   private val playSuffix = "-play-30"
 
   val compile: Seq[ModuleID] = Seq(
@@ -28,10 +28,9 @@ object AppDependencies {
 
   def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
     "uk.gov.hmrc"            %% s"bootstrap-test$playSuffix" % bootstrapVersion % scope,
-    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.30" % scope,
+    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.37" % scope,
     "org.scalatestplus.play" %% "scalatestplus-play"         % scalaTestVersion % scope,
     "org.jsoup"               % "jsoup"                      % jsoupVersion % scope,
-    "org.mockito"            %% "mockito-scala-scalatest"    % "1.17.12" % scope,
-    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.16.0" % scope
+    "org.scalatestplus"      %% "scalacheck-1-17"            % "3.2.18.0" % scope
   )
 }
