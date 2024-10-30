@@ -39,6 +39,7 @@ trait TaxRatesAndBands {
   val maxLettingsRelief: Double
   val startOfTax = "2015-04-06"
   val startOfTaxLocalDate: LocalDate = LocalDate.parse(startOfTax)
+  val effectiveDate: Option[LocalDate] = None
 }
 
 object TaxRatesAndBands {
@@ -47,13 +48,30 @@ object TaxRatesAndBands {
 
   val allRates: List[TaxRatesAndBands] = TaxRatesAndBands20152016 :: TaxRatesAndBands20162017 :: TaxRatesAndBands20172018 ::
     TaxRatesAndBands20182019 :: TaxRatesAndBands20192020 :: TaxRatesAndBands20202021 :: TaxRatesAndBands20212022 ::
-    TaxRatesAndBands20222023 :: TaxRatesAndBands20232024 :: TaxRatesAndBands20242025 :: Nil
+    TaxRatesAndBands20222023 :: TaxRatesAndBands20232024 :: TaxRatesAndBands20242025 :: TaxRatesAndBands20242025MidYearChange :: Nil
 
   val liveTaxRates: List[TaxRatesAndBands] = if (LocalDate.now.isBefore(latestTaxYearGoLiveDate)) allRates.dropRight(1) else allRates
 
-  def getRates(year: Int): TaxRatesAndBands = liveTaxRates.filter(_.taxYear == year) match {
-    case params if params.nonEmpty => params.head
-    case _ => liveTaxRates.maxBy(_.taxYear)
+  def getRates(year: Int, disposalDate : Option[LocalDate] = None , isMidYearChangeApplicable : Boolean = false): TaxRatesAndBands = {
+    liveTaxRates.filter(_.taxYear == year) match {
+      case params if params.size > 1 && isMidYearChangeApplicable => getTaxRatesAndBandsForMidYearChange(params, disposalDate)
+      case params if params.nonEmpty => params.head
+      case _ => liveTaxRates.maxBy(_.taxYear)
+    }
+  }
+
+  private def getTaxRatesAndBandsForMidYearChange(liveTaxRates : List[TaxRatesAndBands], disposalDate: Option[LocalDate]): TaxRatesAndBands = {
+    liveTaxRates.filter(_.effectiveDate.nonEmpty) match {
+      case effectiveTaxBands if effectiveTaxBands.size > 1 =>
+        throw new RuntimeException("Invalid tax band configuration. No support for multiple effective tax bands in a tax year")
+      case _ if disposalDate.isEmpty =>
+        throw new RuntimeException("Disposal date can not be empty")
+      case _ =>
+        liveTaxRates.find(_.effectiveDate.nonEmpty) match {
+          case Some(changedTaxRates) if changedTaxRates.effectiveDate.get.isBefore(disposalDate.get.plusDays(1)) => changedTaxRates
+          case _ => liveTaxRates.head
+        }
+    }
   }
 
   def filterRatesByTaxYear (taxYear: Int): List[TaxRatesAndBands] = {
@@ -67,6 +85,25 @@ object TaxRatesAndBands {
 
   def getEarliestTaxYear: TaxRatesAndBands = liveTaxRates.minBy(_.taxYear)
 
+}
+
+object TaxRatesAndBands20242025MidYearChange extends TaxRatesAndBands {
+  override val taxYear = 2025
+  override val maxAnnualExemptAmount = 3000
+  override val notVulnerableMaxAnnualExemptAmount = 3000
+  override val basicRatePercentage = 18
+  override val higherRatePercentage = 24
+  override val shareBasicRatePercentage = 18
+  override val shareHigherRatePercentage = 24
+  override val maxPersonalAllowance = 12570
+  override val basicRate = basicRatePercentage / 100.toDouble
+  override val higherRate = higherRatePercentage / 100.toDouble
+  override val shareBasicRate = shareBasicRatePercentage / 100.toDouble
+  override val shareHigherRate = shareHigherRatePercentage / 100.toDouble
+  override val basicRateBand = 37700
+  override val blindPersonsAllowance = 2870
+  override val maxLettingsRelief = 40000.0
+  override val effectiveDate = Some(LocalDate.parse(ConfigFactory.load().getString("mid-year-tax-change-effective-date")))
 }
 
 object TaxRatesAndBands20242025 extends TaxRatesAndBands {

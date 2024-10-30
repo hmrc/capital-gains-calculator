@@ -437,6 +437,178 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
       }
     }
 
+
+    "when using 2024/25 before effective date tax year values" must {
+
+      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
+        ChargeableGainModel(TotalGainModel(disposalValue = 250000,
+          disposalCosts = 10000,
+          acquisitionValue = 100000,
+          acquisitionCosts = 10000), allowableLosses = Some(20000),
+          broughtForwardLosses = Some(10000),
+          annualExemptAmount = 11100),
+        previousTaxableGain = Some(10000),
+        previousIncome = 10000,
+        personalAllowance = 11000,
+        disposalDate = LocalDate.parse("2024-10-30")
+      ))(fakeRequest)
+
+      "return a 200" in {
+        status(result) mustBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) mustBe Some("application/json")
+        }
+
+        "has the gain as 130000" in {
+          (json \ "gain").as[Double] mustBe 130000
+        }
+
+        "has the chargeableGain as 88900" in {
+          (json \ "chargeableGain").as[Double] mustBe 88900.0
+        }
+
+        "has the aeaUsed as 11100" in {
+          (json \ "aeaUsed").as[Double] mustBe 11100.0
+        }
+
+        "has the deductions as 41100" in {
+          (json \ "deductions").as[Double] mustBe 41100.0
+        }
+
+        "has the taxOwed as 15010.0" in {
+          (json \ "taxOwed").as[Double] mustBe 15010.0
+        }
+
+        "has a first tax rate of 10%" in {
+          (json \ "firstRate").as[Int] mustBe 10
+        }
+
+        "has a first tax band of 27700" in {
+          (json \ "firstBand").as[Double] mustBe 27700
+        }
+
+        "has a second tax rate of 20%" in {
+          (json \ "secondRate").asOpt[Int] mustBe Some(20)
+        }
+
+        "has a second tax band of 61200" in {
+          (json \ "secondBand").asOpt[Double] mustBe Some(61200)
+        }
+
+        "has the broughtForwardLossesUsed as £10000" in {
+          (json \ "broughtForwardLossesUsed").as[Double] mustBe 10000
+        }
+
+        "has the allowableLossesUsed as £20000" in {
+          (json \ "allowableLossesUsed").as[Double] mustBe 20000
+        }
+
+        "has the baseRateTotal as £2,770.00" in {
+          (json \ "baseRateTotal").as[Double] mustBe 2770.0
+        }
+
+        "has the upperRateTotal as £12,240.00" in {
+          (json \ "upperRateTotal").as[Double] mustBe 12240.0
+        }
+      }
+    }
+
+
+    "when using 2024/25 after effective date tax year values" must {
+
+      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
+        ChargeableGainModel(TotalGainModel(disposalValue = 250000,
+          disposalCosts = 10000,
+          acquisitionValue = 100000,
+          acquisitionCosts = 10000), allowableLosses = Some(20000),
+          broughtForwardLosses = Some(10000),
+          annualExemptAmount = 11100),
+        previousTaxableGain = Some(10000),
+        previousIncome = 10000,
+        personalAllowance = 11000,
+        disposalDate = LocalDate.parse("2024-10-31")
+      ))(fakeRequest)
+
+      "return a 200" in {
+        status(result) mustBe 200
+      }
+
+      "return a JSON result" which {
+
+        lazy val data = contentAsString(result)
+        lazy val json = Json.parse(data)
+
+        "has content type application/json" in {
+          contentType(result) mustBe Some("application/json")
+        }
+
+        "has the gain as 130000" in {
+          (json \ "gain").as[Double] mustBe 130000
+        }
+
+        "has the chargeableGain as 88900" in {
+          (json \ "chargeableGain").as[Double] mustBe 88900.0
+        }
+
+        "has the aeaUsed as 11100" in {
+          (json \ "aeaUsed").as[Double] mustBe 11100.0
+        }
+
+        "has the deductions as 41100" in {
+          (json \ "deductions").as[Double] mustBe 41100.0
+        }
+
+        "has the taxOwed as 19674.0" in {
+          (json \ "taxOwed").as[Double] mustBe 19674.0
+        }
+
+        "has a first tax rate of 18%" in {
+          (json \ "firstRate").as[Int] mustBe 18
+        }
+
+        "has a first tax band of 22000" in {
+          (json \ "firstBand").as[Double] mustBe 27700
+        }
+
+        "has a second tax rate of 24%" in {
+          (json \ "secondRate").asOpt[Int] mustBe Some(24)
+        }
+
+        "has a second tax band of 66900" in {
+          (json \ "secondBand").asOpt[Double] mustBe Some(61200)
+        }
+
+        "has the broughtForwardLossesUsed as £10000" in {
+          (json \ "broughtForwardLossesUsed").as[Double] mustBe 10000
+        }
+
+        "has the allowableLossesUsed as £20000" in {
+          (json \ "allowableLossesUsed").as[Double] mustBe 20000
+        }
+
+        "has the baseRateTotal as £4,986.00" in {
+          (json \ "baseRateTotal").as[Double] mustBe 4986.0
+        }
+
+        "has the upperRateTotal as £14,688.00" in {
+          (json \ "upperRateTotal").as[Double] mustBe 14688.0
+        }
+      }
+
+
+
+
+
+    }
+
+
     "Part allowableLossesUsed" must {
       lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
         TotalGainModel(disposalValue = 50000,

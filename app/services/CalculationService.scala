@@ -27,8 +27,8 @@ class CalculationService {
 
   def calculationResult(gain: Double, taxableGain: Double, chargeableGain: Double,
                         basicRateRemaining: Double, prrClaimed: Option[Double], usedAEA: Double,
-                        aeaLeft: Double, taxYear: Int, isProperty: Boolean): CalculationResultModel = {
-    val taxRates = TaxRatesAndBands.getRates(taxYear)
+                        aeaLeft: Double, taxYear: Int, isProperty: Boolean, disposalDate : Option[LocalDate]= None, isMidYearChangeApplicable : Boolean = false): CalculationResultModel = {
+    val taxRates = TaxRatesAndBands.getRates(taxYear,disposalDate, isMidYearChangeApplicable)
     val basicRate = if (isProperty) taxRates.basicRate else taxRates.shareBasicRate
     val higherRate = if (isProperty) taxRates.higherRate else taxRates.shareHigherRate
     val basicRatePercentage = if (isProperty) taxRates.basicRatePercentage else taxRates.shareBasicRatePercentage
@@ -121,8 +121,8 @@ class CalculationService {
     }
   }
 
-  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int): Double = {
-    negativeToZero(TaxRatesAndBands.getRates(taxYear).basicRateBand - negativeToZero(round("down", currentIncome) - round("up", personalAllowanceAmt)) - round("down", otherPropertiesAmt))
+  def brRemaining(currentIncome: Double, personalAllowanceAmt: Double, otherPropertiesAmt: Double, taxYear: Int, disposalDate : Option[LocalDate]= None, isMidYearChangeApplicable : Boolean = false): Double = {
+    negativeToZero(TaxRatesAndBands.getRates(taxYear, disposalDate, isMidYearChangeApplicable).basicRateBand - negativeToZero(round("down", currentIncome) - round("up", personalAllowanceAmt)) - round("down", otherPropertiesAmt))
   }
 
   def determineReliefsUsed(gain: Double, prrValueOpt: Option[Double]): Double = {
