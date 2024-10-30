@@ -543,14 +543,14 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       val returnModel = CalculationResultModel(8.0, 9.0, 10.0, 20, 0.0, 0.0)
 
       when(mockService.calculateGainFlat(any(), any(), any(), any(), any())).thenReturn(15.0)
-      when(mockService.brRemaining(any(), any(), any(), any())).thenReturn(1.0)
+      when(mockService.brRemaining(any(), any(), any(), any(),any(),any())).thenReturn(1.0)
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any())).thenReturn(2.0)
       when(mockService.determineReliefsUsed(any(), any())).thenReturn(3.0)
       when(mockService.determineLossLeft(any(), any())).thenReturn(4.0)
       when(mockService.annualExemptAmountUsed(any(), any(), any(), any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(any(), any())).thenReturn(6.0)
       when(mockService.determineLossLeft(any(), any())).thenReturn(7.0)
-      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(returnModel)
 
       val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, None, 0, LocalDate.parse("2017-10-10"), None, 0,
@@ -611,14 +611,14 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
       when(mockService.calculateGainRebased(any(), any(), any(), any(), any())).thenReturn(16.0)
       when(mockService.calculateGainTA(any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(17.0)
-      when(mockService.brRemaining(any(), any(), any(), any())).thenReturn(1.0)
+      when(mockService.brRemaining(any(), any(), any(), any(), any(), any())).thenReturn(1.0)
       when(mockService.calculateChargeableGain(any(), any(), any(), any(), any())).thenReturn(2.0)
       when(mockService.determineReliefsUsed(any(), any())).thenReturn(3.0)
       when(mockService.determineLossLeft(any(), any())).thenReturn(4.0)
       when(mockService.annualExemptAmountUsed(any(), any(), any(), any())).thenReturn(5.0)
       when(mockService.annualExemptAmountLeft(any(), any())).thenReturn(6.0)
       when(mockService.determineLossLeft(any(), any())).thenReturn(7.0)
-      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+      when(mockService.calculationResult(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(returnModel)
 
       val result = controller.calculateTaxOwed(1, 0, 1, 0, 0, Some(1.0), 0, LocalDate.parse("2017-10-10"), Some(LocalDate.parse("2011-01-05")),

@@ -107,4 +107,29 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
       TaxRatesAndBands.getEarliestTaxYear mustBe TaxRatesAndBands20152016
     }
   }
+
+
+  "Mid year tax changes for year 2025" must{
+    "return tax rates for after effective date" in {
+      val taxYear = TaxRatesAndBands.getRates(2025,Some(LocalDate.parse("2024-10-31")),isMidYearChangeApplicable = true)
+      taxYear.shareBasicRatePercentage mustBe 18
+      taxYear.shareHigherRatePercentage mustBe 24
+    }
+
+    "return tax rates for before effective date" in {
+      val taxYear = TaxRatesAndBands.getRates(2025,Some(LocalDate.parse("2024-10-30")),isMidYearChangeApplicable = true)
+      taxYear.shareBasicRatePercentage mustBe 10
+      taxYear.shareHigherRatePercentage mustBe 20
+    }
+    "return tax rates for before 2025" in {
+      val taxYear = TaxRatesAndBands.getRates(2018,Some(LocalDate.parse("2017-10-30")),isMidYearChangeApplicable = true)
+      taxYear.taxYear mustBe 2018
+    }
+
+    "throw Runtime exception when disposal date is empty" in {
+      val exception = intercept[RuntimeException](TaxRatesAndBands.getRates(2025,Option.empty,isMidYearChangeApplicable = true))
+      exception shouldBe a[RuntimeException]
+      exception.getMessage shouldBe "Disposal date can not be empty"
+      }
+  }
 }

@@ -65,7 +65,7 @@ object CommonValidation {
 
   def validateResidentPersonalAllowance(input: Double, disposalDate: LocalDate): Either[String, Double] = {
     val closestTaxYear = TaxRatesAndBands.getClosestTaxYear(Date.getTaxYear(disposalDate))
-    val taxBands = TaxRatesAndBands.getRates(closestTaxYear)
+    val taxBands = TaxRatesAndBands.getRates(closestTaxYear, Some(disposalDate))
     val maxPersonalAllowance = taxBands.maxPersonalAllowance + taxBands.blindPersonsAllowance + taxBands.marriageAllowance
 
     validateDouble(input, sharesKeys.personalAllowance) match {
