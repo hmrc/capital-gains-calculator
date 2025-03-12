@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.typesafe.config.ConfigFactory
 import common._
 import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
@@ -67,7 +68,8 @@ class TaxRatesAndBandsController @Inject()(val cc: ControllerComponents
     tryParsing() match {
       case Right(parsedDate) =>
         val taxYear = Date.getTaxYear(parsedDate)
-        val result = TaxYearModel(Date.taxYearToString(taxYear), TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
+        val isValidTaxYear:Boolean = (Date.taxYearToString(taxYear)<= Date.taxYearToString(LocalDate.now().getYear)) && (Date.taxYearToString(taxYear)>= ConfigFactory.load().getString("minimum-tax-year-for-tax-calculation"))
+        val result = TaxYearModel(Date.taxYearToString(taxYear), isValidTaxYear,
           Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
         Future.successful(Ok(Json.toJson(result)))
 
