@@ -18,25 +18,27 @@ package models.nonResident
 
 import play.api.libs.json.{Format, Json}
 
-case class TaxOwedModel (taxOwed: BigDecimal,
-                         taxGain: Double,
-                         taxRate: Int,
-                         upperTaxGain: Option[Double] = None,
-                         upperTaxRate: Option[Int] = None,
-                         totalGain: BigDecimal,
-                         taxableGain: Double,
-                         prrUsed: Option[Double],
-                         otherReliefsUsed: Option[Double],
-                         allowableLossesUsed: Option[Double],
-                         aeaUsed: Option[Double],
-                         aeaRemaining: Double,
-                         broughtForwardLossesUsed: Option[Double],
-                         reliefsRemaining: Option[Double],
-                         allowableLossesRemaining: Option[Double],
-                         broughtForwardLossesRemaining: Option[Double],
-                         totalDeductions: Option[Double],
-                         taxOwedAtBaseRate: Option[Double],
-                         taxOwedAtUpperRate: Option[Double])
+case class TaxOwedModel(
+  taxOwed: BigDecimal,
+  taxGain: Double,
+  taxRate: Int,
+  upperTaxGain: Option[Double] = None,
+  upperTaxRate: Option[Int] = None,
+  totalGain: BigDecimal,
+  taxableGain: Double,
+  prrUsed: Option[Double],
+  otherReliefsUsed: Option[Double],
+  allowableLossesUsed: Option[Double],
+  aeaUsed: Option[Double],
+  aeaRemaining: Double,
+  broughtForwardLossesUsed: Option[Double],
+  reliefsRemaining: Option[Double],
+  allowableLossesRemaining: Option[Double],
+  broughtForwardLossesRemaining: Option[Double],
+  totalDeductions: Option[Double],
+  taxOwedAtBaseRate: Option[Double],
+  taxOwedAtUpperRate: Option[Double]
+)
 
 object TaxOwedModel {
   implicit val formats: Format[TaxOwedModel] = Json.format[TaxOwedModel]

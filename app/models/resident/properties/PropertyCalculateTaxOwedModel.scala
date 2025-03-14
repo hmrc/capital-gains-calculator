@@ -18,9 +18,11 @@ package models.resident.properties
 
 import common.binders.ResidentPropertyBinders
 
-case class PropertyCalculateTaxOwedModel (propertyChargeableGainModel: PropertyChargeableGainModel,
-                                  previousTaxableGain: Option[Double],
-                                  previousIncome: Double,
-                                  personalAllowance: Double)
+case class PropertyCalculateTaxOwedModel(
+  propertyChargeableGainModel: PropertyChargeableGainModel,
+  previousTaxableGain: Option[Double],
+  previousIncome: Double,
+  personalAllowance: Double
+)
 
 object PropertyCalculateTaxOwedModel extends ResidentPropertyBinders

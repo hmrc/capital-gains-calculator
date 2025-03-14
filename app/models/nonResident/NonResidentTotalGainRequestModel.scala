@@ -22,17 +22,18 @@ import play.api.libs.json._
 
 import java.time.LocalDate
 
-
-case class NonResidentTotalGainRequestModel(disposalValue: Double,
-                                            disposalCosts: Double,
-                                            acquisitionValue: Double,
-                                            acquisitionCosts: Double,
-                                            improvements: Double,
-                                            rebasedValue: Option[Double],
-                                            rebasedCosts: Double,
-                                            disposalDate: Option[LocalDate],
-                                            acquisitionDate: Option[LocalDate],
-                                            improvementsAfterTaxStarted: Double)
+case class NonResidentTotalGainRequestModel(
+  disposalValue: Double,
+  disposalCosts: Double,
+  acquisitionValue: Double,
+  acquisitionCosts: Double,
+  improvements: Double,
+  rebasedValue: Option[Double],
+  rebasedCosts: Double,
+  disposalDate: Option[LocalDate],
+  acquisitionDate: Option[LocalDate],
+  improvementsAfterTaxStarted: Double
+)
 
 object NonResidentTotalGainRequestModel {
   implicit val writes: Writes[NonResidentTotalGainRequestModel] = Json.writes[NonResidentTotalGainRequestModel]
@@ -48,6 +49,6 @@ object NonResidentTotalGainRequestModel {
       (__ \ "disposalDate").readNullable[LocalDate] and
       (__ \ "acquisitionDate").readNullable[LocalDate] and
       (__ \ "improvementsAfterTaxStarted").read[Double].or(Reads.pure[Double](0))
-    )(NonResidentTotalGainRequestModel.apply _)
+  )(NonResidentTotalGainRequestModel.apply _)
 
 }

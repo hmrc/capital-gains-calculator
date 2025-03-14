@@ -23,44 +23,82 @@ import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyCharge
 
 object PropertyValidation {
 
-  def validatePropertyTotalGain(propertyTotalGainModel: PropertyTotalGainModel): Either[String, PropertyTotalGainModel] = {
+  def validatePropertyTotalGain(
+    propertyTotalGainModel: PropertyTotalGainModel
+  ): Either[String, PropertyTotalGainModel] = {
     val totalGainModel = validateSharesTotalGain(propertyTotalGainModel.totalGainModel)
-    val improvements = validateDouble(propertyTotalGainModel.improvements, residentPropertyKeys.improvements)
+    val improvements   = validateDouble(propertyTotalGainModel.improvements, residentPropertyKeys.improvements)
 
     (totalGainModel, improvements) match {
       case (Right(_), Right(_)) => Right(propertyTotalGainModel)
-      case _ => Left(getFirstErrorMessage(Seq(totalGainModel, improvements)))
+      case _                    => Left(getFirstErrorMessage(Seq(totalGainModel, improvements)))
     }
   }
 
-  def validatePropertyChargeableGain(propertyChargeableGainModel: PropertyChargeableGainModel): Either[String, PropertyChargeableGainModel] = {
-    val propertyGainModel = validatePropertyTotalGain(propertyChargeableGainModel.propertyTotalGainModel)
-    val prrValue = validateOptionDouble(propertyChargeableGainModel.prrValue, residentPropertyKeys.prrValue)
-    val lettingReliefs = validateOptionDouble(propertyChargeableGainModel.lettingReliefs, residentPropertyKeys.lettingReliefs)
-    val allowableLosses = validateOptionDouble(propertyChargeableGainModel.allowableLosses, residentPropertyKeys.allowableLosses)
-    val broughtForwardLosses = validateOptionDouble(propertyChargeableGainModel.broughtForwardLosses, residentPropertyKeys.broughtForwardLosses)
-    val annualExemptAmount = validateDouble(propertyChargeableGainModel.annualExemptAmount, residentPropertyKeys.annualExemptAmount)
-    val disposalDate = validateDisposalDate(propertyChargeableGainModel.disposalDate)
+  def validatePropertyChargeableGain(
+    propertyChargeableGainModel: PropertyChargeableGainModel
+  ): Either[String, PropertyChargeableGainModel] = {
+    val propertyGainModel    = validatePropertyTotalGain(propertyChargeableGainModel.propertyTotalGainModel)
+    val prrValue             = validateOptionDouble(propertyChargeableGainModel.prrValue, residentPropertyKeys.prrValue)
+    val lettingReliefs       =
+      validateOptionDouble(propertyChargeableGainModel.lettingReliefs, residentPropertyKeys.lettingReliefs)
+    val allowableLosses      =
+      validateOptionDouble(propertyChargeableGainModel.allowableLosses, residentPropertyKeys.allowableLosses)
+    val broughtForwardLosses =
+      validateOptionDouble(propertyChargeableGainModel.broughtForwardLosses, residentPropertyKeys.broughtForwardLosses)
+    val annualExemptAmount   =
+      validateDouble(propertyChargeableGainModel.annualExemptAmount, residentPropertyKeys.annualExemptAmount)
+    val disposalDate         = validateDisposalDate(propertyChargeableGainModel.disposalDate)
 
-    (propertyGainModel, prrValue, lettingReliefs, allowableLosses, broughtForwardLosses, annualExemptAmount, disposalDate) match {
+    (
+      propertyGainModel,
+      prrValue,
+      lettingReliefs,
+      allowableLosses,
+      broughtForwardLosses,
+      annualExemptAmount,
+      disposalDate
+    ) match {
       case (Right(_), Right(_), Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(propertyChargeableGainModel)
-      case _ => Left(getFirstErrorMessage(Seq(propertyGainModel, prrValue, lettingReliefs, allowableLosses,
-        broughtForwardLosses, annualExemptAmount, disposalDate)))
+      case _                                                                      =>
+        Left(
+          getFirstErrorMessage(
+            Seq(
+              propertyGainModel,
+              prrValue,
+              lettingReliefs,
+              allowableLosses,
+              broughtForwardLosses,
+              annualExemptAmount,
+              disposalDate
+            )
+          )
+        )
     }
   }
 
-  def validatePropertyTaxOwed(propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): Either[String, PropertyCalculateTaxOwedModel] = {
-    val propertyChargeableGainModel = validatePropertyChargeableGain(propertyCalculateTaxOwedModel.propertyChargeableGainModel)
-    val previousTaxableGain = validateOptionDouble(propertyCalculateTaxOwedModel.previousTaxableGain, residentPropertyKeys.previousTaxableGain)
-    val previousIncome = validateDouble(propertyCalculateTaxOwedModel.previousIncome, residentPropertyKeys.previousIncome)
-    val personalAllowance = propertyChargeableGainModel match {
-      case Right(data) => validateResidentPersonalAllowance (propertyCalculateTaxOwedModel.personalAllowance, data.disposalDate)
-      case Left(_) => Left("Validation failed on Chargeable Gain inputs.")
+  def validatePropertyTaxOwed(
+    propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel
+  ): Either[String, PropertyCalculateTaxOwedModel] = {
+    val propertyChargeableGainModel = validatePropertyChargeableGain(
+      propertyCalculateTaxOwedModel.propertyChargeableGainModel
+    )
+    val previousTaxableGain         =
+      validateOptionDouble(propertyCalculateTaxOwedModel.previousTaxableGain, residentPropertyKeys.previousTaxableGain)
+    val previousIncome              =
+      validateDouble(propertyCalculateTaxOwedModel.previousIncome, residentPropertyKeys.previousIncome)
+    val personalAllowance           = propertyChargeableGainModel match {
+      case Right(data) =>
+        validateResidentPersonalAllowance(propertyCalculateTaxOwedModel.personalAllowance, data.disposalDate)
+      case Left(_)     => Left("Validation failed on Chargeable Gain inputs.")
     }
 
     (propertyChargeableGainModel, previousTaxableGain, previousIncome, personalAllowance) match {
       case (Right(_), Right(_), Right(_), Right(_)) => Right(propertyCalculateTaxOwedModel)
-      case _ => Left(getFirstErrorMessage(Seq(propertyChargeableGainModel, previousTaxableGain, previousIncome, personalAllowance)))
+      case _                                        =>
+        Left(
+          getFirstErrorMessage(Seq(propertyChargeableGainModel, previousTaxableGain, previousIncome, personalAllowance))
+        )
     }
   }
 }

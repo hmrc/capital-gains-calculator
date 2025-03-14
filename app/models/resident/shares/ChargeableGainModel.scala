@@ -18,9 +18,11 @@ package models.resident.shares
 
 import common.binders.ResidentSharesBinders
 
-case class ChargeableGainModel (totalGainModel: TotalGainModel,
-                                allowableLosses: Option[Double],
-                                broughtForwardLosses: Option[Double],
-                                annualExemptAmount: Double)
+case class ChargeableGainModel(
+  totalGainModel: TotalGainModel,
+  allowableLosses: Option[Double],
+  broughtForwardLosses: Option[Double],
+  annualExemptAmount: Double
+)
 
 object ChargeableGainModel extends ResidentSharesBinders

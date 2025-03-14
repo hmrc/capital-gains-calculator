@@ -27,28 +27,28 @@ class CommonValidationSpec extends PlaySpec {
     "return the string from the first left" when {
 
       "provided with a single Left input" in {
-        val seq = Seq(Left("First error string"))
+        val seq    = Seq(Left("First error string"))
         val result = CommonValidation.getFirstErrorMessage(seq)
 
         result mustBe "First error string"
       }
 
       "provided with a single Left input after the first element" in {
-        val seq = Seq(Right(BigDecimal(0)), Left("First error string"))
+        val seq    = Seq(Right(BigDecimal(0)), Left("First error string"))
         val result = CommonValidation.getFirstErrorMessage(seq)
 
         result mustBe "First error string"
       }
 
       "provided with a single Left input after a Right element with a string" in {
-        val seq = Seq(Right("First valid string"), Left("First error string"))
+        val seq    = Seq(Right("First valid string"), Left("First error string"))
         val result = CommonValidation.getFirstErrorMessage(seq)
 
         result mustBe "First error string"
       }
 
       "provided with multiple Left inputs" in {
-        val seq = Seq(Right("First valid string"), Left("First error string"), Left("Second error string"))
+        val seq    = Seq(Right("First valid string"), Left("First error string"), Left("Second error string"))
         val result = CommonValidation.getFirstErrorMessage(seq)
 
         result mustBe "First error string"
@@ -215,21 +215,21 @@ class CommonValidationSpec extends PlaySpec {
   "Calling validateSharesDisposalDate" must {
 
     "return a Right when providing a date after the start of the 2015/16 tax year" in {
-      val date = LocalDate.parse("2015-08-10")
+      val date   = LocalDate.parse("2015-08-10")
       val result = CommonValidation.validateDisposalDate(date)
 
       result mustBe Right(date)
     }
 
     "return a Right when providing a date on the start of the 2015/16 tax year" in {
-      val date = LocalDate.parse("2015-04-06")
+      val date   = LocalDate.parse("2015-04-06")
       val result = CommonValidation.validateDisposalDate(date)
 
       result mustBe Right(date)
     }
 
     "return a Left when providing a date before the start of the 2015/16 tax year" in {
-      val date = LocalDate.parse("2015-04-05")
+      val date   = LocalDate.parse("2015-04-05")
       val result = CommonValidation.validateDisposalDate(date)
 
       result mustBe Left("disposalDate cannot be before 2015-04-06")
@@ -278,7 +278,9 @@ class CommonValidationSpec extends PlaySpec {
     }
 
     "return a Left when given an invalid input" in {
-      CommonValidation.validateCustomerType("frfsdaf", "option") mustBe Left("option must be either individual, trustee or personalRep")
+      CommonValidation.validateCustomerType("frfsdaf", "option") mustBe Left(
+        "option must be either individual, trustee or personalRep"
+      )
     }
   }
 

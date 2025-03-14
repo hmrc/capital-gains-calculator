@@ -30,10 +30,10 @@ import scala.concurrent.ExecutionContext.global
 
 class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 
-  val fakeRequest = FakeRequest()
+  val fakeRequest                  = FakeRequest()
   implicit val system: ActorSystem = ActorSystem("QuickStart")
-  val components = app.injector.instanceOf[ControllerComponents]
-  val controller = new TaxRatesAndBandsController(components)(global)
+  val components                   = app.injector.instanceOf[ControllerComponents]
+  val controller                   = new TaxRatesAndBandsController(components)(global)
 
   "validating the getMaxAEA method" when {
 
@@ -221,43 +221,43 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
       "return status 400" in {
         status(result) mustBe 400
       }
-      }
+    }
+  }
+
+  "calling with the year 2014 and with BPA and MA" must {
+
+    val result = controller.getMaxPersonalAllowance(2014, Some(true), Some(true))(fakeRequest)
+
+    "return status 400" in {
+      status(result) mustBe 400
+    }
+  }
+
+  "calling with an invalid tax year (current year plus 2) and with BPA and MA" must {
+
+    val result = controller.getMaxPersonalAllowance(LocalDate.now().getYear + 2, Some(true), Some(true))(fakeRequest)
+
+    "return status 400" in {
+      status(result) mustBe 400
     }
 
-    "calling with the year 2014 and with BPA and MA" must {
-
-      val result = controller.getMaxPersonalAllowance(2014, Some(true), Some(true))(fakeRequest)
-
-      "return status 400" in {
-        status(result) mustBe 400
-      }
+    "return a JSON result" in {
+      contentType(result) mustBe Some("application/json")
     }
 
-    "calling with an invalid tax year (current year plus 2) and with BPA and MA" must {
-
-      val result = controller.getMaxPersonalAllowance(LocalDate.now().getYear + 2, Some(true), Some(true))(fakeRequest)
-
-      "return status 400" in {
-        status(result) mustBe 400
-      }
-
-      "return a JSON result" in {
-        contentType(result) mustBe Some("application/json")
-      }
-
-      "return 11000 as the annual exempt amount" in {
-        val data = contentAsString(result)
-        val json = Json.parse(data)
-        json.as[String] mustBe "This tax year is not valid"
-      }
+    "return 11000 as the annual exempt amount" in {
+      val data = contentAsString(result)
+      val json = Json.parse(data)
+      json.as[String] mustBe "This tax year is not valid"
     }
+  }
 
   "validating the getTaxYear method" when {
 
     "calling with the date 10/10/2016" must {
       val result = controller.getTaxYear("2016-10-10")(fakeRequest)
-      val data = contentAsString(result)
-      val json = Json.parse(data)
+      val data   = contentAsString(result)
+      val json   = Json.parse(data)
 
       "return a status 200" in {
         status(result) mustBe 200
@@ -283,8 +283,8 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with the date 10/10/2014" must {
       val result = controller.getTaxYear("2014-10-10")(fakeRequest)
-      val data = contentAsString(result)
-      val json = Json.parse(data)
+      val data   = contentAsString(result)
+      val json   = Json.parse(data)
 
       "return a status 200" in {
         status(result) mustBe 200
@@ -309,8 +309,8 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with the date 10/10/2099" must {
       val result = controller.getTaxYear("2099-10-10")(fakeRequest)
-      val data = contentAsString(result)
-      val json = Json.parse(data)
+      val data   = contentAsString(result)
+      val json   = Json.parse(data)
 
       "return a status 200" in {
         status(result) mustBe 200
@@ -336,8 +336,8 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with an invalid date 10/100/2014" must {
       val result = controller.getTaxYear("2014-100-10")(fakeRequest)
-      val data = contentAsString(result)
-      val json = Json.parse(data)
+      val data   = contentAsString(result)
+      val json   = Json.parse(data)
 
       "return a status 400" in {
         status(result) mustBe 400

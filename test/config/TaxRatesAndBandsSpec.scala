@@ -37,8 +37,17 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
   "tax year config for given tax year validation" must {
     "success for provided table driven tax year fixtures" in {
       val expected = Table(
-        ("taxYear", "basicRate", "basicRatePercentage", "higherRate", "higherRatePercentage", "maxAnnualExemptAmount",
-          "notVulnerableMaxAnnualExemptAmount", "basicRateBand", "maxPersonalAllowance"),
+        (
+          "taxYear",
+          "basicRate",
+          "basicRatePercentage",
+          "higherRate",
+          "higherRatePercentage",
+          "maxAnnualExemptAmount",
+          "notVulnerableMaxAnnualExemptAmount",
+          "basicRateBand",
+          "maxPersonalAllowance"
+        ),
         (2018, 0.18, 18, 0.28, 28, 11300, 5650, 33500, 11500),
         (2019, 0.18, 18, 0.28, 28, 11700, 5850, 34500, 11850),
         (2020, 0.18, 18, 0.28, 28, 12000, 6000, 37500, 12500),
@@ -49,19 +58,29 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
         (2025, 0.18, 18, 0.24, 24, 3000, 3000, 37700, 12570)
       )
 
-      forAll(expected) { (taxYear, basicRate, basicRatePercentage, higherRate, higherRatePercentage, maxAnnualExemptAmount,
-                          notVulnerableMaxAnnualExemptAmount, basicRateBand, maxPersonalAllowance) =>
-        val taxRateAndBand = TaxRatesAndBands.allRates.filter(_.taxYear == taxYear).head
+      forAll(expected) {
+        (
+          taxYear,
+          basicRate,
+          basicRatePercentage,
+          higherRate,
+          higherRatePercentage,
+          maxAnnualExemptAmount,
+          notVulnerableMaxAnnualExemptAmount,
+          basicRateBand,
+          maxPersonalAllowance
+        ) =>
+          val taxRateAndBand = TaxRatesAndBands.allRates.filter(_.taxYear == taxYear).head
 
-        taxRateAndBand.taxYear should equal(taxYear)
-        taxRateAndBand.basicRate should equal(basicRate)
-        taxRateAndBand.basicRatePercentage should equal(basicRatePercentage)
-        taxRateAndBand.higherRate should equal(higherRate)
-        taxRateAndBand.higherRatePercentage should equal(higherRatePercentage)
-        taxRateAndBand.maxAnnualExemptAmount should equal(maxAnnualExemptAmount)
-        taxRateAndBand.notVulnerableMaxAnnualExemptAmount should equal(notVulnerableMaxAnnualExemptAmount)
-        taxRateAndBand.basicRateBand should equal(basicRateBand)
-        taxRateAndBand.maxPersonalAllowance should equal(maxPersonalAllowance)
+          taxRateAndBand.taxYear                            should equal(taxYear)
+          taxRateAndBand.basicRate                          should equal(basicRate)
+          taxRateAndBand.basicRatePercentage                should equal(basicRatePercentage)
+          taxRateAndBand.higherRate                         should equal(higherRate)
+          taxRateAndBand.higherRatePercentage               should equal(higherRatePercentage)
+          taxRateAndBand.maxAnnualExemptAmount              should equal(maxAnnualExemptAmount)
+          taxRateAndBand.notVulnerableMaxAnnualExemptAmount should equal(notVulnerableMaxAnnualExemptAmount)
+          taxRateAndBand.basicRateBand                      should equal(basicRateBand)
+          taxRateAndBand.maxPersonalAllowance               should equal(maxPersonalAllowance)
       }
     }
   }
@@ -73,7 +92,7 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
     "checked for closest tax year" must {
       "return correct closest tax year" in {
         check {
-          Prop.forAll(Gen.choose(Integer.MIN_VALUE, Integer.MAX_VALUE))(taxYear => {
+          Prop.forAll(Gen.choose(Integer.MIN_VALUE, Integer.MAX_VALUE)) { taxYear =>
             val closestTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
             if (taxYear >= acceptedMinTaxYear && taxYear <= acceptedMaxTaxYear) {
               closestTaxYear == taxYear
@@ -82,7 +101,7 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
             } else {
               closestTaxYear == acceptedMinTaxYear
             }
-          })
+          }
         }
       }
     }
@@ -95,28 +114,31 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
     }
   }
 
-
-  "Mid year tax changes for year 2025" must{
+  "Mid year tax changes for year 2025" must {
     "return tax rates for after effective date" in {
-      val taxYear = TaxRatesAndBands.getRates(2025,Some(LocalDate.parse("2024-10-31")),isMidYearChangeApplicable = true)
+      val taxYear =
+        TaxRatesAndBands.getRates(2025, Some(LocalDate.parse("2024-10-31")), isMidYearChangeApplicable = true)
       taxYear.shareBasicRatePercentage mustBe 18
       taxYear.shareHigherRatePercentage mustBe 24
     }
 
     "return tax rates for before effective date" in {
-      val taxYear = TaxRatesAndBands.getRates(2025,Some(LocalDate.parse("2024-10-30")),isMidYearChangeApplicable = true)
+      val taxYear =
+        TaxRatesAndBands.getRates(2025, Some(LocalDate.parse("2024-10-30")), isMidYearChangeApplicable = true)
       taxYear.shareBasicRatePercentage mustBe 10
       taxYear.shareHigherRatePercentage mustBe 20
     }
     "return tax rates for before 2025" in {
-      val taxYear = TaxRatesAndBands.getRates(2018,Some(LocalDate.parse("2017-10-30")),isMidYearChangeApplicable = true)
+      val taxYear =
+        TaxRatesAndBands.getRates(2018, Some(LocalDate.parse("2017-10-30")), isMidYearChangeApplicable = true)
       taxYear.taxYear mustBe 2018
     }
 
     "throw Runtime exception when disposal date is empty" in {
-      val exception = intercept[RuntimeException](TaxRatesAndBands.getRates(2025,Option.empty,isMidYearChangeApplicable = true))
-      exception shouldBe a[RuntimeException]
+      val exception =
+        intercept[RuntimeException](TaxRatesAndBands.getRates(2025, Option.empty, isMidYearChangeApplicable = true))
+      exception            shouldBe a[RuntimeException]
       exception.getMessage shouldBe "Disposal date can not be empty"
-      }
+    }
   }
 }

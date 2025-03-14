@@ -24,28 +24,29 @@ case class OtherReliefsModel(flatReliefs: Double, rebasedReliefs: Double, timeAp
 object OtherReliefsModel {
   implicit val formats: Format[OtherReliefsModel] = Json.format
 
-  implicit def otherReliefsBinder(implicit doubleBinder: QueryStringBindable[Double]): QueryStringBindable[OtherReliefsModel] = {
+  implicit def otherReliefsBinder(implicit
+    doubleBinder: QueryStringBindable[Double]
+  ): QueryStringBindable[OtherReliefsModel] =
     new QueryStringBindable[OtherReliefsModel] {
       override def unbind(key: String, value: OtherReliefsModel): String = s"&otherReliefsFlat=${value.flatReliefs}" +
         s"&otherReliefsRebased=${value.rebasedReliefs}" +
         s"&otherReliefsTimeApportioned=${value.timeApportionedReliefs}"
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, OtherReliefsModel]] = {
-        val flatReliefs = doubleBinder.bind("otherReliefsFlat", params) match {
+        val flatReliefs            = doubleBinder.bind("otherReliefsFlat", params) match {
           case Some(Right(value)) => value
-          case _ => 0.0
+          case _                  => 0.0
         }
-        val rebasedReliefs = doubleBinder.bind("otherReliefsRebased", params) match {
+        val rebasedReliefs         = doubleBinder.bind("otherReliefsRebased", params) match {
           case Some(Right(value)) => value
-          case _ => 0.0
+          case _                  => 0.0
         }
         val timeApportionedReliefs = doubleBinder.bind("otherReliefsTimeApportioned", params) match {
           case Some(Right(value)) => value
-          case _ => 0.0
+          case _                  => 0.0
         }
 
         Some(Right(OtherReliefsModel(flatReliefs, rebasedReliefs, timeApportionedReliefs)))
       }
     }
-  }
 }

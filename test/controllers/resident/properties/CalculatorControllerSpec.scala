@@ -31,15 +31,17 @@ import java.time.LocalDate
 
 class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 
-  val service = new CalculationService
+  val service        = new CalculationService
   val mockComponents = app.injector.instanceOf[ControllerComponents]
-  val controller = new CalculatorController(service, mockComponents)
+  val controller     = new CalculatorController(service, mockComponents)
 
   "CalculatorController.calculateTotalGain" when {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" must {
-      lazy val result = controller.calculateTotalGain(PropertyTotalGainModel(TotalGainModel(100000, 10000, 50000, 10000), 10000))(fakeRequest)
+      lazy val result = controller.calculateTotalGain(
+        PropertyTotalGainModel(TotalGainModel(100000, 10000, 50000, 10000), 10000)
+      )(fakeRequest)
 
       "return a 200" in {
         status(result) mustBe 200
@@ -63,8 +65,16 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "numeric values are passed" must {
 
-      lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, Some(1000), Some(5000), Some(20000), 11100, LocalDate.parse("2015-05-06"))
+      lazy val result = controller.calculateChargeableGain(
+        PropertyChargeableGainModel(
+          PropertyTotalGainModel(TotalGainModel(195000, 1000, 160000, 1000), 5000),
+          None,
+          Some(1000),
+          Some(5000),
+          Some(20000),
+          11100,
+          LocalDate.parse("2015-05-06")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -127,8 +137,16 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     }
 
     "numeric values are passed with correct rounding" must {
-      lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(195000, 1000, 160000, 1000), 5000), None, None, Some(4999.01), Some(19999.01), 11100, LocalDate.parse("2015-05-06"))
+      lazy val result = controller.calculateChargeableGain(
+        PropertyChargeableGainModel(
+          PropertyTotalGainModel(TotalGainModel(195000, 1000, 160000, 1000), 5000),
+          None,
+          None,
+          Some(4999.01),
+          Some(19999.01),
+          11100,
+          LocalDate.parse("2015-05-06")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -192,10 +210,16 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "numeric values are passed with reliefs greater than gain" must {
 
-
-      lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(195000, 1000, 160000, 1000), 5000), Some(20000), Some(30000), Some(4999.01), Some(19999.01),
-        11100, LocalDate.parse("2015-05-06"))
+      lazy val result = controller.calculateChargeableGain(
+        PropertyChargeableGainModel(
+          PropertyTotalGainModel(TotalGainModel(195000, 1000, 160000, 1000), 5000),
+          Some(20000),
+          Some(30000),
+          Some(4999.01),
+          Some(19999.01),
+          11100,
+          LocalDate.parse("2015-05-06")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -259,8 +283,16 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "numeric values are passed with reliefs greater than gain and lettings exceeding 40000" must {
 
-      lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(200000, 0, 100000, 0), 0), Some(55000), Some(45000), Some(4999.01), Some(19999.01), 11100, LocalDate.parse("2015-05-06"))
+      lazy val result = controller.calculateChargeableGain(
+        PropertyChargeableGainModel(
+          PropertyTotalGainModel(TotalGainModel(200000, 0, 100000, 0), 0),
+          Some(55000),
+          Some(45000),
+          Some(4999.01),
+          Some(19999.01),
+          11100,
+          LocalDate.parse("2015-05-06")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -327,21 +359,29 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" must {
-      lazy val result = controller.calculateTaxOwed(PropertyCalculateTaxOwedModel(
-        PropertyChargeableGainModel(PropertyTotalGainModel(TotalGainModel(disposalValue = 195000,
-        disposalCosts = 1000,
-        acquisitionValue = 160000,
-        acquisitionCosts = 1000),
-        improvements = 5000),
-        prrValue = None,
-        lettingReliefs = None,
-        allowableLosses = None,
-        broughtForwardLosses = None,
-        annualExemptAmount = 11100,
-          disposalDate = LocalDate.parse("2015-10-10")),
-        previousTaxableGain = None,
-        previousIncome = 20000,
-        personalAllowance = 11000)
+      lazy val result = controller.calculateTaxOwed(
+        PropertyCalculateTaxOwedModel(
+          PropertyChargeableGainModel(
+            PropertyTotalGainModel(
+              TotalGainModel(
+                disposalValue = 195000,
+                disposalCosts = 1000,
+                acquisitionValue = 160000,
+                acquisitionCosts = 1000
+              ),
+              improvements = 5000
+            ),
+            prrValue = None,
+            lettingReliefs = None,
+            allowableLosses = None,
+            broughtForwardLosses = None,
+            annualExemptAmount = 11100,
+            disposalDate = LocalDate.parse("2015-10-10")
+          ),
+          previousTaxableGain = None,
+          previousIncome = 20000,
+          personalAllowance = 11000
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -420,22 +460,29 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     }
 
     "all optional values are provided" must {
-      lazy val result = controller.calculateTaxOwed(PropertyCalculateTaxOwedModel(
-        PropertyChargeableGainModel(PropertyTotalGainModel(TotalGainModel(
-        disposalValue = 250000,
-        disposalCosts = 10000,
-        acquisitionValue = 100000,
-        acquisitionCosts = 10000),
-        improvements = 30000),
-        prrValue = Some(1000),
-        lettingReliefs = Some(8900),
-        allowableLosses = Some(20000),
-        broughtForwardLosses = Some(10000),
-        annualExemptAmount = 11100,
-        disposalDate = LocalDate.parse("2015-10-10")),
-        previousTaxableGain = Some(10000),
-        previousIncome = 10000,
-        personalAllowance = 11000)
+      lazy val result = controller.calculateTaxOwed(
+        PropertyCalculateTaxOwedModel(
+          PropertyChargeableGainModel(
+            PropertyTotalGainModel(
+              TotalGainModel(
+                disposalValue = 250000,
+                disposalCosts = 10000,
+                acquisitionValue = 100000,
+                acquisitionCosts = 10000
+              ),
+              improvements = 30000
+            ),
+            prrValue = Some(1000),
+            lettingReliefs = Some(8900),
+            allowableLosses = Some(20000),
+            broughtForwardLosses = Some(10000),
+            annualExemptAmount = 11100,
+            disposalDate = LocalDate.parse("2015-10-10")
+          ),
+          previousTaxableGain = Some(10000),
+          previousIncome = 10000,
+          personalAllowance = 11000
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -514,8 +561,16 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     }
 
     "Part allowableLossesUsed" must {
-      lazy val result = controller.calculateChargeableGain(PropertyChargeableGainModel(PropertyTotalGainModel(
-        TotalGainModel(50000, 0, 0, 0), 0), None, None, Some(100000), Some(0), 11100, LocalDate.parse("2015-05-06"))
+      lazy val result = controller.calculateChargeableGain(
+        PropertyChargeableGainModel(
+          PropertyTotalGainModel(TotalGainModel(50000, 0, 0, 0), 0),
+          None,
+          None,
+          Some(100000),
+          Some(0),
+          11100,
+          LocalDate.parse("2015-05-06")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -573,7 +628,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
       val propertyTotalGainModel = PropertyTotalGainModel(TotalGainModel(0, 999.99, 0, 299.50), 5000.01)
 
       lazy val fakeRequest = FakeRequest("GET", "")
-      lazy val result = controller.calculateTotalCosts(propertyTotalGainModel)(fakeRequest)
+      lazy val result      = controller.calculateTotalCosts(propertyTotalGainModel)(fakeRequest)
 
       "return a 200 status" in {
         status(result) mustBe 200

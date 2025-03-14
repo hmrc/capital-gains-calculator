@@ -22,39 +22,54 @@ import org.scalatestplus.play.PlaySpec
 import java.time.LocalDate
 
 class CalculationServiceSpec extends PlaySpec with MockitoSugar {
- val calculationService = new CalculationService
+  val calculationService = new CalculationService
   "Calling CalculationService.calculateGainFlat" must {
 
     "return the total Gain value of 4700 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000, " +
       "Incidental Acquisition Costs = 300, Enhancement Costs = 2000" in {
-      val result = calculationService.calculateGainFlat(10000, 2000, 1000, 300, 2000)
-      result mustEqual 4700
-    }
+        val result = calculationService.calculateGainFlat(10000, 2000, 1000, 300, 2000)
+        result mustEqual 4700
+      }
   }
 
   "Calling CalculationService.calculateGainTA" must {
 
     "return 2500 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Acquisition Cost = 1000," +
       "Incidental Acquisition Costs = 0, Enhancement Costs = 2000, Acquisition Date 05/04/2015, Disposal Date 06/04/2015" in {
-      val result = calculationService.calculateGainTA(10000.0, 2000.0, 1000.0, 0.0, 2000.0, Some(LocalDate.parse("2015-04-05")), LocalDate.parse("2015-04-06"))
-      result mustEqual 2500
-    }
+        val result = calculationService.calculateGainTA(
+          10000.0,
+          2000.0,
+          1000.0,
+          0.0,
+          2000.0,
+          Some(LocalDate.parse("2015-04-05")),
+          LocalDate.parse("2015-04-06")
+        )
+        result mustEqual 2500
+      }
 
     "return 206 where Disposal Proceeds = 12,645.77, Incidental Disposal Costs = 1954.66, Acquisition Cost = 1000.04," +
       "Incidental Acquisition Costs = 0.99, Enhancement Costs = 2000.65, Acquisition Date 05/04/1967, Disposal Date 31/07/2016" in {
-      val result = calculationService.calculateGainTA(12645.77, 1954.66, 1000.04, 0.99, 2000.65, Some(LocalDate.parse("1967-04-05")),
-        LocalDate.parse("2016-07-31"))
-      result mustEqual 206
-    }
+        val result = calculationService.calculateGainTA(
+          12645.77,
+          1954.66,
+          1000.04,
+          0.99,
+          2000.65,
+          Some(LocalDate.parse("1967-04-05")),
+          LocalDate.parse("2016-07-31")
+        )
+        result mustEqual 206
+      }
   }
 
   "Calling CalculationService.calculateGainRebased" must {
 
     "return the total Gain value of 4700 where Disposal Proceeds = 10000, Incidental Disposal Costs = 2000, Rebased Value = 1000, " +
       "Revaluation Costs = 300, Enhancement Costs = 2000" in {
-      val result = calculationService.calculateGainRebased(10000, 2000, 1000, 300, 2000)
-      result mustEqual 4700
-    }
+        val result = calculationService.calculateGainRebased(10000, 2000, 1000, 300, 2000)
+        result mustEqual 4700
+      }
   }
 
   "Calling CalculationService.calculateChargeableGain" must {
@@ -91,7 +106,6 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
   }
 
   "Calling CalculationService.brRemaining" must {
-
 
     "return a value of 1 when Individual has income of 49999, PA of 12300" in {
       val result = calculationService.brRemaining(49999, 12500, 0, 2020)
@@ -404,7 +418,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           usedAEA = 0,
           aeaLeft = 11000,
           taxYear = 2016,
-          isProperty = true)
+          isProperty = true
+        )
 
         "return basic rate total of 1800" in {
           result.baseRateTotal mustEqual 1800
@@ -426,7 +441,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           usedAEA = 0,
           aeaLeft = 11000,
           taxYear = 2016,
-          isProperty = true)
+          isProperty = true
+        )
 
         "return basic rate total of 1800" in {
           result.baseRateTotal mustEqual 1800
@@ -448,7 +464,8 @@ class CalculationServiceSpec extends PlaySpec with MockitoSugar {
           usedAEA = 0,
           aeaLeft = 11000,
           taxYear = 2016,
-          isProperty = true)
+          isProperty = true
+        )
 
         "return a rounded number for base rate total" in {
           result.baseRateTotal mustEqual 6222.05

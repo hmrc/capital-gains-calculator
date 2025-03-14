@@ -28,18 +28,17 @@ import services.CalculationService
 
 import java.time.LocalDate
 
+class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 
-class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar{
-
-  val service = new CalculationService
+  val service        = new CalculationService
   val mockComponents = app.injector.instanceOf[ControllerComponents]
-  val controller = new CalculatorController(service, mockComponents)
+  val controller     = new CalculatorController(service, mockComponents)
 
   "ShareCalculatorController.calculateTotalGain" when {
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "numeric values are passed" must {
-      val model = TotalGainModel(100000, 10000, 50000, 10000)
+      val model       = TotalGainModel(100000, 10000, 50000, 10000)
       lazy val result = controller.calculateTotalGain(model)(fakeRequest)
 
       "return a 200" in {
@@ -64,14 +63,18 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "numeric values are passed" must {
 
-      lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
-        TotalGainModel(disposalValue = 195000,
-          disposalCosts = 1000,
-          acquisitionValue = 160000,
-          acquisitionCosts = 1000),
-        allowableLosses = Some(5000),
-        broughtForwardLosses = Some(20000),
-        annualExemptAmount = 11100)
+      lazy val result = controller.calculateChargeableGain(
+        ChargeableGainModel(
+          TotalGainModel(
+            disposalValue = 195000,
+            disposalCosts = 1000,
+            acquisitionValue = 160000,
+            acquisitionCosts = 1000
+          ),
+          allowableLosses = Some(5000),
+          broughtForwardLosses = Some(20000),
+          annualExemptAmount = 11100
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -127,14 +130,18 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "numeric values are passed with correct rounding" must {
 
-      lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
-        TotalGainModel(disposalValue = 195000,
-          disposalCosts = 1000,
-          acquisitionValue = 160000,
-          acquisitionCosts = 1000),
-        allowableLosses = Some(4999.01),
-        broughtForwardLosses = Some(19999.01),
-        annualExemptAmount = 11100)
+      lazy val result = controller.calculateChargeableGain(
+        ChargeableGainModel(
+          TotalGainModel(
+            disposalValue = 195000,
+            disposalCosts = 1000,
+            acquisitionValue = 160000,
+            acquisitionCosts = 1000
+          ),
+          allowableLosses = Some(4999.01),
+          broughtForwardLosses = Some(19999.01),
+          annualExemptAmount = 11100
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -193,18 +200,24 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     lazy val fakeRequest = FakeRequest("GET", "")
 
     "no optional values are provided" must {
-      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
-        ChargeableGainModel(TotalGainModel(disposalValue = 195000,
-          disposalCosts = 1000,
-          acquisitionValue = 160000,
-          acquisitionCosts = 1000),
-          allowableLosses = None,
-          broughtForwardLosses = None,
-          annualExemptAmount = 11100),
-        previousTaxableGain = None,
-        previousIncome = 20000,
-        personalAllowance = 11000,
-        disposalDate = LocalDate.parse("2015-10-10"))
+      lazy val result = controller.calculateTaxOwed(
+        CalculateTaxOwedModel(
+          ChargeableGainModel(
+            TotalGainModel(
+              disposalValue = 195000,
+              disposalCosts = 1000,
+              acquisitionValue = 160000,
+              acquisitionCosts = 1000
+            ),
+            allowableLosses = None,
+            broughtForwardLosses = None,
+            annualExemptAmount = 11100
+          ),
+          previousTaxableGain = None,
+          previousIncome = 20000,
+          personalAllowance = 11000,
+          disposalDate = LocalDate.parse("2015-10-10")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -275,17 +288,24 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
     }
 
     "all optional values are provided" must {
-      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
-         ChargeableGainModel(TotalGainModel(disposalValue = 250000,
-          disposalCosts = 10000,
-          acquisitionValue = 100000,
-          acquisitionCosts = 10000), allowableLosses = Some(20000),
-          broughtForwardLosses = Some(10000),
-          annualExemptAmount = 11100),
-        previousTaxableGain = Some(10000),
-        previousIncome = 10000,
-        personalAllowance = 11000,
-        disposalDate = LocalDate.parse("2015-10-10"))
+      lazy val result = controller.calculateTaxOwed(
+        CalculateTaxOwedModel(
+          ChargeableGainModel(
+            TotalGainModel(
+              disposalValue = 250000,
+              disposalCosts = 10000,
+              acquisitionValue = 100000,
+              acquisitionCosts = 10000
+            ),
+            allowableLosses = Some(20000),
+            broughtForwardLosses = Some(10000),
+            annualExemptAmount = 11100
+          ),
+          previousTaxableGain = Some(10000),
+          previousIncome = 10000,
+          personalAllowance = 11000,
+          disposalDate = LocalDate.parse("2015-10-10")
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -357,18 +377,25 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
 
     "when using 2016/17 tax year values" must {
 
-      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
-         ChargeableGainModel(TotalGainModel(disposalValue = 250000,
-          disposalCosts = 10000,
-          acquisitionValue = 100000,
-          acquisitionCosts = 10000), allowableLosses = Some(20000),
-          broughtForwardLosses = Some(10000),
-          annualExemptAmount = 11100),
-        previousTaxableGain = Some(10000),
-        previousIncome = 10000,
-        personalAllowance = 11000,
-        disposalDate = LocalDate.parse("2016-10-10")
-      ))(fakeRequest)
+      lazy val result = controller.calculateTaxOwed(
+        CalculateTaxOwedModel(
+          ChargeableGainModel(
+            TotalGainModel(
+              disposalValue = 250000,
+              disposalCosts = 10000,
+              acquisitionValue = 100000,
+              acquisitionCosts = 10000
+            ),
+            allowableLosses = Some(20000),
+            broughtForwardLosses = Some(10000),
+            annualExemptAmount = 11100
+          ),
+          previousTaxableGain = Some(10000),
+          previousIncome = 10000,
+          personalAllowance = 11000,
+          disposalDate = LocalDate.parse("2016-10-10")
+        )
+      )(fakeRequest)
 
       "return a 200" in {
         status(result) mustBe 200
@@ -437,21 +464,27 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
       }
     }
 
-
     "when using 2024/25 before effective date tax year values" must {
 
-      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
-        ChargeableGainModel(TotalGainModel(disposalValue = 250000,
-          disposalCosts = 10000,
-          acquisitionValue = 100000,
-          acquisitionCosts = 10000), allowableLosses = Some(20000),
-          broughtForwardLosses = Some(10000),
-          annualExemptAmount = 11100),
-        previousTaxableGain = Some(10000),
-        previousIncome = 10000,
-        personalAllowance = 11000,
-        disposalDate = LocalDate.parse("2024-10-30")
-      ))(fakeRequest)
+      lazy val result = controller.calculateTaxOwed(
+        CalculateTaxOwedModel(
+          ChargeableGainModel(
+            TotalGainModel(
+              disposalValue = 250000,
+              disposalCosts = 10000,
+              acquisitionValue = 100000,
+              acquisitionCosts = 10000
+            ),
+            allowableLosses = Some(20000),
+            broughtForwardLosses = Some(10000),
+            annualExemptAmount = 11100
+          ),
+          previousTaxableGain = Some(10000),
+          previousIncome = 10000,
+          personalAllowance = 11000,
+          disposalDate = LocalDate.parse("2024-10-30")
+        )
+      )(fakeRequest)
 
       "return a 200" in {
         status(result) mustBe 200
@@ -520,21 +553,27 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
       }
     }
 
-
     "when using 2024/25 after effective date tax year values" must {
 
-      lazy val result = controller.calculateTaxOwed(CalculateTaxOwedModel(
-        ChargeableGainModel(TotalGainModel(disposalValue = 250000,
-          disposalCosts = 10000,
-          acquisitionValue = 100000,
-          acquisitionCosts = 10000), allowableLosses = Some(20000),
-          broughtForwardLosses = Some(10000),
-          annualExemptAmount = 11100),
-        previousTaxableGain = Some(10000),
-        previousIncome = 10000,
-        personalAllowance = 11000,
-        disposalDate = LocalDate.parse("2024-10-31")
-      ))(fakeRequest)
+      lazy val result = controller.calculateTaxOwed(
+        CalculateTaxOwedModel(
+          ChargeableGainModel(
+            TotalGainModel(
+              disposalValue = 250000,
+              disposalCosts = 10000,
+              acquisitionValue = 100000,
+              acquisitionCosts = 10000
+            ),
+            allowableLosses = Some(20000),
+            broughtForwardLosses = Some(10000),
+            annualExemptAmount = 11100
+          ),
+          previousTaxableGain = Some(10000),
+          previousIncome = 10000,
+          personalAllowance = 11000,
+          disposalDate = LocalDate.parse("2024-10-31")
+        )
+      )(fakeRequest)
 
       "return a 200" in {
         status(result) mustBe 200
@@ -602,22 +641,16 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
         }
       }
 
-
-
-
-
     }
 
-
     "Part allowableLossesUsed" must {
-      lazy val result = controller.calculateChargeableGain(ChargeableGainModel(
-        TotalGainModel(disposalValue = 50000,
-          disposalCosts = 0,
-          acquisitionValue = 0,
-          acquisitionCosts = 0),
-        allowableLosses = Some(100000),
-        broughtForwardLosses = Some(0),
-        annualExemptAmount = 11100)
+      lazy val result = controller.calculateChargeableGain(
+        ChargeableGainModel(
+          TotalGainModel(disposalValue = 50000, disposalCosts = 0, acquisitionValue = 0, acquisitionCosts = 0),
+          allowableLosses = Some(100000),
+          broughtForwardLosses = Some(0),
+          annualExemptAmount = 11100
+        )
       )(fakeRequest)
 
       "return a 200" in {
@@ -667,7 +700,7 @@ class CalculatorControllerSpec extends PlaySpec with GuiceOneAppPerSuite with Mo
       val totalGainModel = TotalGainModel(0, 999.99, 0, 299.50)
 
       lazy val fakeRequest = FakeRequest("GET", "")
-      lazy val result = controller.calculateTotalCosts(totalGainModel)(fakeRequest)
+      lazy val result      = controller.calculateTotalCosts(totalGainModel)(fakeRequest)
 
       "return a 200 status" in {
         status(result) mustBe 200
