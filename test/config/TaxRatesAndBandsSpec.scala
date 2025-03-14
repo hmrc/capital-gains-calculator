@@ -70,19 +70,6 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
     val acceptedMinTaxYear = TaxRatesAndBands.liveTaxRates.head.taxYear
     val acceptedMaxTaxYear = TaxRatesAndBands.liveTaxRates.last.taxYear
 
-    "filtered by tax year" must {
-      "return correct tax year details" in {
-        check {
-          Prop.forAll(Gen.choose(Integer.MIN_VALUE, Integer.MAX_VALUE))(taxYear => {
-            val taxYearList = TaxRatesAndBands.filterRatesByTaxYear(taxYear)
-            if (taxYear >= acceptedMinTaxYear && taxYear <= acceptedMaxTaxYear) {
-              taxYearList.nonEmpty && taxYearList.size == 1 && taxYearList.head.taxYear == taxYear
-            } else taxYearList.isEmpty
-          })
-        }
-      }
-    }
-
     "checked for closest tax year" must {
       "return correct closest tax year" in {
         check {

@@ -307,6 +307,33 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
       }
     }
 
+    "calling with the date 10/10/2099" must {
+      val result = controller.getTaxYear("2099-10-10")(fakeRequest)
+      val data = contentAsString(result)
+      val json = Json.parse(data)
+
+      "return a status 200" in {
+        status(result) mustBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) mustBe Some("application/json")
+      }
+
+      "return a supplied TaxYearModel for 2099/00" in {
+        (json \ "taxYearSupplied").as[String] mustBe "2099/00"
+      }
+
+      "return a supplied TaxYearModel with isValidYear as true" in {
+        (json \ "isValidYear").as[Boolean] mustBe false
+      }
+
+      "return a supplied TaxYearModel with calculationTaxYear as 2024/25" in {
+        (json \ "calculationTaxYear").as[String] mustBe "2024/25"
+      }
+
+    }
+
     "calling with an invalid date 10/100/2014" must {
       val result = controller.getTaxYear("2014-100-10")(fakeRequest)
       val data = contentAsString(result)

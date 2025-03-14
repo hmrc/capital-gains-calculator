@@ -74,10 +74,6 @@ object TaxRatesAndBands {
     }
   }
 
-  def filterRatesByTaxYear (taxYear: Int): List[TaxRatesAndBands] = {
-    liveTaxRates.filter(_.taxYear == taxYear)
-  }
-
   def getClosestTaxYear (taxYear: Int): Int = {
     val validYears = liveTaxRates.map(_.taxYear)
     validYears.minBy(year => math.abs(year - taxYear))
