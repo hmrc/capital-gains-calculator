@@ -22,40 +22,36 @@ import java.time.temporal.ChronoUnit._
 
 object Date {
 
-  val taxYearEnd = "04-05"
-  val taxYearStart = "04-06"
-  val taxStartDate = LocalDate.parse("2015-04-05")
+  val taxYearEnd                 = "04-05"
+  val taxYearStart               = "04-06"
+  val taxStartDate               = LocalDate.parse("2015-04-05")
   val PRRDeductionApplicableDate = LocalDate.parse("2020-04-05")
 
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d")
 
-  def daysBetween(start: String, end: String): Double = {
+  def daysBetween(start: String, end: String): Double =
     (DAYS.between(LocalDate.parse(start, dateFormatter), LocalDate.parse(end, dateFormatter)) + 1).toDouble
-  }
 
-  def daysBetween(start: LocalDate, end: LocalDate): Double = {
+  def daysBetween(start: LocalDate, end: LocalDate): Double =
     (DAYS.between(start, end) + 1).toDouble
-  }
 
   def getTaxYear(date: LocalDate): Int = {
     val year = date.getYear
     if (date.isAfter(LocalDate.parse(s"${year.toString}-$taxYearEnd"))) {
       year + 1
-    }
-    else {
+    } else {
       year
     }
   }
 
   def taxYearToString(input: Int): String = {
     val startYear = input - 1
-    val endYear = input.toString.takeRight(2)
+    val endYear   = input.toString.takeRight(2)
     s"$startYear/$endYear"
   }
 
-  def afterTaxStarted(date: LocalDate): Boolean = {
+  def afterTaxStarted(date: LocalDate): Boolean =
     date.isAfter(taxStartDate)
-  }
 
   def taxYearEndDate(input: Int): LocalDate = LocalDate.parse(
     s"${input - 1}-$taxYearEnd"

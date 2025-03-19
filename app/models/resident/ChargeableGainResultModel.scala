@@ -18,8 +18,7 @@ package models.resident
 
 import play.api.libs.json.{Format, Json}
 
-case class ChargeableGainResultModel
-(
+case class ChargeableGainResultModel(
   gain: Double,
   chargeableGain: Double,
   aeaUsed: Double,

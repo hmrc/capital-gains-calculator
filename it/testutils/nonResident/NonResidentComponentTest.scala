@@ -42,10 +42,10 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
     s"return a $OK with a valid result" when {
 
       "non-residential" in {
-        def request: WSResponse = Await.result(ws.url(s"$calculateUrl")
-          .post(
-            Json.parse(
-              """
+        def request: WSResponse = Await.result(
+          ws.url(s"$calculateUrl")
+            .post(
+              Json.parse("""
                 |{
                 |"disposalValue":500000,
                 |"disposalCosts":20000,
@@ -58,12 +58,12 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
                 |"acquisitionDate":"2014-08-14",
                 |"improvementsAfterTaxStarted":1000
                 |}
-              """.
-                stripMargin)
-          ), Duration(60, SECONDS))
+              """.stripMargin)
+            ),
+          Duration(60, SECONDS)
+        )
 
-        val responseJson = Json.parse(
-          """
+        val responseJson = Json.parse("""
             |{
             |"flatGain":100000,
             |"rebasedGain":9000,
@@ -79,10 +79,10 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
     s"return a $BAD_REQUEST" when {
 
       "data is missing" in {
-        def request: WSResponse = Await.result(ws.url(calculateUrl)
-          .post(
-            Json.parse(
-              """
+        def request: WSResponse = Await.result(
+          ws.url(calculateUrl)
+            .post(
+              Json.parse("""
                 |{
                 |"disposalCosts":200000,
                 |"acquisitionValue":350000,
@@ -94,17 +94,21 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
                 |"acquisitionDate":"2014-08-14",
                 |"improvementsAfterTaxStarted":250000
                 |}
-              """.
-                stripMargin)
-          ), Duration(60, SECONDS))
+              """.stripMargin)
+            ),
+          Duration(60, SECONDS)
+        )
 
         request.status mustBe 400
         request.body mustBe "Validation failed with errors: List((/disposalValue,List(JsonValidationError(List(error.path.missing),List()))))"
       }
 
       "no data is provided" in {
-        def request: WSResponse = Await.result(ws.url(calculateUrl)
-          .post(""), Duration(60, SECONDS))
+        def request: WSResponse = Await.result(
+          ws.url(calculateUrl)
+            .post(""),
+          Duration(60, SECONDS)
+        )
 
         request.status mustBe 400
         request.body mustBe "No Json provided"

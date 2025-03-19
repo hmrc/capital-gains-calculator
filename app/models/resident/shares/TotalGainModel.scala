@@ -18,6 +18,11 @@ package models.resident.shares
 
 import common.binders.ResidentSharesBinders
 
-case class TotalGainModel (disposalValue: Double, disposalCosts: Double, acquisitionValue: Double, acquisitionCosts: Double)
+case class TotalGainModel(
+  disposalValue: Double,
+  disposalCosts: Double,
+  acquisitionValue: Double,
+  acquisitionCosts: Double
+)
 
 object TotalGainModel extends ResidentSharesBinders

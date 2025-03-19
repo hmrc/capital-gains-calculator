@@ -19,6 +19,6 @@ package models.resident.properties
 import common.binders._
 import models.resident.shares.TotalGainModel
 
-case class PropertyTotalGainModel (totalGainModel: TotalGainModel, improvements: Double)
+case class PropertyTotalGainModel(totalGainModel: TotalGainModel, improvements: Double)
 
 object PropertyTotalGainModel extends ResidentPropertyBinders

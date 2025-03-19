@@ -27,9 +27,10 @@ import java.time.LocalDate
 class RouteSpec extends PlaySpec with MockitoSugar {
 
   "The route for calculate gain after prr for non-resident properties" must {
-    val testDate = Some(LocalDate.parse("2001-01-01"))
-    lazy val url = controllers.nonresident.routes.CalculatorController.
-      calculateTaxableGainAfterPRR(1, 1, 1, 1, 1, Some(1), 1, testDate, testDate, 1, Some(1)).url
+    val testDate                   = Some(LocalDate.parse("2001-01-01"))
+    lazy val url                   = controllers.nonresident.routes.CalculatorController
+      .calculateTaxableGainAfterPRR(1, 1, 1, 1, 1, Some(1), 1, testDate, testDate, 1, Some(1))
+      .url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -82,9 +83,29 @@ class RouteSpec extends PlaySpec with MockitoSugar {
   }
 
   "The route for calculate tax owed for non-resident properties" must {
-    val testDate = Some(LocalDate.parse("2001-01-01"))
-    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTaxOwed(1, 1, 1, 1, 1, Some(1), 1, testDate.get, testDate,
-      1, Some(1), 1, 1, 1, 1, 1, 1, OtherReliefsModel(1, 1, 1)).url
+    val testDate                   = Some(LocalDate.parse("2001-01-01"))
+    lazy val url                   = controllers.nonresident.routes.CalculatorController
+      .calculateTaxOwed(
+        1,
+        1,
+        1,
+        1,
+        1,
+        Some(1),
+        1,
+        testDate.get,
+        testDate,
+        1,
+        Some(1),
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        OtherReliefsModel(1, 1, 1)
+      )
+      .url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-gain-after-prr" in {
@@ -174,7 +195,7 @@ class RouteSpec extends PlaySpec with MockitoSugar {
 
   "The route for calculate total costs for non-resident properties" must {
 
-    lazy val url = controllers.nonresident.routes.CalculatorController.calculateTotalCosts(1000.00, 500.00, 300.00).url
+    lazy val url                   = controllers.nonresident.routes.CalculatorController.calculateTotalCosts(1000.00, 500.00, 300.00).url
     lazy val queryStringParameters = url.substring(url.indexOf('?'))
 
     "have the path /non-resident/calculate-total-costs" in {
@@ -200,10 +221,11 @@ class RouteSpec extends PlaySpec with MockitoSugar {
 
   "The route for calculate total costs for resident properties" must {
 
-    val totalGainModel = TotalGainModel(0, 0, 0, 0)
+    val totalGainModel         = TotalGainModel(0, 0, 0, 0)
     val propertyTotalGainModel = PropertyTotalGainModel(totalGainModel, 0)
 
-    lazy val url = controllers.resident.properties.routes.CalculatorController.calculateTotalCosts(propertyTotalGainModel).url
+    lazy val url =
+      controllers.resident.properties.routes.CalculatorController.calculateTotalCosts(propertyTotalGainModel).url
 
     "be equal to '/capital-gains-calculator/calculate-total-costs'" in {
       url must startWith("/calculate-total-costs")

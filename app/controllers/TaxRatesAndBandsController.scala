@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.typesafe.config.ConfigFactory
 import common._
 import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
@@ -32,43 +33,52 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 @Singleton
-class TaxRatesAndBandsController @Inject()(val cc: ControllerComponents
-                                          )(implicit ec: ExecutionContext) extends BackendController(cc) {
+class TaxRatesAndBandsController @Inject() (val cc: ControllerComponents)(implicit ec: ExecutionContext)
+    extends BackendController(cc) {
 
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d")
 
   def getMaxAEA(year: Int): Action[AnyContent] = Action.async {
-    if (TaxRatesAndBandsValidation.checkValidTaxYear(year)) Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
+    if (TaxRatesAndBandsValidation.checkValidTaxYear(year))
+      Future.successful(Ok(Json.toJson(getRates(year).maxAnnualExemptAmount)))
     else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
-  def getMaxPersonalAllowance(year: Int, isEligibleBlindPersonsAllowance: Option[Boolean],
-                              isEligibleMarriageAllowance: Option[Boolean]): Action[AnyContent] = Action.async {
+  def getMaxPersonalAllowance(
+    year: Int,
+    isEligibleBlindPersonsAllowance: Option[Boolean],
+    isEligibleMarriageAllowance: Option[Boolean]
+  ): Action[AnyContent] = Action.async {
     if (TaxRatesAndBandsValidation.checkValidTaxYear(year)) {
-      val rates = getRates(year)
-      val blindPersonalAllowance = if (isEligibleBlindPersonsAllowance.contains(true)) rates.blindPersonsAllowance else 0
-      val marriageAllowance = if (isEligibleMarriageAllowance.contains(true)) rates.marriageAllowance else 0
+      val rates                  = getRates(year)
+      val blindPersonalAllowance =
+        if (isEligibleBlindPersonsAllowance.contains(true)) rates.blindPersonsAllowance else 0
+      val marriageAllowance      = if (isEligibleMarriageAllowance.contains(true)) rates.marriageAllowance else 0
       Future.successful(Ok(Json.toJson(rates.maxPersonalAllowance + blindPersonalAllowance + marriageAllowance)))
-    }
-    else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
+    } else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
   def getTaxYear(dateString: String): Action[AnyContent] = Action.async {
 
-    def tryParsing(): Either[String, LocalDate] = {
+    def tryParsing(): Either[String, LocalDate] =
       Try {
         LocalDate.parse(dateString, dateFormatter)
       } match {
         case Success(date) => Right(date)
-        case _ => Left(ValidationErrorMessages.invalidDateFormat(dateString))
+        case _             => Left(ValidationErrorMessages.invalidDateFormat(dateString))
       }
-    }
 
     tryParsing() match {
       case Right(parsedDate) =>
-        val taxYear = Date.getTaxYear(parsedDate)
-        val result = TaxYearModel(Date.taxYearToString(taxYear), TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
-          Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear)))
+        val taxYear                 = Date.getTaxYear(parsedDate)
+        val isValidTaxYear: Boolean = (Date.taxYearToString(taxYear) <= Date.taxYearToString(
+          LocalDate.now().getYear
+        )) && (Date.taxYearToString(taxYear) >= Date.taxYearToString(TaxRatesAndBands.allRates.head.taxYear))
+        val result                  = TaxYearModel(
+          Date.taxYearToString(taxYear),
+          isValidTaxYear,
+          Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear))
+        )
         Future.successful(Ok(Json.toJson(result)))
 
       case Left(errorMessage) =>

@@ -128,19 +128,19 @@ class MathSpec extends PlaySpec {
   "calling common.Math.min" must {
 
     "return -1 when -1 and 0 are supplied" in {
-      min(-1,0) mustEqual -1
+      min(-1, 0) mustEqual -1
     }
 
     "return 0 when 0 and 0 are supplied" in {
-      min(0,0) mustEqual 0
+      min(0, 0) mustEqual 0
     }
 
     "return 0 when 1 and 0 are supplied" in {
-      min(1,0) mustEqual 0
+      min(1, 0) mustEqual 0
     }
 
     "return 1 when 1 and 2 are supplied" in {
-      min(1,2) mustEqual 1
+      min(1, 2) mustEqual 1
     }
   }
 

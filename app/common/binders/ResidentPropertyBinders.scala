@@ -26,76 +26,120 @@ object ResidentPropertyBinders extends ResidentPropertyBinders
 
 trait ResidentPropertyBinders extends CommonBinders {
 
-  val totalGainParameters = Seq(queryKeys.disposalValue, queryKeys.disposalCosts, queryKeys.acquisitionValue, queryKeys.acquisitionCosts)
+  val totalGainParameters         =
+    Seq(queryKeys.disposalValue, queryKeys.disposalCosts, queryKeys.acquisitionValue, queryKeys.acquisitionCosts)
   val propertyTotalGainParameters = totalGainParameters ++ Seq(queryKeys.improvements)
-  val chargeableGainParameters = propertyTotalGainParameters ++ Seq(queryKeys.annualExemptAmount, queryKeys.disposalDate)
-  val calculateTaxOwedParameters = chargeableGainParameters ++ Seq(queryKeys.previousIncome, queryKeys.personalAllowance, queryKeys.disposalDate)
+  val chargeableGainParameters    =
+    propertyTotalGainParameters ++ Seq(queryKeys.annualExemptAmount, queryKeys.disposalDate)
+  val calculateTaxOwedParameters  =
+    chargeableGainParameters ++ Seq(queryKeys.previousIncome, queryKeys.personalAllowance, queryKeys.disposalDate)
 
-  implicit def propertyTotalGainBinder(implicit totalGainBinder: QueryStringBindable[TotalGainModel],
-                                       doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyTotalGainModel] =
+  implicit def propertyTotalGainBinder(implicit
+    totalGainBinder: QueryStringBindable[TotalGainModel],
+    doubleBinder: QueryStringBindable[Double]
+  ): QueryStringBindable[PropertyTotalGainModel] =
     new QueryStringBindable[PropertyTotalGainModel] {
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PropertyTotalGainModel]] = {
+      override def bind(
+        key: String,
+        params: Map[String, Seq[String]]
+      ): Option[Either[String, PropertyTotalGainModel]] = {
 
         val missingParameter = propertyTotalGainParameters.find(element => params.get(element).isEmpty)
 
-        if(missingParameter.isEmpty) {
+        if (missingParameter.isEmpty) {
           for {
             totalGainModelEither <- totalGainBinder.bind("", params)
-            improvementsEither <- doubleBinder.bind(queryKeys.improvements, params)
+            improvementsEither   <- doubleBinder.bind(queryKeys.improvements, params)
           } yield {
             val inputs = (totalGainModelEither, improvementsEither)
             inputs match {
               case (Right(totalGainModel), Right(improvements)) =>
                 PropertyValidation.validatePropertyTotalGain(PropertyTotalGainModel(totalGainModel, improvements))
-              case fail => Left(CommonValidation.getFirstErrorMessage(Seq(totalGainModelEither, improvementsEither)))
+              case fail                                         => Left(CommonValidation.getFirstErrorMessage(Seq(totalGainModelEither, improvementsEither)))
             }
           }
-        }
-        else Some(Left(s"${missingParameter.get} is required."))
+        } else Some(Left(s"${missingParameter.get} is required."))
       }
 
-      override def unbind(key: String, propertyTotalGainModel: PropertyTotalGainModel): String = {
+      override def unbind(key: String, propertyTotalGainModel: PropertyTotalGainModel): String =
         Seq(
           totalGainBinder.unbind("", propertyTotalGainModel.totalGainModel),
           doubleBinder.unbind(queryKeys.improvements, propertyTotalGainModel.improvements)
         ).filter(!_.isEmpty).mkString("&")
-      }
     }
 
-  implicit def propertyChargeableGainBinder(implicit propertyTotalGainBinder: QueryStringBindable[PropertyTotalGainModel],
-                                            optionDoubleBinder: QueryStringBindable[Option[Double]],
-                                            doubleBinder: QueryStringBindable[Double]) : QueryStringBindable[PropertyChargeableGainModel] = {
+  implicit def propertyChargeableGainBinder(implicit
+    propertyTotalGainBinder: QueryStringBindable[PropertyTotalGainModel],
+    optionDoubleBinder: QueryStringBindable[Option[Double]],
+    doubleBinder: QueryStringBindable[Double]
+  ): QueryStringBindable[PropertyChargeableGainModel] =
     new QueryStringBindable[PropertyChargeableGainModel] {
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PropertyChargeableGainModel]] = {
+      override def bind(
+        key: String,
+        params: Map[String, Seq[String]]
+      ): Option[Either[String, PropertyChargeableGainModel]] = {
 
         val missingParameter = chargeableGainParameters.find(element => params.get(element).isEmpty)
 
-        if(missingParameter.isEmpty) {
+        if (missingParameter.isEmpty) {
           for {
             propertyTotalGainModelEither <- propertyTotalGainBinder.bind("", params)
-            prrValueEither <- optionDoubleBinder.bind(queryKeys.prrValue, params)
-            lettingReliefsEither <- optionDoubleBinder.bind(queryKeys.lettingReliefs, params)
-            allowableLossesEither <- optionDoubleBinder.bind(queryKeys.allowableLosses, params)
-            broughtForwardLossesEither <- optionDoubleBinder.bind(queryKeys.broughtForwardLosses, params)
-            annualExemptAmountEither <- doubleBinder.bind(queryKeys.annualExemptAmount, params)
-            disposalDateEither <- localDateBinder.bind(queryKeys.disposalDate, params)
+            prrValueEither               <- optionDoubleBinder.bind(queryKeys.prrValue, params)
+            lettingReliefsEither         <- optionDoubleBinder.bind(queryKeys.lettingReliefs, params)
+            allowableLossesEither        <- optionDoubleBinder.bind(queryKeys.allowableLosses, params)
+            broughtForwardLossesEither   <- optionDoubleBinder.bind(queryKeys.broughtForwardLosses, params)
+            annualExemptAmountEither     <- doubleBinder.bind(queryKeys.annualExemptAmount, params)
+            disposalDateEither           <- localDateBinder.bind(queryKeys.disposalDate, params)
           } yield {
 
-            val inputs = (propertyTotalGainModelEither, prrValueEither, lettingReliefsEither, allowableLossesEither,
-              broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)
+            val inputs = (
+              propertyTotalGainModelEither,
+              prrValueEither,
+              lettingReliefsEither,
+              allowableLossesEither,
+              broughtForwardLossesEither,
+              annualExemptAmountEither,
+              disposalDateEither
+            )
             inputs match {
-              case (Right(propertyTotalGain), Right(prrValue), Right(lettingReliefs), Right(allowableLosses), Right(broughtForwardLosses),
-                Right(annualExemptAmount), Right(disposalDate)) =>
-                  PropertyValidation.validatePropertyChargeableGain(PropertyChargeableGainModel(propertyTotalGain, prrValue, lettingReliefs,
-                    allowableLosses, broughtForwardLosses, annualExemptAmount, disposalDate))
+              case (
+                    Right(propertyTotalGain),
+                    Right(prrValue),
+                    Right(lettingReliefs),
+                    Right(allowableLosses),
+                    Right(broughtForwardLosses),
+                    Right(annualExemptAmount),
+                    Right(disposalDate)
+                  ) =>
+                PropertyValidation.validatePropertyChargeableGain(
+                  PropertyChargeableGainModel(
+                    propertyTotalGain,
+                    prrValue,
+                    lettingReliefs,
+                    allowableLosses,
+                    broughtForwardLosses,
+                    annualExemptAmount,
+                    disposalDate
+                  )
+                )
 
-              case _ => Left(CommonValidation.getFirstErrorMessage(Seq(propertyTotalGainModelEither, prrValueEither, lettingReliefsEither,
-                allowableLossesEither, broughtForwardLossesEither, annualExemptAmountEither, disposalDateEither)))
+              case _ =>
+                Left(
+                  CommonValidation.getFirstErrorMessage(
+                    Seq(
+                      propertyTotalGainModelEither,
+                      prrValueEither,
+                      lettingReliefsEither,
+                      allowableLossesEither,
+                      broughtForwardLossesEither,
+                      annualExemptAmountEither,
+                      disposalDateEither
+                    )
+                  )
+                )
             }
           }
-        }
-
-        else Some(Left(s"${missingParameter.get} is required."))
+        } else Some(Left(s"${missingParameter.get} is required."))
       }
 
       override def unbind(key: String, propertyChargeableGainModel: PropertyChargeableGainModel): String =
@@ -109,37 +153,54 @@ trait ResidentPropertyBinders extends CommonBinders {
           localDateBinder.unbind(queryKeys.disposalDate, propertyChargeableGainModel.disposalDate)
         ).filter(!_.isEmpty).mkString("&")
     }
-  }
 
-  implicit def propertyCalculateTaxOwedBinder(implicit doubleBinder: QueryStringBindable[Double], optionDoubleBinder: QueryStringBindable[Option[Double]],
-                                              propertyChargeableGainBinder: QueryStringBindable[PropertyChargeableGainModel]):
-  QueryStringBindable[PropertyCalculateTaxOwedModel] =
+  implicit def propertyCalculateTaxOwedBinder(implicit
+    doubleBinder: QueryStringBindable[Double],
+    optionDoubleBinder: QueryStringBindable[Option[Double]],
+    propertyChargeableGainBinder: QueryStringBindable[PropertyChargeableGainModel]
+  ): QueryStringBindable[PropertyCalculateTaxOwedModel] =
     new QueryStringBindable[PropertyCalculateTaxOwedModel] {
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, PropertyCalculateTaxOwedModel]] = {
+      override def bind(
+        key: String,
+        params: Map[String, Seq[String]]
+      ): Option[Either[String, PropertyCalculateTaxOwedModel]] = {
 
         val missingParameter = calculateTaxOwedParameters.find(element => params.get(element).isEmpty)
 
-        if(missingParameter.isEmpty) {
+        if (missingParameter.isEmpty) {
           for {
             propertyChargeableGainModelEither <- propertyChargeableGainBinder.bind("", params)
-            previousTaxableGainEither <- optionDoubleBinder.bind(queryKeys.previousTaxableGain, params)
-            previousIncomeEither <- doubleBinder.bind(queryKeys.previousIncome, params)
-            personalAllowanceEither <- doubleBinder.bind(queryKeys.personalAllowance, params)
+            previousTaxableGainEither         <- optionDoubleBinder.bind(queryKeys.previousTaxableGain, params)
+            previousIncomeEither              <- doubleBinder.bind(queryKeys.previousIncome, params)
+            personalAllowanceEither           <- doubleBinder.bind(queryKeys.personalAllowance, params)
           } yield {
-            val inputs = (propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
+            val inputs = (
+              propertyChargeableGainModelEither,
+              previousTaxableGainEither,
+              previousIncomeEither,
+              personalAllowanceEither
+            )
             inputs match {
-              case (Right(chargeableGain), Right(previousTaxableGain), Right(previousIncome), Right(personalAllowance)) =>
+              case (
+                    Right(chargeableGain),
+                    Right(previousTaxableGain),
+                    Right(previousIncome),
+                    Right(personalAllowance)
+                  ) =>
                 PropertyValidation.validatePropertyTaxOwed(
                   PropertyCalculateTaxOwedModel(chargeableGain, previousTaxableGain, previousIncome, personalAllowance)
                 )
               case _ =>
-                val inputs = Seq(propertyChargeableGainModelEither, previousTaxableGainEither, previousIncomeEither, personalAllowanceEither)
+                val inputs = Seq(
+                  propertyChargeableGainModelEither,
+                  previousTaxableGainEither,
+                  previousIncomeEither,
+                  personalAllowanceEither
+                )
                 Left(CommonValidation.getFirstErrorMessage(inputs))
             }
           }
-        }
-
-        else Some(Left(s"${missingParameter.get} is required."))
+        } else Some(Left(s"${missingParameter.get} is required."))
       }
 
       override def unbind(key: String, propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): String =

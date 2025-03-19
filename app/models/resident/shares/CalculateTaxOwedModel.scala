@@ -20,10 +20,12 @@ import common.binders.ResidentSharesBinders
 
 import java.time.LocalDate
 
-case class CalculateTaxOwedModel(chargeableGainModel: ChargeableGainModel,
-                                 previousTaxableGain: Option[Double],
-                                 previousIncome: Double,
-                                 personalAllowance: Double,
-                                 disposalDate: LocalDate)
+case class CalculateTaxOwedModel(
+  chargeableGainModel: ChargeableGainModel,
+  previousTaxableGain: Option[Double],
+  previousIncome: Double,
+  personalAllowance: Double,
+  disposalDate: LocalDate
+)
 
 object CalculateTaxOwedModel extends ResidentSharesBinders

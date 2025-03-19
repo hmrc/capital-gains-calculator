@@ -32,10 +32,10 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class CalculatorController @Inject()(
-                                          val calculationService: CalculationService,
-                                          val cc: ControllerComponents
-                                        ) extends BackendController(cc) {
+class CalculatorController @Inject() (
+  val calculationService: CalculationService,
+  val cc: ControllerComponents
+) extends BackendController(cc) {
 
   def calculateTotalGain(totalGainModel: TotalGainModel): Action[AnyContent] =
     Action.async {
@@ -45,74 +45,124 @@ class CalculatorController @Inject()(
         totalGainModel.disposalCosts,
         totalGainModel.acquisitionValue,
         totalGainModel.acquisitionCosts,
-        0)
+        0
+      )
 
       Future.successful(Ok(Json.toJson(result)))
     }
 
-  def calculateChargeableGain
-  (
+  def calculateChargeableGain(
     chargeableGainModel: ChargeableGainModel
   ): Action[AnyContent] = Action.async {
     val totalGainModel = chargeableGainModel.totalGainModel
 
-    val gain = calculationService.calculateGainFlat(totalGainModel.disposalValue, totalGainModel.disposalCosts,
-      totalGainModel.acquisitionValue, totalGainModel.acquisitionCosts, 0)
-    val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, chargeableGainModel.allowableLosses.getOrElse(0), chargeableGainModel.annualExemptAmount, chargeableGainModel.broughtForwardLosses.getOrElse(0)
+    val gain                          = calculationService.calculateGainFlat(
+      totalGainModel.disposalValue,
+      totalGainModel.disposalCosts,
+      totalGainModel.acquisitionValue,
+      totalGainModel.acquisitionCosts,
+      0
     )
-    val aeaUsed = calculationService.annualExemptAmountUsed(
+    val chargeableGain                = calculationService.calculateChargeableGain(
+      gain,
+      0,
+      chargeableGainModel.allowableLosses.getOrElse(0),
+      chargeableGainModel.annualExemptAmount,
+      chargeableGainModel.broughtForwardLosses.getOrElse(0)
+    )
+    val aeaUsed                       = calculationService.annualExemptAmountUsed(
       chargeableGainModel.annualExemptAmount,
       gain,
       0,
       chargeableGainModel.allowableLosses.getOrElse(0)
     )
-    val aeaRemaining = calculationService.annualExemptAmountLeft(chargeableGainModel.annualExemptAmount, aeaUsed)
-    val allowableLossesRemaining = calculationService.determineLossLeft(gain, chargeableGainModel.allowableLosses.getOrElse(0))
-    val broughtForwardLossesRemaining = calculationService.determineLossLeft(chargeableGain + chargeableGainModel.broughtForwardLosses.getOrElse(0.0),
-      chargeableGainModel.broughtForwardLosses.getOrElse(0))
-    val broughtForwardLossesUsed = calculationService.calculateAmountUsed(round("up", chargeableGainModel.broughtForwardLosses.getOrElse(0)),
-      broughtForwardLossesRemaining)
-    val allowableLossesUsed = calculationService.calculateAmountUsed(round("up", chargeableGainModel.allowableLosses.getOrElse(0)), allowableLossesRemaining)
+    val aeaRemaining                  = calculationService.annualExemptAmountLeft(chargeableGainModel.annualExemptAmount, aeaUsed)
+    val allowableLossesRemaining      =
+      calculationService.determineLossLeft(gain, chargeableGainModel.allowableLosses.getOrElse(0))
+    val broughtForwardLossesRemaining = calculationService.determineLossLeft(
+      chargeableGain + chargeableGainModel.broughtForwardLosses.getOrElse(0.0),
+      chargeableGainModel.broughtForwardLosses.getOrElse(0)
+    )
+    val broughtForwardLossesUsed      = calculationService.calculateAmountUsed(
+      round("up", chargeableGainModel.broughtForwardLosses.getOrElse(0)),
+      broughtForwardLossesRemaining
+    )
+    val allowableLossesUsed           = calculationService.calculateAmountUsed(
+      round("up", chargeableGainModel.allowableLosses.getOrElse(0)),
+      allowableLossesRemaining
+    )
 
     val deductions = round("up", allowableLossesUsed) + aeaUsed + round("up", broughtForwardLossesUsed)
 
-    val result = ChargeableGainResultModel(gain, chargeableGain, aeaUsed, aeaRemaining, deductions, allowableLossesRemaining,
-      broughtForwardLossesRemaining, None, None, Some(broughtForwardLossesUsed), allowableLossesUsed)
+    val result = ChargeableGainResultModel(
+      gain,
+      chargeableGain,
+      aeaUsed,
+      aeaRemaining,
+      deductions,
+      allowableLossesRemaining,
+      broughtForwardLossesRemaining,
+      None,
+      None,
+      Some(broughtForwardLossesUsed),
+      allowableLossesUsed
+    )
 
     Future.successful(Ok(Json.toJson(result)))
   }
 
-  def calculateTaxOwed
-  (
+  def calculateTaxOwed(
     calculateTaxOwedModel: CalculateTaxOwedModel
   ): Action[AnyContent] = Action.async {
 
     val chargeableGainModel = calculateTaxOwedModel.chargeableGainModel
 
-    val taxYear = getTaxYear(calculateTaxOwedModel.disposalDate)
-    val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val gain = calculationService.calculateGainFlat(chargeableGainModel.totalGainModel.disposalValue,
-      chargeableGainModel.totalGainModel.disposalCosts, chargeableGainModel.totalGainModel.acquisitionValue,
-      chargeableGainModel.totalGainModel.acquisitionCosts, 0)
-    val chargeableGain = calculationService.calculateChargeableGain(
-      gain, 0, chargeableGainModel.allowableLosses.getOrElse(0.0), chargeableGainModel.annualExemptAmount,
+    val taxYear                                   = getTaxYear(calculateTaxOwedModel.disposalDate)
+    val calcTaxYear                               = TaxRatesAndBands.getClosestTaxYear(taxYear)
+    val gain                                      = calculationService.calculateGainFlat(
+      chargeableGainModel.totalGainModel.disposalValue,
+      chargeableGainModel.totalGainModel.disposalCosts,
+      chargeableGainModel.totalGainModel.acquisitionValue,
+      chargeableGainModel.totalGainModel.acquisitionCosts,
+      0
+    )
+    val chargeableGain                            = calculationService.calculateChargeableGain(
+      gain,
+      0,
+      chargeableGainModel.allowableLosses.getOrElse(0.0),
+      chargeableGainModel.annualExemptAmount,
       chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
     )
-    val aeaUsed: Double = calculationService.annualExemptAmountUsed(
+    val aeaUsed: Double                           = calculationService.annualExemptAmountUsed(
       chargeableGainModel.annualExemptAmount,
       gain,
       0,
       chargeableGainModel.allowableLosses.getOrElse(0.0)
     )
-    val deductions = 0 + chargeableGainModel.allowableLosses.getOrElse(0.0) + aeaUsed + chargeableGainModel.broughtForwardLosses.getOrElse(0.0)
-    val calculationResult: CalculationResultModel = calculationService.calculationResult(gain, chargeableGain, negativeToZero(chargeableGain),
-      calculationService.brRemaining(calculateTaxOwedModel.previousIncome,
-        calculateTaxOwedModel.personalAllowance, calculateTaxOwedModel.previousTaxableGain.getOrElse(0.0),
-        Date.getTaxYear(calculateTaxOwedModel.disposalDate), Some(calculateTaxOwedModel.disposalDate), isMidYearChangeApplicable = true),
-      None, aeaUsed, 0.0, calcTaxYear, isProperty = false, Some(calculateTaxOwedModel.disposalDate), isMidYearChangeApplicable = true
+    val deductions                                =
+      0 + chargeableGainModel.allowableLosses.getOrElse(0.0) + aeaUsed + chargeableGainModel.broughtForwardLosses
+        .getOrElse(0.0)
+    val calculationResult: CalculationResultModel = calculationService.calculationResult(
+      gain,
+      chargeableGain,
+      negativeToZero(chargeableGain),
+      calculationService.brRemaining(
+        calculateTaxOwedModel.previousIncome,
+        calculateTaxOwedModel.personalAllowance,
+        calculateTaxOwedModel.previousTaxableGain.getOrElse(0.0),
+        Date.getTaxYear(calculateTaxOwedModel.disposalDate),
+        Some(calculateTaxOwedModel.disposalDate),
+        isMidYearChangeApplicable = true
+      ),
+      None,
+      aeaUsed,
+      0.0,
+      calcTaxYear,
+      isProperty = false,
+      Some(calculateTaxOwedModel.disposalDate),
+      isMidYearChangeApplicable = true
     )
-    val result: TaxOwedResultModel = TaxOwedResultModel(
+    val result: TaxOwedResultModel                = TaxOwedResultModel(
       gain,
       chargeableGain,
       aeaUsed,
@@ -136,8 +186,7 @@ class CalculatorController @Inject()(
 
   def calculateTotalCosts(totalGainModel: TotalGainModel): Action[AnyContent] = Action.async {
 
-    val result = calculationService.calculateTotalCosts(totalGainModel.disposalCosts,
-      totalGainModel.acquisitionCosts)
+    val result = calculationService.calculateTotalCosts(totalGainModel.disposalCosts, totalGainModel.acquisitionCosts)
 
     Future.successful(Ok(Json.toJson(result)))
   }

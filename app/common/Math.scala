@@ -20,25 +20,21 @@ import scala.math.BigDecimal.RoundingMode
 
 object Math {
 
-  def round(roundMethod: String, x: Double): Double = {
+  def round(roundMethod: String, x: Double): Double =
     roundMethod match {
-      case "down" => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
-      case "up" => BigDecimal.valueOf(x).setScale(0, RoundingMode.UP).toDouble
+      case "down"   => BigDecimal.valueOf(x).setScale(0, RoundingMode.DOWN).toDouble
+      case "up"     => BigDecimal.valueOf(x).setScale(0, RoundingMode.UP).toDouble
       case "result" => BigDecimal.valueOf(x).setScale(2, RoundingMode.DOWN).toDouble
-      case "gain" => BigDecimal.valueOf(x).setScale(0, RoundingMode.FLOOR).toDouble
-      case _ => x
+      case "gain"   => BigDecimal.valueOf(x).setScale(0, RoundingMode.FLOOR).toDouble
+      case _        => x
     }
-  }
 
-  def min(x: Double, y: Double): Double = {
+  def min(x: Double, y: Double): Double =
     if (x < y) x else y
-  }
 
-  def negativeToNone(x: Double): Option[Double] = {
+  def negativeToNone(x: Double): Option[Double] =
     if (x < 0) None else Some(x)
-  }
 
-  def negativeToZero(x: Double): Double = {
+  def negativeToZero(x: Double): Double =
     if (x < 0) 0 else x
-  }
 }

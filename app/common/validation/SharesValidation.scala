@@ -23,42 +23,51 @@ import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, Total
 object SharesValidation {
 
   def validateSharesTotalGain(totalGainModel: TotalGainModel): Either[String, TotalGainModel] = {
-    val disposalValue = validateDouble(totalGainModel.disposalValue, residentShareKeys.disposalValue)
-    val disposalCosts = validateDouble(totalGainModel.disposalCosts, residentShareKeys.disposalCosts)
+    val disposalValue    = validateDouble(totalGainModel.disposalValue, residentShareKeys.disposalValue)
+    val disposalCosts    = validateDouble(totalGainModel.disposalCosts, residentShareKeys.disposalCosts)
     val acquisitionValue = validateDouble(totalGainModel.acquisitionValue, residentShareKeys.acquisitionValue)
     val acquisitionCosts = validateDouble(totalGainModel.acquisitionCosts, residentShareKeys.acquisitionCosts)
 
     Seq(disposalValue, disposalCosts, acquisitionValue, acquisitionCosts) match {
       case Seq(Right(_), Right(_), Right(_), Right(_)) => Right(totalGainModel)
-      case failed => Left(getFirstErrorMessage(failed))
+      case failed                                      => Left(getFirstErrorMessage(failed))
     }
   }
 
   def validateSharesChargeableGain(chargeableGainModel: ChargeableGainModel): Either[String, ChargeableGainModel] = {
-    val totalGainModel = validateSharesTotalGain(chargeableGainModel.totalGainModel)
-    val allowableLosses = validateOptionDouble(chargeableGainModel.allowableLosses, residentShareKeys.allowableLosses)
-    val broughtForwardLosses = validateOptionDouble(chargeableGainModel.broughtForwardLosses, residentShareKeys.broughtForwardLosses)
-    val annualExemptAmount = validateDouble(chargeableGainModel.annualExemptAmount, residentShareKeys.annualExemptAmount)
+    val totalGainModel       = validateSharesTotalGain(chargeableGainModel.totalGainModel)
+    val allowableLosses      = validateOptionDouble(chargeableGainModel.allowableLosses, residentShareKeys.allowableLosses)
+    val broughtForwardLosses =
+      validateOptionDouble(chargeableGainModel.broughtForwardLosses, residentShareKeys.broughtForwardLosses)
+    val annualExemptAmount   =
+      validateDouble(chargeableGainModel.annualExemptAmount, residentShareKeys.annualExemptAmount)
 
     (totalGainModel, allowableLosses, broughtForwardLosses, annualExemptAmount) match {
       case (Right(_), Right(_), Right(_), Right(_)) => Right(chargeableGainModel)
-      case _ => Left(getFirstErrorMessage(Seq(totalGainModel, allowableLosses, broughtForwardLosses, annualExemptAmount)))
+      case _                                        =>
+        Left(getFirstErrorMessage(Seq(totalGainModel, allowableLosses, broughtForwardLosses, annualExemptAmount)))
     }
   }
 
   def validateSharesTaxOwed(taxOwedModel: CalculateTaxOwedModel): Either[String, CalculateTaxOwedModel] = {
     val chargeableGainModel = validateSharesChargeableGain(taxOwedModel.chargeableGainModel)
-    val previousTaxableGain = validateOptionDouble(taxOwedModel.previousTaxableGain, residentShareKeys.previousTaxableGain)
-    val previousIncome = validateDouble(taxOwedModel.previousIncome, residentShareKeys.previousIncome)
-    val disposalDate = validateDisposalDate(taxOwedModel.disposalDate)
-    val personalAllowance = disposalDate match {
-      case Right(date) => validateResidentPersonalAllowance (taxOwedModel.personalAllowance, date)
-      case Left(_) => Right(taxOwedModel.personalAllowance)
+    val previousTaxableGain =
+      validateOptionDouble(taxOwedModel.previousTaxableGain, residentShareKeys.previousTaxableGain)
+    val previousIncome      = validateDouble(taxOwedModel.previousIncome, residentShareKeys.previousIncome)
+    val disposalDate        = validateDisposalDate(taxOwedModel.disposalDate)
+    val personalAllowance   = disposalDate match {
+      case Right(date) => validateResidentPersonalAllowance(taxOwedModel.personalAllowance, date)
+      case Left(_)     => Right(taxOwedModel.personalAllowance)
     }
 
     (chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate) match {
       case (Right(_), Right(_), Right(_), Right(_), Right(_)) => Right(taxOwedModel)
-      case _ => Left(getFirstErrorMessage(Seq(chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate)))
+      case _                                                  =>
+        Left(
+          getFirstErrorMessage(
+            Seq(chargeableGainModel, previousTaxableGain, previousIncome, personalAllowance, disposalDate)
+          )
+        )
     }
   }
 

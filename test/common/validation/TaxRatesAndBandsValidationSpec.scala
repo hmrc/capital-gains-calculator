@@ -21,7 +21,7 @@ import org.scalatestplus.play.PlaySpec
 
 import java.time.LocalDate
 
-class TaxRatesAndBandsValidationSpec extends PlaySpec{
+class TaxRatesAndBandsValidationSpec extends PlaySpec {
 
   "calling checkValidTaxYear" must {
 

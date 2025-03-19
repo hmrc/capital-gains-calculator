@@ -18,7 +18,11 @@ package models.nonResident
 
 import play.api.libs.json.{Format, Json}
 
-case class CalculationResultsWithTaxOwed (flatResult: TaxOwedModel, rebasedResult: Option[TaxOwedModel], timeApportionedResult: Option[TaxOwedModel])
+case class CalculationResultsWithTaxOwed(
+  flatResult: TaxOwedModel,
+  rebasedResult: Option[TaxOwedModel],
+  timeApportionedResult: Option[TaxOwedModel]
+)
 
 object CalculationResultsWithTaxOwed {
   implicit val formats: Format[CalculationResultsWithTaxOwed] = Json.format

@@ -28,53 +28,59 @@ trait CommonBinders {
 
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("y-M-d")
 
-  implicit def localDateBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[LocalDate] = {
+  implicit def localDateBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[LocalDate] =
     new QueryStringBindable[LocalDate] {
 
-      override def unbind(key: String, value: LocalDate): String = s"$key=${value.getYear}-${value.getMonthValue}-${value.getDayOfMonth}"
+      override def unbind(key: String, value: LocalDate): String =
+        s"$key=${value.getYear}-${value.getMonthValue}-${value.getDayOfMonth}"
 
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, LocalDate]] = {
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, LocalDate]] =
         stringBinder.bind(key, params) match {
-          case Some(Right(dateString)) => Try {
-            LocalDate.parse(dateString, dateFormatter)
-          } match {
-            case Success(date) => Some(Right(date))
-            case _ => Some(Left(s"""Cannot parse parameter $key as LocalDate: For input string: "${params.get(key).get.head}""""))
-          }
-          case _ => None
+          case Some(Right(dateString)) =>
+            Try {
+              LocalDate.parse(dateString, dateFormatter)
+            } match {
+              case Success(date) => Some(Right(date))
+              case _             =>
+                Some(
+                  Left(s"""Cannot parse parameter $key as LocalDate: For input string: "${params.get(key).get.head}"""")
+                )
+            }
+          case _                       => None
         }
-      }
     }
-  }
 
-  implicit def optionalLocalDateBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[Option[LocalDate]] = {
+  implicit def optionalLocalDateBinder(implicit
+    stringBinder: QueryStringBindable[String]
+  ): QueryStringBindable[Option[LocalDate]] =
     new QueryStringBindable[Option[LocalDate]] {
 
-      override def unbind(key: String, value: Option[LocalDate]): String = {
-
+      override def unbind(key: String, value: Option[LocalDate]): String =
         if (value.isDefined) {
           s"$key=${value.get.getYear}-${value.get.getMonthValue}-${value.get.getDayOfMonth}"
         } else {
           ""
         }
-      }
 
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Option[LocalDate]]] = {
-
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Option[LocalDate]]] =
         if (params.get(key).isDefined) {
           stringBinder.bind(key, params) match {
-            case Some(Right(dateString)) => Try {
-              LocalDate.parse(dateString, dateFormatter)
-            } match {
-              case Success(date) => Some(Right(Some(date)))
-              case _ => Some(Left(s"""Cannot parse parameter $key as LocalDate: For input string: "${params.get(key).get.head}""""))
-            }
-            case _ => None
+            case Some(Right(dateString)) =>
+              Try {
+                LocalDate.parse(dateString, dateFormatter)
+              } match {
+                case Success(date) => Some(Right(Some(date)))
+                case _             =>
+                  Some(
+                    Left(
+                      s"""Cannot parse parameter $key as LocalDate: For input string: "${params.get(key).get.head}""""
+                    )
+                  )
+              }
+            case _                       => None
           }
         } else {
           Some(Right(None))
         }
-      }
     }
-  }
 }

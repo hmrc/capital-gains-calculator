@@ -26,8 +26,7 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
 
   "NonResidentTotalGainRequest" must {
     "reads from Json" in {
-      val inputJson = Json.parse(
-        """
+      val inputJson = Json.parse("""
           |{
           |"disposalValue":500000,
           |"disposalCosts":20000,
@@ -52,13 +51,13 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
         rebasedCosts = 20000,
         disposalDate = Some(LocalDate.parse("2017-05-12")),
         acquisitionDate = Some(LocalDate.parse("2014-08-14")),
-        improvementsAfterTaxStarted = 1000)
+        improvementsAfterTaxStarted = 1000
+      )
 
       inputJson.as[NonResidentTotalGainRequestModel] mustBe model
     }
     "non optional values" in {
-      val inputJson = Json.parse(
-        """
+      val inputJson = Json.parse("""
           |{
           |"disposalValue":500000,
           |"disposalCosts":20000,
@@ -80,7 +79,8 @@ class NonResidentTotalGainRequestSpec extends PlaySpec {
         rebasedCosts = 20000,
         disposalDate = None,
         acquisitionDate = None,
-        improvementsAfterTaxStarted = 1000)
+        improvementsAfterTaxStarted = 1000
+      )
 
       inputJson.as[NonResidentTotalGainRequestModel] mustBe model
     }

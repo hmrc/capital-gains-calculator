@@ -36,7 +36,7 @@ class DateSpec extends PlaySpec {
     }
 
     "return 365 days when passing in String dates 1/1/2015 and 31/12/2015" in {
-      val result = daysBetween("2015-1-1","2015-12-31")
+      val result = daysBetween("2015-1-1", "2015-12-31")
       result mustEqual 365
     }
 
@@ -105,21 +105,21 @@ class DateSpec extends PlaySpec {
   "Calling afterTaxStarted" must {
 
     "return a false with a date before the start date" in {
-      val date = LocalDate.parse("2015-04-04")
+      val date   = LocalDate.parse("2015-04-04")
       val result = Date.afterTaxStarted(date)
 
       result mustBe false
     }
 
     "return a false with a date on the start date" in {
-      val date = LocalDate.parse("2015-04-05")
+      val date   = LocalDate.parse("2015-04-05")
       val result = Date.afterTaxStarted(date)
 
       result mustBe false
     }
 
     "return a true with a date after the start date" in {
-      val date = LocalDate.parse("2015-04-06")
+      val date   = LocalDate.parse("2015-04-06")
       val result = Date.afterTaxStarted(date)
 
       result mustBe true
