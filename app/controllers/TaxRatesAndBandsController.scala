@@ -70,13 +70,10 @@ class TaxRatesAndBandsController @Inject() (val cc: ControllerComponents)(implic
 
     tryParsing() match {
       case Right(parsedDate) =>
-        val taxYear                 = Date.getTaxYear(parsedDate)
-        val isValidTaxYear: Boolean = (Date.taxYearToString(taxYear) <= Date.taxYearToString(
-          LocalDate.now().getYear
-        )) && (Date.taxYearToString(taxYear) >= Date.taxYearToString(TaxRatesAndBands.allRates.head.taxYear))
-        val result                  = TaxYearModel(
+        val taxYear = Date.getTaxYear(parsedDate)
+        val result  = TaxYearModel(
           Date.taxYearToString(taxYear),
-          isValidTaxYear,
+          TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
           Date.taxYearToString(TaxRatesAndBands.getClosestTaxYear(taxYear))
         )
         Future.successful(Ok(Json.toJson(result)))

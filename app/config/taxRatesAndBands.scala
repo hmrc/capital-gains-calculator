@@ -56,6 +56,9 @@ object TaxRatesAndBands {
   val liveTaxRates: List[TaxRatesAndBands] =
     if (LocalDate.now.isBefore(latestTaxYearGoLiveDate)) allRates.dropRight(1) else allRates
 
+  def filterRatesByTaxYear(taxYear: Int): List[TaxRatesAndBands] =
+    liveTaxRates.filter(_.taxYear == taxYear)
+
   def getRates(
     year: Int,
     disposalDate: Option[LocalDate] = None,
