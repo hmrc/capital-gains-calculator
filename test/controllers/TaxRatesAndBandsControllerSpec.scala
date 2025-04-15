@@ -328,8 +328,8 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
         (json \ "isValidYear").as[Boolean] mustBe false
       }
 
-      "return a supplied TaxYearModel with calculationTaxYear as 2024/25" in {
-        (json \ "calculationTaxYear").as[String] mustBe "2024/25"
+      "return a supplied TaxYearModel with calculationTaxYear as 2025/26" in {
+        (json \ "calculationTaxYear").as[String] mustBe "2025/26"
       }
 
     }
