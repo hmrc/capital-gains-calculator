@@ -18,7 +18,7 @@ package config
 
 import org.scalacheck.Prop.propBoolean
 import org.scalacheck.{Gen, Prop}
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.scalacheck.{Checkers, ScalaCheckPropertyChecks}
 
@@ -72,15 +72,15 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
         ) =>
           val taxRateAndBand = TaxRatesAndBands.allRates.filter(_.taxYear == taxYear).head
 
-          taxRateAndBand.taxYear                            should equal(taxYear)
-          taxRateAndBand.basicRate                          should equal(basicRate)
-          taxRateAndBand.basicRatePercentage                should equal(basicRatePercentage)
-          taxRateAndBand.higherRate                         should equal(higherRate)
-          taxRateAndBand.higherRatePercentage               should equal(higherRatePercentage)
-          taxRateAndBand.maxAnnualExemptAmount              should equal(maxAnnualExemptAmount)
-          taxRateAndBand.notVulnerableMaxAnnualExemptAmount should equal(notVulnerableMaxAnnualExemptAmount)
-          taxRateAndBand.basicRateBand                      should equal(basicRateBand)
-          taxRateAndBand.maxPersonalAllowance               should equal(maxPersonalAllowance)
+          taxRateAndBand.taxYear shouldEqual taxYear
+          taxRateAndBand.basicRate shouldEqual basicRate
+          taxRateAndBand.basicRatePercentage shouldEqual basicRatePercentage
+          taxRateAndBand.higherRate shouldEqual higherRate
+          taxRateAndBand.higherRatePercentage shouldEqual higherRatePercentage
+          taxRateAndBand.maxAnnualExemptAmount shouldEqual maxAnnualExemptAmount
+          taxRateAndBand.notVulnerableMaxAnnualExemptAmount shouldEqual notVulnerableMaxAnnualExemptAmount
+          taxRateAndBand.basicRateBand shouldEqual basicRateBand
+          taxRateAndBand.maxPersonalAllowance shouldEqual maxPersonalAllowance
       }
     }
   }

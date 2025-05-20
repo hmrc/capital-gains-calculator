@@ -64,7 +64,7 @@ class CalculationService {
       aeaRemaining = aeaLeft,
       upperTaxGain = negativeToNone(
         round("result", taxableGain - basicRateRemaining)
-      ), //rounding to be removed when refactored into BigDecimals
+      ), // rounding to be removed when refactored into BigDecimals
       upperTaxRate = if (negativeToZero(taxableGain - basicRateRemaining) > 0) Some(higherRatePercentage) else None,
       simplePRR = prrClaimed,
       baseRateTotal = basicRateOwed,
@@ -125,21 +125,21 @@ class CalculationService {
     if (gain <= 0) gain
     else
       gain - round("up", reliefs) match {
-        //gain greater than 0 so deduct the reliefs
-        case gainMinusReliefs if gainMinusReliefs <= 0 => 0 //Reliefs cannot turn gain into a loss, hence return 0
+        // gain greater than 0 so deduct the reliefs
+        case gainMinusReliefs if gainMinusReliefs <= 0 => 0 // Reliefs cannot turn gain into a loss, hence return 0
         case gainMinusReliefs                          =>
           gainMinusReliefs - round("up", allowableLossesAmt) match {
-            //Gain greater than 0 still so deduct allowable loses
+            // Gain greater than 0 still so deduct allowable loses
             case gainMinusLosses if gainMinusLosses <= 0 =>
               gainMinusLosses - round(
                 "up",
                 broughtForwardLosses
-              ) //Allowable losses turns gain into a loss so return the loss and finally, subtract any brought forward losses.
+              ) // Allowable losses turns gain into a loss so return the loss and finally, subtract any brought forward losses.
             case gainMinusLosses                         =>
               negativeToZero(gainMinusLosses - round("up", annualExemptAmount)) - round(
                 "up",
                 broughtForwardLosses
-              ) //deduct AEA, if amount less than 0 return 0 else return amount and finally, subtract any brought forward losses.
+              ) // deduct AEA, if amount less than 0 return 0 else return amount and finally, subtract any brought forward losses.
           }
       }
 

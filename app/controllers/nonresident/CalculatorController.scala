@@ -78,7 +78,7 @@ class CalculatorController @Inject() (val calculationService: CalculationService
       }
     } else None
 
-    val timeApportionedGain = {
+    val timeApportionedGain =
       if (timeApportionedCalculationApplicable(disposalDate, acquisitionDate))
         Some(
           calculationService.calculateGainTA(
@@ -92,7 +92,6 @@ class CalculatorController @Inject() (val calculationService: CalculationService
           )
         )
       else None
-    }
 
     TotalGainModel(flatGain, rebasedGain, timeApportionedGain)
   }
@@ -154,7 +153,7 @@ class CalculatorController @Inject() (val calculationService: CalculationService
       val prrUsed     = calculationService.determineReliefsUsed(model, prrClaimed)
       GainsAfterPRRModel(model, taxableGain, prrUsed)
     }
-    val result         = CalculationResultsWithPRRModel(
+    val result                       = CalculationResultsWithPRRModel(
       flatResult = gainsAfterPRR(totalGainModel.flatGain),
       rebasedResult = totalGainModel.rebasedGain.map(gainsAfterPRR),
       timeApportionedResult = totalGainModel.timeApportionedGain.map(gainsAfterPRR)

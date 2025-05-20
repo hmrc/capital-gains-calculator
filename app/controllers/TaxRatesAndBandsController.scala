@@ -16,7 +16,6 @@
 
 package controllers
 
-import com.typesafe.config.ConfigFactory
 import common._
 import common.validation.TaxRatesAndBandsValidation
 import config.TaxRatesAndBands
