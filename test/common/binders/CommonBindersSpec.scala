@@ -16,7 +16,7 @@
 
 package common.binders
 
-import org.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
 import java.time.LocalDate

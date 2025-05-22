@@ -27,12 +27,13 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 2)
   .settings(PlayKeys.playDefaultPort := 9985)
   .settings(
-    scalaVersion := "2.13.12",
+    scalaVersion := "3.3.5",
     scalafmtOnCompile := true,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test()
   )
   .settings(
-    scalacOptions += "-Wconf:src=routes/.*:s"
+    scalacOptions += "-Wconf:src=routes/.*:s",
+    scalacOptions += "-Wconf:msg=Flag.*repeatedly:s"
   )
   .configs(ItTest)
   .settings(inConfig(ItTest)(Defaults.testSettings) *)

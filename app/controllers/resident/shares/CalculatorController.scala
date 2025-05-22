@@ -174,8 +174,8 @@ class CalculatorController @Inject() (
       calculationResult.upperTaxRate,
       None,
       None,
-      //Logic here is that there has been a total gain made.  Therefore any brought forward losses claimed have been used entirely.
-      //As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
+      // Logic here is that there has been a total gain made.  Therefore any brought forward losses claimed have been used entirely.
+      // As such it returns either a 0 if no losses were supplied or the value of the losses supplied.
       Some(chargeableGainModel.broughtForwardLosses.getOrElse(0)),
       chargeableGainModel.allowableLosses.getOrElse(0),
       calculationResult.baseRateTotal,

@@ -18,8 +18,10 @@ package controllers.nonresident
 
 import models.CalculationResultModel
 import models.nonResident._
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
-import org.mockito.{ArgumentMatchers, MockitoSugar}
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite

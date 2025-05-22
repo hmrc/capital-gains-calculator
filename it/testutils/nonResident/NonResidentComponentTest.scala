@@ -22,6 +22,10 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.writeableOf_JsValue
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
+import play.api.libs.ws.writeableOf_String
+
 import play.api.test.Helpers._
 
 import scala.concurrent.Await
@@ -100,7 +104,7 @@ class NonResidentComponentTest extends PlaySpec with GuiceOneServerPerSuite {
         )
 
         request.status mustBe 400
-        request.body mustBe "Validation failed with errors: List((/disposalValue,List(JsonValidationError(List(error.path.missing),List()))))"
+        request.body mustBe "Validation failed with errors: List((/disposalValue,List(JsonValidationError(List(error.path.missing),ArraySeq()))))"
       }
 
       "no data is provided" in {

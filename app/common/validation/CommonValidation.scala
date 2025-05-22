@@ -76,8 +76,8 @@ object CommonValidation {
     if (!disposalDate.isBefore(TaxRatesAndBands20152016.startOfTaxLocalDate)) Right(disposalDate)
     else Left("disposalDate cannot be before 2015-04-06")
 
-  //When the refactor the the non-resident calculator happens this validation should become
-  //redundant.
+  // When the refactor the the non-resident calculator happens this validation should become
+  // redundant.
   def validateYesNo(input: String, key: String): Either[String, String] =
     if (input == "Yes" || input == "No") Right(input)
     else Left(s"$key must be either Yes or No")
