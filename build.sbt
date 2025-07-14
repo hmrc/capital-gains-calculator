@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-
 lazy val appName = "capital-gains-calculator"
 
 lazy val ItTest = config("it") extend Test
@@ -27,7 +25,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 2)
   .settings(PlayKeys.playDefaultPort := 9985)
   .settings(
-    scalaVersion := "3.3.5",
+    scalaVersion := "3.7.1",
     scalafmtOnCompile := true,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test()
   )

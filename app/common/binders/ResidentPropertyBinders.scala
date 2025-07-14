@@ -55,7 +55,7 @@ trait ResidentPropertyBinders extends CommonBinders {
             inputs match {
               case (Right(totalGainModel), Right(improvements)) =>
                 PropertyValidation.validatePropertyTotalGain(PropertyTotalGainModel(totalGainModel, improvements))
-              case fail                                         => Left(CommonValidation.getFirstErrorMessage(Seq(totalGainModelEither, improvementsEither)))
+              case _                                            => Left(CommonValidation.getFirstErrorMessage(Seq(totalGainModelEither, improvementsEither)))
             }
           }
         } else Some(Left(s"${missingParameter.get} is required."))

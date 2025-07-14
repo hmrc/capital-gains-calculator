@@ -66,7 +66,7 @@ object CommonValidation {
 
     validateDouble(input, sharesKeys.personalAllowance) match {
       case Right(data) if data <= maxPersonalAllowance => Right(input)
-      case Right(test)                                 =>
+      case Right(_)                                    =>
         Left(s"${sharesKeys.personalAllowance} cannot exceed $maxPersonalAllowance")
       case Left(message)                               => Left(message)
     }
