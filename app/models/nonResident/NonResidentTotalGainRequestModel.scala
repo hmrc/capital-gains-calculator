@@ -49,6 +49,6 @@ object NonResidentTotalGainRequestModel {
       (__ \ "disposalDate").readNullable[LocalDate] and
       (__ \ "acquisitionDate").readNullable[LocalDate] and
       (__ \ "improvementsAfterTaxStarted").read[Double].or(Reads.pure[Double](0))
-  )(NonResidentTotalGainRequestModel.apply _)
+  )(NonResidentTotalGainRequestModel.apply)
 
 }

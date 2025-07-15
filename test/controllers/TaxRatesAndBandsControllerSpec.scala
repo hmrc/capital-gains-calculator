@@ -33,7 +33,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
   val fakeRequest                  = FakeRequest()
   implicit val system: ActorSystem = ActorSystem("QuickStart")
   val components                   = app.injector.instanceOf[ControllerComponents]
-  val controller                   = new TaxRatesAndBandsController(components)(global)
+  val controller                   = new TaxRatesAndBandsController(components)(using global)
 
   "validating the getMaxAEA method" when {
 
