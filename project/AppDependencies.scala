@@ -18,7 +18,7 @@ import sbt.*
 
 object AppDependencies {
   private val jsoupVersion     = "1.18.1"
-  private val bootstrapVersion = "9.14.0"
+  private val bootstrapVersion = "10.2.0"
   private val scalaTestVersion = "7.0.1"
   private val playSuffix = "-play-30"
 

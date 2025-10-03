@@ -102,7 +102,7 @@ object TaxRatesAndBands {
 object TaxRatesAndBands20252026 extends TaxRatesAndBands {
   override val taxYear                            = 2026
   override val maxAnnualExemptAmount              = 3000
-  override val notVulnerableMaxAnnualExemptAmount = 3000
+  override val notVulnerableMaxAnnualExemptAmount = 1500
   override val basicRatePercentage                = 18
   override val higherRatePercentage               = 24
   override val shareBasicRatePercentage           = 18
@@ -120,7 +120,7 @@ object TaxRatesAndBands20252026 extends TaxRatesAndBands {
 object TaxRatesAndBands20242025MidYearChange extends TaxRatesAndBands {
   override val taxYear                            = 2025
   override val maxAnnualExemptAmount              = 3000
-  override val notVulnerableMaxAnnualExemptAmount = 3000
+  override val notVulnerableMaxAnnualExemptAmount = 1500
   override val basicRatePercentage                = 18
   override val higherRatePercentage               = 24
   override val shareBasicRatePercentage           = 18
