@@ -49,11 +49,8 @@ class TaxRatesAndBandsController @Inject() (val cc: ControllerComponents)(implic
     isEligibleMarriageAllowance: Option[Boolean]
   ): Action[AnyContent] = Action.async {
     if (TaxRatesAndBandsValidation.checkValidTaxYear(year)) {
-      val rates                  = getRates(year)
-      val blindPersonalAllowance =
-        if (isEligibleBlindPersonsAllowance.contains(true)) rates.blindPersonsAllowance else 0
-      val marriageAllowance      = if (isEligibleMarriageAllowance.contains(true)) rates.marriageAllowance else 0
-      Future.successful(Ok(Json.toJson(rates.maxPersonalAllowance + blindPersonalAllowance + marriageAllowance)))
+      val rates = getRates(year)
+      Future.successful(Ok(Json.toJson(rates.maxPersonalAllowance)))
     } else Future.successful(BadRequest(Json.toJson("This tax year is not valid")))
   }
 
