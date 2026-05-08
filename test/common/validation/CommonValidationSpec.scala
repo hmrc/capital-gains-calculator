@@ -190,19 +190,19 @@ class CommonValidationSpec extends PlaySpec {
     "return a Left with a value of 13890.0 in 2015/16" in {
       val result = CommonValidation.validateResidentPersonalAllowance(15290.0, LocalDate.parse("2015-08-08"))
 
-      result mustBe Left("personalAllowance cannot exceed 14150")
+      result mustBe Left("personalAllowance cannot exceed 12890")
     }
 
     "return a Right with a value of 12890 in 2015/16" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(14150.0, LocalDate.parse("2015-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(12890.0, LocalDate.parse("2015-08-08"))
 
-      result mustBe Right(14150.0)
+      result mustBe Right(12890.0)
     }
 
     "return a Left with a value of 13291 in 2016/17" in {
-      val result = CommonValidation.validateResidentPersonalAllowance(14550.1, LocalDate.parse("2016-08-08"))
+      val result = CommonValidation.validateResidentPersonalAllowance(13290.1, LocalDate.parse("2016-08-08"))
 
-      result mustBe Left("personalAllowance cannot exceed 14550")
+      result mustBe Left("personalAllowance cannot exceed 13290")
     }
 
     "return a Left with an error message when the double fails validation" in {
