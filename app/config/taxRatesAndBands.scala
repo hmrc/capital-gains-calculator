@@ -35,7 +35,6 @@ trait TaxRatesAndBands {
   val shareHigherRate: Double
   val basicRateBand: Int
   val blindPersonsAllowance: Int
-  val marriageAllowance                = 1260
   val maxLettingsRelief: Double
   val startOfTax                       = "2015-04-06"
   val startOfTaxLocalDate: LocalDate   = LocalDate.parse(startOfTax)
