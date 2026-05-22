@@ -110,7 +110,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
   "validating the getMaxPersonalAllowance method" when {
 
     "calling with the year 2021 and with no BPA or MA" must {
-      val result = controller.getMaxPersonalAllowance(2021, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2021, None, None)(fakeRequest)
 
       "return status 200" in {
         status(result) mustBe 200
@@ -129,7 +129,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
     }
 
     "calling with the year 2020 and with no BPA or MA" must {
-      val result = controller.getMaxPersonalAllowance(2020, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2020, None, None)(fakeRequest)
 
       "return status 200" in {
         status(result) mustBe 200
@@ -148,7 +148,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
     }
 
     "calling with the year 2018 and with no BPA or MA" must {
-      val result = controller.getMaxPersonalAllowance(2018, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2018, None, None)(fakeRequest)
 
       "return status 200" in {
         status(result) mustBe 200
@@ -168,7 +168,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with the year 2017 and no BPA or MA" must {
 
-      val result = controller.getMaxPersonalAllowance(2017, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2017, None, None)(fakeRequest)
 
       "return status 200" in {
         status(result) mustBe 200
@@ -188,7 +188,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with the year 2016 and with BPA and MA" must {
 
-      val result = controller.getMaxPersonalAllowance(2016, Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2016, Some(true), Some(true))(fakeRequest)
 
       "return status 200" in {
         status(result) mustBe 200
@@ -201,13 +201,13 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
       "return 12890 as the annual exempt amount" in {
         val data = contentAsString(result)
         val json = Json.parse(data)
-        json.as[Int] mustBe 12890
+        json.as[Int] mustBe 14150
       }
     }
 
     "calling with the year 2015 and with BPA" must {
 
-      val result = controller.getMaxPersonalAllowance(2015, Some(true))(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2015, Some(true), Some(true))(fakeRequest)
 
       "return status 200" in {
         status(result) mustBe 400
@@ -216,7 +216,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
     "calling with the year 2014 and no BPA or MA" must {
 
-      val result = controller.getMaxPersonalAllowance(2014, None)(fakeRequest)
+      val result = controller.getMaxPersonalAllowance(2014, None, None)(fakeRequest)
 
       "return status 400" in {
         status(result) mustBe 400
@@ -226,7 +226,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
   "calling with the year 2014 and with BPA and MA" must {
 
-    val result = controller.getMaxPersonalAllowance(2014, Some(true))(fakeRequest)
+    val result = controller.getMaxPersonalAllowance(2014, Some(true), Some(true))(fakeRequest)
 
     "return status 400" in {
       status(result) mustBe 400
@@ -235,7 +235,7 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
   "calling with an invalid tax year (current year plus 2) and with BPA and MA" must {
 
-    val result = controller.getMaxPersonalAllowance(LocalDate.now().getYear + 2, Some(true))(fakeRequest)
+    val result = controller.getMaxPersonalAllowance(LocalDate.now().getYear + 2, Some(true), Some(true))(fakeRequest)
 
     "return status 400" in {
       status(result) mustBe 400
