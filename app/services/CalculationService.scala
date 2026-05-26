@@ -16,14 +16,16 @@
 
 package services
 
-import common.Date._
-import common.Math._
+import common.Date.*
+import common.Math.*
 import config.TaxRatesAndBands
 import models.CalculationResultModel
 
 import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 
-class CalculationService {
+@Singleton
+class CalculationService @Inject() {
 
   def calculationResult(
     gain: Double,

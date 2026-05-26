@@ -18,21 +18,24 @@ package controllers.nonresident
 
 import common.Date
 import common.Date._
-import common.Math._
 import config.TaxRatesAndBands
 import models.nonResident._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.CalculationService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import controllers.nonresident.NonResidentTaxCalculationHelper
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class CalculatorController @Inject() (val calculationService: CalculationService, val cc: ControllerComponents)
-    extends BackendController(cc) {
+class CalculatorController @Inject() (
+  val calculationService: CalculationService,
+  val cc: ControllerComponents,
+  val nonResidentTaxCalculationHelper: NonResidentTaxCalculationHelper
+) extends BackendController(cc) {
 
   def timeApportionedCalculationApplicable(
     disposalDate: Option[LocalDate],
@@ -199,216 +202,56 @@ class CalculatorController @Inject() (val calculationService: CalculationService
     val calcTaxYear      = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val prrValue: Double = prrClaimed.getOrElse(0)
 
-    val flatModel = {
-      val brRemaining                 = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
-      val flatChargeableGain          = calculationService.calculateChargeableGain(
-        totalGainModel.flatGain,
-        prrValue + otherReliefsModel.flatReliefs,
-        allowableLoss,
-        annualExemptAmount,
-        broughtForwardLoss
-      )
-      val flatPRRUsed                 = calculationService.determineReliefsUsed(totalGainModel.flatGain, Some(prrValue))
-      val otherReliefsUsed            = calculationService.determineReliefsUsed(
-        totalGainModel.flatGain - flatPRRUsed,
-        Some(otherReliefsModel.flatReliefs)
-      )
-      val allowableLossesLeft         =
-        calculationService.determineLossLeft(totalGainModel.flatGain - (flatPRRUsed + otherReliefsUsed), allowableLoss)
-      val allowableLossesUsed         = allowableLoss - allowableLossesLeft
-      val aeaUsed                     = calculationService.annualExemptAmountUsed(
-        annualExemptAmount,
-        totalGainModel.flatGain,
-        prrValue + otherReliefsModel.flatReliefs,
-        allowableLoss
-      )
-      val aeaRemaining                = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-      val broughtForwardLossRemaining = calculationService.determineLossLeft(
-        totalGainModel.flatGain - (flatPRRUsed +
-          round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
-        broughtForwardLoss
-      )
-      val broughtForwardLossUsed      = broughtForwardLoss - broughtForwardLossRemaining
-
-      val reliefsRemaining = (prrValue + round("up", otherReliefsModel.flatReliefs)) - (flatPRRUsed + otherReliefsUsed)
-
-      val taxOwed = calculationService.calculationResult(
-        totalGainModel.flatGain,
-        negativeToZero(flatChargeableGain),
-        flatChargeableGain,
-        brRemaining,
-        prrClaimed,
-        aeaUsed,
-        aeaRemaining,
-        calcTaxYear,
-        isProperty = true
+    val flatModel =
+      nonResidentTaxCalculationHelper.buildTaxOwedModel(
+        gain = totalGainModel.flatGain,
+        reliefs = otherReliefsModel.flatReliefs,
+        currentIncome = currentIncome,
+        personalAllowanceAmt = personalAllowanceAmt,
+        previousGain = previousGain,
+        prrValue = prrValue,
+        allowableLoss = allowableLoss,
+        annualExemptAmount = annualExemptAmount,
+        broughtForwardLoss = broughtForwardLoss,
+        prrClaimed = prrClaimed,
+        calcTaxYear = calcTaxYear
       )
 
-      val totalDeductions = flatPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
+    val rebasedModel =
+      totalGainModel.rebasedGain.map { gain =>
+        nonResidentTaxCalculationHelper.buildTaxOwedModel(
+          gain = gain,
+          reliefs = otherReliefsModel.rebasedReliefs,
+          currentIncome = currentIncome,
+          personalAllowanceAmt = personalAllowanceAmt,
+          previousGain = previousGain,
+          prrValue = prrValue,
+          allowableLoss = allowableLoss,
+          annualExemptAmount = annualExemptAmount,
+          broughtForwardLoss = broughtForwardLoss,
+          prrClaimed = prrClaimed,
+          calcTaxYear = calcTaxYear,
+          useClaimedPrrForReliefsRemaining = true
+        )
+      }
 
-      TaxOwedModel(
-        taxOwed.taxOwed,
-        taxOwed.baseTaxGain,
-        taxOwed.baseTaxRate,
-        taxOwed.upperTaxGain,
-        taxOwed.upperTaxRate,
-        totalGainModel.flatGain,
-        flatChargeableGain,
-        if (flatPRRUsed > 0) Some(flatPRRUsed) else None,
-        if (otherReliefsUsed > 0) Some(otherReliefsUsed) else None,
-        if (allowableLossesUsed > 0) Some(allowableLossesUsed) else None,
-        if (aeaUsed > 0) Some(aeaUsed) else None,
-        aeaRemaining,
-        if (broughtForwardLossUsed > 0) Some(broughtForwardLossUsed) else None,
-        if (reliefsRemaining > 0) Some(reliefsRemaining) else None,
-        if (allowableLossesLeft > 0) Some(allowableLossesLeft) else None,
-        if (broughtForwardLossRemaining > 0) Some(broughtForwardLossRemaining) else None,
-        if (totalDeductions > 0) Some(totalDeductions) else None,
-        Some(taxOwed.baseRateTotal),
-        Some(taxOwed.upperRateTotal)
-      )
-    }
-
-    val rebasedModel = totalGainModel.rebasedGain.map { data =>
-      val brRemaining                 = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
-      val rebasedChargeableGain       = calculationService.calculateChargeableGain(
-        data,
-        prrValue + otherReliefsModel.rebasedReliefs,
-        allowableLoss,
-        annualExemptAmount,
-        broughtForwardLoss
-      )
-      val rebasedPRRUsed              = calculationService.determineReliefsUsed(data, Some(prrValue))
-      val otherReliefsUsed            = calculationService.determineReliefsUsed(
-        totalGainModel.rebasedGain.get - rebasedPRRUsed,
-        Some(otherReliefsModel.rebasedReliefs)
-      )
-      val allowableLossesLeft         =
-        calculationService.determineLossLeft(data - (otherReliefsUsed + rebasedPRRUsed), allowableLoss)
-      val allowableLossesUsed         = allowableLoss - allowableLossesLeft
-      val aeaUsed                     = calculationService.annualExemptAmountUsed(
-        annualExemptAmount,
-        data,
-        prrValue + otherReliefsModel.rebasedReliefs,
-        allowableLoss
-      )
-      val aeaRemaining                = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-      val broughtForwardLossRemaining = calculationService.determineLossLeft(
-        data - (rebasedPRRUsed +
-          round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
-        broughtForwardLoss
-      )
-      val broughtForwardLossUsed      = broughtForwardLoss - broughtForwardLossRemaining
-
-      val reliefsRemaining = (prrValue + round("up", otherReliefsModel.rebasedReliefs)) - (prrValue + otherReliefsUsed)
-
-      val taxOwed = calculationService.calculationResult(
-        data,
-        negativeToZero(rebasedChargeableGain),
-        rebasedChargeableGain,
-        brRemaining,
-        prrClaimed,
-        aeaUsed,
-        aeaRemaining,
-        calcTaxYear,
-        isProperty = true
-      )
-
-      val totalDeductions = rebasedPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
-
-      TaxOwedModel(
-        taxOwed.taxOwed,
-        taxOwed.baseTaxGain,
-        taxOwed.baseTaxRate,
-        taxOwed.upperTaxGain,
-        taxOwed.upperTaxRate,
-        data,
-        rebasedChargeableGain,
-        if (rebasedPRRUsed > 0) Some(rebasedPRRUsed) else None,
-        if (otherReliefsUsed > 0) Some(otherReliefsUsed) else None,
-        if (allowableLossesUsed > 0) Some(allowableLossesUsed) else None,
-        if (aeaUsed > 0) Some(aeaUsed) else None,
-        aeaRemaining,
-        if (broughtForwardLossUsed > 0) Some(broughtForwardLossUsed) else None,
-        if (reliefsRemaining > 0) Some(reliefsRemaining) else None,
-        if (allowableLossesLeft > 0) Some(allowableLossesLeft) else None,
-        if (broughtForwardLossRemaining > 0) Some(broughtForwardLossRemaining) else None,
-        if (totalDeductions > 0) Some(totalDeductions) else None,
-        Some(taxOwed.baseRateTotal),
-        Some(taxOwed.upperRateTotal)
-      )
-    }
-
-    val timeApportionedModel = totalGainModel.timeApportionedGain.map { data =>
-      val brRemaining                   = calculationService.brRemaining(currentIncome, personalAllowanceAmt, previousGain, calcTaxYear)
-      val timeApportionedChargeableGain = calculationService.calculateChargeableGain(
-        data,
-        prrValue + otherReliefsModel.timeApportionedReliefs,
-        allowableLoss,
-        annualExemptAmount,
-        broughtForwardLoss
-      )
-      val timeApportionedPRRUsed        = calculationService.determineReliefsUsed(data, Some(prrValue))
-      val otherReliefsUsed              = calculationService.determineReliefsUsed(
-        totalGainModel.timeApportionedGain.get - timeApportionedPRRUsed,
-        Some(otherReliefsModel.timeApportionedReliefs)
-      )
-      val allowableLossesLeft           =
-        calculationService.determineLossLeft(data - (timeApportionedPRRUsed + otherReliefsUsed), allowableLoss)
-      val allowableLossesUsed           = allowableLoss - allowableLossesLeft
-      val aeaUsed                       = calculationService.annualExemptAmountUsed(
-        annualExemptAmount,
-        data,
-        prrValue + otherReliefsModel.timeApportionedReliefs,
-        allowableLoss
-      )
-      val aeaRemaining                  = calculationService.annualExemptAmountLeft(annualExemptAmount, aeaUsed)
-      val broughtForwardLossRemaining   = calculationService.determineLossLeft(
-        data - (timeApportionedPRRUsed +
-          round("up", allowableLoss) + aeaUsed + otherReliefsUsed),
-        broughtForwardLoss
-      )
-      val broughtForwardLossUsed        = broughtForwardLoss - broughtForwardLossRemaining
-      val taxOwed                       = calculationService.calculationResult(
-        data,
-        negativeToZero(timeApportionedChargeableGain),
-        timeApportionedChargeableGain,
-        brRemaining,
-        prrClaimed,
-        aeaUsed,
-        aeaRemaining,
-        calcTaxYear,
-        isProperty = true
-      )
-
-      val reliefsRemaining =
-        (prrValue + round("up", otherReliefsModel.timeApportionedReliefs)) - (prrValue + otherReliefsUsed)
-
-      val totalDeductions =
-        timeApportionedPRRUsed + otherReliefsUsed + allowableLossesUsed + aeaUsed + broughtForwardLossUsed
-
-      TaxOwedModel(
-        taxOwed.taxOwed,
-        taxOwed.baseTaxGain,
-        taxOwed.baseTaxRate,
-        taxOwed.upperTaxGain,
-        taxOwed.upperTaxRate,
-        data,
-        timeApportionedChargeableGain,
-        if (timeApportionedPRRUsed > 0) Some(timeApportionedPRRUsed) else None,
-        if (otherReliefsUsed > 0) Some(otherReliefsUsed) else None,
-        if (allowableLossesUsed > 0) Some(allowableLossesUsed) else None,
-        if (aeaUsed > 0) Some(aeaUsed) else None,
-        aeaRemaining,
-        if (broughtForwardLossUsed > 0) Some(broughtForwardLossUsed) else None,
-        if (reliefsRemaining > 0) Some(reliefsRemaining) else None,
-        if (allowableLossesLeft > 0) Some(allowableLossesLeft) else None,
-        if (broughtForwardLossRemaining > 0) Some(broughtForwardLossRemaining) else None,
-        if (totalDeductions > 0) Some(totalDeductions) else None,
-        Some(taxOwed.baseRateTotal),
-        Some(taxOwed.upperRateTotal)
-      )
-    }
+    val timeApportionedModel =
+      totalGainModel.timeApportionedGain.map { gain =>
+        nonResidentTaxCalculationHelper.buildTaxOwedModel(
+          gain = gain,
+          reliefs = otherReliefsModel.timeApportionedReliefs,
+          currentIncome = currentIncome,
+          personalAllowanceAmt = personalAllowanceAmt,
+          previousGain = previousGain,
+          prrValue = prrValue,
+          allowableLoss = allowableLoss,
+          annualExemptAmount = annualExemptAmount,
+          broughtForwardLoss = broughtForwardLoss,
+          prrClaimed = prrClaimed,
+          calcTaxYear = calcTaxYear,
+          useClaimedPrrForReliefsRemaining = true
+        )
+      }
 
     val result = CalculationResultsWithTaxOwed(flatModel, rebasedModel, timeApportionedModel)
     Future.successful(Ok(Json.toJson(result)))
