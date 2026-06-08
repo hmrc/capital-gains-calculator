@@ -39,7 +39,10 @@ class CalculatorControllerSpec extends PlaySpec with MockitoSugar with GuiceOneA
   val mockService: CalculationService          = mock[CalculationService]
   val injectedComponents: ControllerComponents = app.injector.instanceOf[ControllerComponents]
 
-  val controller = new CalculatorController(mockService, injectedComponents)
+  val nonResidentTaxCalculationHelper =
+    new NonResidentTaxCalculationHelper(mockService)
+
+  val controller = new CalculatorController(mockService, injectedComponents, nonResidentTaxCalculationHelper)
 
   override def beforeEach(): Unit = {
     reset(mockService)
