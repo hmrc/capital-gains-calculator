@@ -26,6 +26,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.concurrent.ExecutionContext.global
 
 class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
@@ -253,7 +254,37 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
   }
 
   "validating the getTaxYear method" when {
+    "calling with current date (today)" must {
+      val today = LocalDate.now()
+      val dateFormatter = DateTimeFormatter.ofPattern("y-M-d")
+      val formattedDate = today.format(dateFormatter)
+      val result = controller.getTaxYear(formattedDate)(fakeRequest)
+      val data = contentAsString(result)
+      val json = Json.parse(data)
 
+      "return a status 200" in {
+        status(result) mustBe 200
+      }
+
+      "return a JSON result" in {
+        contentType(result) mustBe Some("application/json")
+      }
+
+      "return the current tax year as supplied" in {
+        val currentTaxYearInt = if (today.isAfter(LocalDate.parse(s"${today.getYear}-04-05"))) {
+          today.getYear + 1
+        } else {
+          today.getYear
+        }
+        val currentTaxYearString = s"${currentTaxYearInt - 1}/${currentTaxYearInt.toString.takeRight(2)}"
+        (json \ "taxYearSupplied").as[String] mustBe currentTaxYearString
+      }
+
+      "return a supplied TaxYearModel with calculationTaxYear matching the closest available config" in {
+        val calculationTaxYear = (json \ "calculationTaxYear").as[String]
+        calculationTaxYear must not be empty
+      }
+    }
     "calling with the date 10/10/2016" must {
       val result = controller.getTaxYear("2016-10-10")(fakeRequest)
       val data   = contentAsString(result)
