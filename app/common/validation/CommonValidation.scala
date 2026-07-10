@@ -59,8 +59,7 @@ object CommonValidation {
     else Left(s"$key has too many decimal places.")
 
   def validateResidentPersonalAllowance(input: Double, disposalDate: LocalDate): Either[String, Double] = {
-    val closestTaxYear       = TaxRatesAndBands.getClosestTaxYear(Date.getTaxYear(disposalDate))
-    val taxBands             = TaxRatesAndBands.getRates(closestTaxYear, Some(disposalDate))
+    val taxBands             = TaxRatesAndBands.getRates(Date.getTaxYear(disposalDate), Some(disposalDate))
     val maxPersonalAllowance =
       taxBands.maxPersonalAllowance + taxBands.blindPersonsAllowance + taxBands.marriageAllowance
 

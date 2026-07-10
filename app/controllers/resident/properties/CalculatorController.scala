@@ -19,7 +19,6 @@ package controllers.resident.properties
 import common.Date
 import common.Date._
 import common.Math._
-import config.TaxRatesAndBands
 import models.CalculationResultModel
 import models.resident.properties.{PropertyCalculateTaxOwedModel, PropertyChargeableGainModel, PropertyTotalGainModel}
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
@@ -53,8 +52,7 @@ class CalculatorController @Inject() (
   def calculateChargeableGain(propertyChargeableGainModel: PropertyChargeableGainModel): Action[AnyContent] =
     Action.async {
 
-      val taxYear     = getTaxYear(propertyChargeableGainModel.disposalDate)
-      val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+      val taxYear = getTaxYear(propertyChargeableGainModel.disposalDate)
 
       val gain = calculationService.calculateGainFlat(
         propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.disposalValue,
@@ -69,7 +67,7 @@ class CalculatorController @Inject() (
         gain,
         prrUsed,
         propertyChargeableGainModel.lettingReliefs,
-        calcTaxYear
+        taxYear
       )
       val chargeableGain                = calculationService.calculateChargeableGain(
         gain,
@@ -132,8 +130,7 @@ class CalculatorController @Inject() (
   def calculateTaxOwed(propertyCalculateTaxOwedModel: PropertyCalculateTaxOwedModel): Action[AnyContent] =
     Action.async {
 
-      val taxYear     = getTaxYear(propertyCalculateTaxOwedModel.propertyChargeableGainModel.disposalDate)
-      val calcTaxYear = TaxRatesAndBands.getClosestTaxYear(taxYear)
+      val taxYear = getTaxYear(propertyCalculateTaxOwedModel.propertyChargeableGainModel.disposalDate)
 
       val gain                                      = calculationService.calculateGainFlat(
         propertyCalculateTaxOwedModel.propertyChargeableGainModel.propertyTotalGainModel.totalGainModel.disposalValue,
@@ -150,7 +147,7 @@ class CalculatorController @Inject() (
         gain,
         prrUsed,
         propertyCalculateTaxOwedModel.propertyChargeableGainModel.lettingReliefs,
-        calcTaxYear
+        taxYear
       )
       val chargeableGain                            = calculationService.calculateChargeableGain(
         gain,
@@ -182,7 +179,7 @@ class CalculatorController @Inject() (
         None,
         aeaUsed,
         0.0,
-        calcTaxYear,
+        taxYear,
         isProperty = true
       )
       val result: TaxOwedResultModel                = TaxOwedResultModel(

@@ -19,7 +19,6 @@ package controllers.resident.shares
 import common.Date
 import common.Date._
 import common.Math._
-import config.TaxRatesAndBands
 import models.CalculationResultModel
 import models.resident.shares.{CalculateTaxOwedModel, ChargeableGainModel, TotalGainModel}
 import models.resident.{ChargeableGainResultModel, TaxOwedResultModel}
@@ -118,7 +117,6 @@ class CalculatorController @Inject() (
     val chargeableGainModel = calculateTaxOwedModel.chargeableGainModel
 
     val taxYear                                   = getTaxYear(calculateTaxOwedModel.disposalDate)
-    val calcTaxYear                               = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val gain                                      = calculationService.calculateGainFlat(
       chargeableGainModel.totalGainModel.disposalValue,
       chargeableGainModel.totalGainModel.disposalCosts,
@@ -157,7 +155,7 @@ class CalculatorController @Inject() (
       None,
       aeaUsed,
       0.0,
-      calcTaxYear,
+      taxYear,
       isProperty = false,
       Some(calculateTaxOwedModel.disposalDate),
       isMidYearChangeApplicable = true
