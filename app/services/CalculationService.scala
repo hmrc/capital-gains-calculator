@@ -106,8 +106,7 @@ class CalculationService @Inject() {
   ): Double = {
 
     val taxYear             = getTaxYear(disposalDate)
-    val calcTaxYear         = TaxRatesAndBands.getClosestTaxYear(taxYear)
-    val taxRatesAndBands    = TaxRatesAndBands.getRates(calcTaxYear)
+    val taxRatesAndBands    = TaxRatesAndBands.getRates(taxYear)
     val flatGain            =
       calculateGainFlat(disposalValue, disposalCosts, acquisitionValueAmt, acquisitionCostsAmt, improvementsAmt)
     val fractionOfOwnership =

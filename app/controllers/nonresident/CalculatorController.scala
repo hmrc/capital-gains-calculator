@@ -18,7 +18,6 @@ package controllers.nonresident
 
 import common.Date
 import common.Date._
-import config.TaxRatesAndBands
 import models.nonResident._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
@@ -199,7 +198,6 @@ class CalculatorController @Inject() (
     )
 
     val taxYear          = getTaxYear(disposalDate)
-    val calcTaxYear      = TaxRatesAndBands.getClosestTaxYear(taxYear)
     val prrValue: Double = prrClaimed.getOrElse(0)
 
     val flatModel =
@@ -214,7 +212,7 @@ class CalculatorController @Inject() (
         annualExemptAmount = annualExemptAmount,
         broughtForwardLoss = broughtForwardLoss,
         prrClaimed = prrClaimed,
-        calcTaxYear = calcTaxYear
+        calcTaxYear = taxYear
       )
 
     val rebasedModel =
@@ -230,7 +228,7 @@ class CalculatorController @Inject() (
           annualExemptAmount = annualExemptAmount,
           broughtForwardLoss = broughtForwardLoss,
           prrClaimed = prrClaimed,
-          calcTaxYear = calcTaxYear,
+          calcTaxYear = taxYear,
           useClaimedPrrForReliefsRemaining = true
         )
       }
@@ -248,7 +246,7 @@ class CalculatorController @Inject() (
           annualExemptAmount = annualExemptAmount,
           broughtForwardLoss = broughtForwardLoss,
           prrClaimed = prrClaimed,
-          calcTaxYear = calcTaxYear,
+          calcTaxYear = taxYear,
           useClaimedPrrForReliefsRemaining = true
         )
       }

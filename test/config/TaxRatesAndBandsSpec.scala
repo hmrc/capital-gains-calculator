@@ -89,6 +89,53 @@ class TaxRatesAndBandsSpec extends PlaySpec with ScalaCheckPropertyChecks with C
     val acceptedMinTaxYear = TaxRatesAndBands.liveTaxRates.head.taxYear
     val acceptedMaxTaxYear = TaxRatesAndBands.liveTaxRates.last.taxYear
 
+    "the requested tax year is configured" must {
+      "return the matching tax year config" in {
+        val rates = TaxRatesAndBands.getRates(2024)
+
+        rates.taxYear shouldEqual 2024
+        rates.maxAnnualExemptAmount shouldEqual TaxRatesAndBands20232024.maxAnnualExemptAmount
+      }
+    }
+
+    "the requested tax year is not configured" must {
+      "use the latest live config for an earlier tax year" in {
+        val requestedTaxYear = acceptedMinTaxYear - 1
+        val latestRates      = TaxRatesAndBands.liveTaxRates.last
+        val rates            = TaxRatesAndBands.getRates(requestedTaxYear)
+
+        rates.taxYear shouldEqual requestedTaxYear
+        rates.maxAnnualExemptAmount shouldEqual latestRates.maxAnnualExemptAmount
+        rates.maxPersonalAllowance shouldEqual latestRates.maxPersonalAllowance
+        rates.effectiveDate shouldEqual None
+      }
+
+      "use the latest config before the requested tax year" in {
+        val rates = TaxRatesAndBands.getRates(
+          year = 2024,
+          rates = List(TaxRatesAndBands20222023, TaxRatesAndBands20242025),
+          disposalDate = None,
+          isMidYearChangeApplicable = false
+        )
+
+        rates.taxYear shouldEqual 2024
+        rates.maxAnnualExemptAmount shouldEqual TaxRatesAndBands20222023.maxAnnualExemptAmount
+        rates.maxPersonalAllowance shouldEqual TaxRatesAndBands20222023.maxPersonalAllowance
+        rates.effectiveDate shouldEqual None
+      }
+
+      "use the latest live config for a future tax year" in {
+        val requestedTaxYear = acceptedMaxTaxYear + 1
+        val latestRates      = TaxRatesAndBands.liveTaxRates.last
+        val rates            = TaxRatesAndBands.getRates(requestedTaxYear)
+
+        rates.taxYear shouldEqual requestedTaxYear
+        rates.maxAnnualExemptAmount shouldEqual latestRates.maxAnnualExemptAmount
+        rates.maxPersonalAllowance shouldEqual latestRates.maxPersonalAllowance
+        rates.effectiveDate shouldEqual None
+      }
+    }
+
     "checked for closest tax year" must {
       "return correct closest tax year" in {
         check {

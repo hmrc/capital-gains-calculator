@@ -71,14 +71,10 @@ class TaxRatesAndBandsController @Inject() (val cc: ControllerComponents)(implic
       case Right(parsedDate) =>
         val taxYear            = Date.getTaxYear(parsedDate)
         val currentTaxYear     = Date.getTaxYear(LocalDate.now())
-        val calculationTaxYear = if (taxYear > currentTaxYear) {
-          currentTaxYear // Future year -> use current year
-        } else {
-          TaxRatesAndBands.getClosestTaxYear(taxYear) // Past/present -> use closest available rates
-        }
+        val calculationTaxYear = if (taxYear > currentTaxYear) currentTaxYear else taxYear
         val result             = TaxYearModel(
           Date.taxYearToString(taxYear),
-          TaxRatesAndBands.filterRatesByTaxYear(taxYear).nonEmpty,
+          TaxRatesAndBandsValidation.checkValidTaxYear(taxYear),
           Date.taxYearToString(calculationTaxYear)
         )
         Future.successful(Ok(Json.toJson(result)))

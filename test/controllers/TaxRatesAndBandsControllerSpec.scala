@@ -16,6 +16,7 @@
 
 package controllers
 
+import common.Date
 import org.apache.pekko.actor.ActorSystem
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -255,12 +256,14 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
 
   "validating the getTaxYear method" when {
     "calling with current date (today)" must {
-      val today = LocalDate.now()
-      val dateFormatter = DateTimeFormatter.ofPattern("y-M-d")
-      val formattedDate = today.format(dateFormatter)
-      val result = controller.getTaxYear(formattedDate)(fakeRequest)
-      val data = contentAsString(result)
-      val json = Json.parse(data)
+      val today                = LocalDate.now()
+      val dateFormatter        = DateTimeFormatter.ofPattern("y-M-d")
+      val formattedDate        = today.format(dateFormatter)
+      val result               = controller.getTaxYear(formattedDate)(fakeRequest)
+      val data                 = contentAsString(result)
+      val json                 = Json.parse(data)
+      val currentTaxYear       = Date.getTaxYear(today)
+      val currentTaxYearString = Date.taxYearToString(currentTaxYear)
 
       "return a status 200" in {
         status(result) mustBe 200
@@ -271,21 +274,18 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
       }
 
       "return the current tax year as supplied" in {
-        val currentTaxYearInt = if (today.isAfter(LocalDate.parse(s"${today.getYear}-04-05"))) {
-          today.getYear + 1
-        } else {
-          today.getYear
-        }
-        val currentTaxYearString = s"${currentTaxYearInt - 1}/${currentTaxYearInt.toString.takeRight(2)}"
         (json \ "taxYearSupplied").as[String] mustBe currentTaxYearString
       }
 
-      "return a supplied TaxYearModel with calculationTaxYear matching the closest available config" in {
-        val calculationTaxYear = (json \ "calculationTaxYear").as[String]
-        calculationTaxYear must not be empty
+      "return isValidYear as true" in {
+        (json \ "isValidYear").as[Boolean] mustBe true
+      }
+
+      "return calculationTaxYear as the year to use for rates" in {
+        (json \ "calculationTaxYear").as[String] mustBe currentTaxYearString
       }
     }
-    "calling with the date 10/10/2016" must {
+    "calling with the date 10/10/2016"  must {
       val result = controller.getTaxYear("2016-10-10")(fakeRequest)
       val data   = contentAsString(result)
       val json   = Json.parse(data)
@@ -298,15 +298,15 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
         contentType(result) mustBe Some("application/json")
       }
 
-      "return a supplied TaxYearModel for 2016/17" in {
+      "return taxYearSupplied as 2016/17" in {
         (json \ "taxYearSupplied").as[String] mustBe "2016/17"
       }
 
-      "return a supplied TaxYearModel with isValidYear as true" in {
+      "return isValidYear as true" in {
         (json \ "isValidYear").as[Boolean] mustBe true
       }
 
-      "return a supplied TaxYearModel with calculationTaxYear as 2016/17" in {
+      "return calculationTaxYear as 2016/17" in {
         (json \ "calculationTaxYear").as[String] mustBe "2016/17"
       }
 
@@ -325,23 +325,25 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
         contentType(result) mustBe Some("application/json")
       }
 
-      "return a supplied TaxYearModel for 2014/15" in {
+      "return taxYearSupplied as 2014/15" in {
         (json \ "taxYearSupplied").as[String] mustBe "2014/15"
       }
 
-      "return a supplied TaxYearModel with isValidYear as false" in {
+      "return isValidYear as false" in {
         (json \ "isValidYear").as[Boolean] mustBe false
       }
 
-      "return a supplied TaxYearModel with calculationTaxYear as 2015/16" in {
-        (json \ "calculationTaxYear").as[String] mustBe "2015/16"
+      "return calculationTaxYear as the year to use for rates" in {
+        (json \ "calculationTaxYear").as[String] mustBe "2014/15"
       }
     }
 
-    "calling with the date 10/10/2099" must {
-      val result = controller.getTaxYear("2099-10-10")(fakeRequest)
-      val data   = contentAsString(result)
-      val json   = Json.parse(data)
+    "calling with a future date" must {
+      val currentTaxYear       = Date.getTaxYear(LocalDate.now())
+      val currentTaxYearString = Date.taxYearToString(currentTaxYear)
+      val futureTaxYear        = Date.taxYearToString(currentTaxYear + 2)
+      val result               = controller.getTaxYear(s"${currentTaxYear + 1}-10-10")(fakeRequest)
+      val json                 = Json.parse(contentAsString(result))
 
       "return a status 200" in {
         status(result) mustBe 200
@@ -351,16 +353,16 @@ class TaxRatesAndBandsControllerSpec extends PlaySpec with GuiceOneAppPerSuite w
         contentType(result) mustBe Some("application/json")
       }
 
-      "return a supplied TaxYearModel for 2099/00" in {
-        (json \ "taxYearSupplied").as[String] mustBe "2099/00"
+      "return taxYearSupplied as the future tax year" in {
+        (json \ "taxYearSupplied").as[String] mustBe futureTaxYear
       }
 
-      "return a supplied TaxYearModel with isValidYear as true" in {
+      "return isValidYear as false" in {
         (json \ "isValidYear").as[Boolean] mustBe false
       }
 
-      "return a supplied TaxYearModel with calculationTaxYear as 2026/27" in {
-        (json \ "calculationTaxYear").as[String] mustBe "2026/27"
+      "return calculationTaxYear as the current tax year" in {
+        (json \ "calculationTaxYear").as[String] mustBe currentTaxYearString
       }
 
     }
